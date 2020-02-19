@@ -19,6 +19,7 @@ library(here)
 load up all the links we have (just the first two column of the dataframe expanded)
 ```{r}
 ncov=read.csv(here("./data/singapore_ncov_2019.csv"))
+# ncov=read.csv("../../Data/nCov_Singapore_2019.csv")
 ncov_sing=ncov[ncov$country=="Singapore",]
 names(ncov_sing)[1] <- 'CaseID'
 ```
@@ -27,7 +28,7 @@ names(ncov_sing)[1] <- 'CaseID'
 links_condense=ncov_sing[,c(1,2)]
 links_exp=separate(links_condense, 'Related.cases', paste("relations", 1:7, sep=""), sep=",", extra="drop")
 links_long=gather(links_exp,rel,link,relations1:relations7)%>%select("CaseID","link")
-write.csv(links_long,("links_long.csv"))
+write.csv(links_long,("../data/links_long.csv"))
 ```
 make it clear that those links are the edges we will be using. Also omit any of the cases that don't have  links to others in the dataset 
 ```{r}
@@ -48,12 +49,13 @@ This chunk does not always have to be run, only if you need to generate a new se
 ```{r}
 cov_net=graph_from_data_frame(edges_reduced,vertices = nodes_sing,directed=TRUE)
 n=ggnetwork(cov_net)
-#write.csv(n,"good_coords.csv")
+write.csv(n,"../data/good_coords.csv")
+saveRDS(n, "../data/cov_net.rds")
 ```
 
 Load the dataset that has the coordinates mapped out, also convert the age coumn to an intger so that we can bin it for nice plotting.
 ```{r}
-n=read.csv("good_coords.csv")
+n=read.csv("../data/good_coords.csv")
 n$age=as.character(n$age)
 n$age=as.integer(n$age)
 n$age_bin=bin(n$age,nbins=5)
