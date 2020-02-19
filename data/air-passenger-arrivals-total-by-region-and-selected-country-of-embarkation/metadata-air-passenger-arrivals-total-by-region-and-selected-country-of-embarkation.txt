@@ -1,0 +1,137 @@
+# Metadata for Air Passenger Arrivals - Total by Region and Selected Country of Embarkation.
+---
+Identifier: '4a83d585-2399-4c00-9caa-dff61a115de5'
+Name: 'air-passenger-arrivals-total-by-region-and-selected-country-of-embarkation'
+Title: 'Air Passenger Arrivals - Total by Region and Selected Country of Embarkation.'
+Description:
+  - 'Air Passenger Arrivals by Region and Selected Country of Embarkation.'
+  - ''
+  - 'Note:'
+  - ''
+  - '1. Refers to Changi Airport only.'
+  - ''
+  - '2. Data exclude transit passengers who continued their journey on the same flight.'
+  - ''
+  - '3. Figures from January 1989 refer to Changi Airport only.'
+  - ''
+  - '4. Data for GERMANY prior to January 1991 refers to Federal Republic of Germany
+    only.'
+  - ''
+  - '5. Please note that the information has been obtained from third party sources.'
+Topics:
+  - 'Transport'
+Keywords:
+  - 'Changi Airport'
+  - 'International Travel'
+Publisher:
+  Name: 'Civil Aviation Authority of Singapore'
+  Admin 1:
+    Name: 'Ng Bo Lin'
+    Department: 'Civil Aviation Authority of Singapore'
+    Email: 'ng_bo_lin@caas.gov.sg'
+  Admin 2:
+    Name: 'Amaliah Hamsah'
+    Department: 'Civil Aviation Authority of Singapore'
+    Email: 'Amaliah_HAMSAH@caas.gov.sg'
+Sources:
+  - 'Civil Aviation Authority of Singapore'
+Source Url: 'http://www.tablebuilder.singstat.gov.sg/publicfacing/createDataTable.action?refId=2006&exportType=CSV'
+License: 'https://data.gov.sg/open-data-licence'
+Frequency: 'Monthly'
+Coverage: '1961-01-01 to 2019-08-31'
+Last Updated: '2019-10-08T16:30:59.327828'
+Resources:
+  -
+    Identifier: '4b634602-570d-47af-bae2-403135179249'
+    Title: 'Total Air Passenger Arrivals'
+    Url: 'https://storage.data.gov.sg/air-passenger-arrivals-total-by-region-and-selected-country-of-embarkation/resources/total-air-passenger-arrivals-2019-10-08T16-30-58Z.csv'
+    Format: 'CSV'
+    Coverage: '1961-01-01 to 2019-08-31'
+    Last Updated: '2019-10-08T16:30:58.649412'
+    Schema:
+      -
+        Name: 'month'
+        Title: 'Month'
+        Type: 'datetime'
+        Sub Type: 'month'
+        Format: 'YYYY-MM'
+      -
+        Name: 'level_1'
+        Title: 'Number of Air Passenger Arrivals'
+        Type: 'text'
+        Sub Type: 'general'
+      -
+        Name: 'value'
+        Title: 'Value'
+        Type: 'numeric'
+        Sub Type: 'general'
+        Unit Of Measure: 'Total'
+  -
+    Identifier: 'e80cd9b0-580b-48f0-a5b6-aa9b01fab201'
+    Title: 'Total Air Passenger Arrivals by Region'
+    Url: 'https://storage.data.gov.sg/air-passenger-arrivals-total-by-region-and-selected-country-of-embarkation/resources/total-air-passenger-arrivals-by-region-2019-10-07T16-11-17Z.csv'
+    Format: 'CSV'
+    Coverage: '1961-01-01 to 2019-08-31'
+    Last Updated: '2019-10-07T16:11:17.746161'
+    Schema:
+      -
+        Name: 'month'
+        Title: 'Month'
+        Type: 'datetime'
+        Sub Type: 'month'
+        Format: 'YYYY-MM'
+      -
+        Name: 'level_1'
+        Title: 'Number of Air Passenger Arrivals'
+        Type: 'text'
+        Sub Type: 'general'
+      -
+        Name: 'level_2'
+        Title: 'Region'
+        Type: 'text'
+        Sub Type: 'general'
+      -
+        Name: 'value'
+        Title: 'Value'
+        Type: 'numeric'
+        Sub Type: 'general'
+        Unit Of Measure: 'Total'
+        Description: '"na" : Data not available or not applicable'
+  -
+    Identifier: 'efd7b75b-992e-4221-aff3-c57140af1f67'
+    Title: 'Total Air Passenger Arrivals by Country'
+    Url: 'https://storage.data.gov.sg/air-passenger-arrivals-total-by-region-and-selected-country-of-embarkation/resources/total-air-passenger-arrivals-by-country-2019-10-07T16-12-09Z.csv'
+    Format: 'CSV'
+    Coverage: '1961-01-01 to 2019-08-31'
+    Last Updated: '2019-10-07T16:12:09.507585'
+    Schema:
+      -
+        Name: 'month'
+        Title: 'Month'
+        Type: 'datetime'
+        Sub Type: 'month'
+        Format: 'YYYY-MM'
+      -
+        Name: 'level_1'
+        Title: 'Number of Air Passenger Arrivals'
+        Type: 'text'
+        Sub Type: 'general'
+      -
+        Name: 'level_2'
+        Title: 'Region'
+        Type: 'text'
+        Sub Type: 'general'
+      -
+        Name: 'level_3'
+        Title: 'Country'
+        Type: 'text'
+        Sub Type: 'general'
+      -
+        Name: 'value'
+        Title: 'Value'
+        Type: 'numeric'
+        Sub Type: 'general'
+        Unit Of Measure: 'Total'
+        Description:
+          - '"na" : Data is not available'
+          - '"-" : Detailed breakdown is not available'
