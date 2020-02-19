@@ -4,6 +4,8 @@ author: "Emma Garlock"
 date: "2/18/2020"
 output: html_document
 ---
+
+#Set the working directory to be EpiCoronaHack_Cluster/Clustering/network_diagram
 Load all the libraries we will need 
 ```{r}
 library(ggplot2)
@@ -13,11 +15,18 @@ library(OneR)
 library(igraph)
 library(here)
 ```
+
 load up all the links we have (just the first two column of the dataframe expanded)
 ```{r}
-links_exp=read.csv(here("Clustering/network_diagram/links_ncov_expanded.csv"))
-links_long=gather(links_exp,rel,link,relations1:relations7)%>%select("caseid","link")
-write.csv(links_long,here("Clustering/network_diagram/links_long.csv"))
+ncov=read.csv(here("./data/singapore_ncov_2019.csv"))
+ncov_sing=ncov[ncov$country=="Singapore",]
+
+```
+```{r}
+links_condense=ncov_sing[,c(1,2)]
+links_exp=separate(links_condense, 'Related.cases', paste("relations", 1:7, sep=""), sep=",", extra="drop")
+links_long=gather(links_exp,rel,link,relations1:relations7)%>%select("CaseID","link")
+write.csv(links_long,("links_long.csv"))
 ```
 make it clear that those links are the edges we will be using. Also omit any of the cases that don't have  links to others in the dataset 
 ```{r}
@@ -27,19 +36,18 @@ names(edges)=c("from","to")
 
 Load the node info. This basically just supplies the metadata about each of the nodes in the edges df. 
 ```{r}
-nodes=read.csv(here("Clustering/network_diagram/singapore_ncov_2019.csv"))
-nodes_sing=nodes[nodes$country=="Singapore",]
+nodes_sing=ncov_sing
 ```
 This chunk does not always have to be run, only if you need to generate a new set of coordinates for the network diagram. If you skip to the chunk below there is a step where you can load n, a df that already has the coordinates you will need 
 ```{r}
-cov_net=graph_from_data_frame(edges_narm,vertices = nodes_sing,directed = TRUE)
+cov_net=graph_from_data_frame(edges,vertices = nodes_sing,directed = TRUE)
 n=ggnetwork(cov_net)
-write.csv(n,"good_coords.csv")
+#write.csv(n,"good_coords.csv")
 ```
 
 Load the dataset that has the coordinates mapped out, also convert the age coumn to an intger so that we can bin it for nice plotting.
 ```{r}
-n=read.csv("Clustering/network_diagram/good_coords.csv")
+n=read.csv("good_coords.csv")
 n$age=as.character(n$age)
 n$age=as.integer(n$age)
 n$age_bin=bin(n$age,nbins=5)
@@ -68,6 +76,28 @@ cov_net=ggplot(n)+
         legend.direction = "horizontal")
  
 cov_net
+
+```
+
+```{r}
+k_n=ggnetwork(cov_net,layout = "fruchtermanreingold")
+
+k_cov_net=ggplot(k_n)+
+  geom_edges(aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_nodes(aes(x = x, y = y,color=hospital),size=8)+
+  geom_text(aes(x = x, y = y,label=name),check_overlap = TRUE)+
+  guides(colour = guide_legend(title.position="top",override.aes = list(size=3)))+
+  theme_bw()+
+  theme(panel.grid = element_blank(),
+        axis.title = element_blank(),
+        axis.line = element_blank(),
+        axis.text=element_blank(),
+        axis.ticks = element_blank(),
+        panel.border = element_blank(),
+        legend.position = "bottom",
+        legend.direction = "horizontal")
+ 
+k_cov_net
 
 ```
 
