@@ -20,8 +20,9 @@ load up all the links we have (just the first two column of the dataframe expand
 ```{r}
 ncov=read.csv(here("./data/singapore_ncov_2019.csv"))
 ncov_sing=ncov[ncov$country=="Singapore",]
-
+names(ncov_sing)[1] <- 'CaseID'
 ```
+
 ```{r}
 links_condense=ncov_sing[,c(1,2)]
 links_exp=separate(links_condense, 'Related.cases', paste("relations", 1:7, sep=""), sep=",", extra="drop")
