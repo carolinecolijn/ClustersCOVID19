@@ -97,7 +97,7 @@ sp_model <- function(t,state,pars) {
 Now specify the starting state, the time range, the parameters and the input functions. Wu et al modelled new introductions of cases each day, but we are assuming for the moment that Singapore cases all came from the original 2 cases. 
 
 ```{r}
-state = c(S = 5638700, E = 2, I = 0)
+i_state = c(S = 5638700, E = 0, I = 2)
 times = seq(0,50, by=0.1) 
 
 pars=list(N = 5638700, 
@@ -147,43 +147,49 @@ return(0.5 * (dx) * (ft[1] + 2*sum(ft[2:(length(ft) - 1)]) + ft[length(ft)]))
 }
 
 # returns NEG of log likelihood
-negloglike = function(R0, pars, sp_daily, state, times) {
+negloglike = function(R0, pars, sp_daily, my_state, times) {
   pars$R0 <-  R0
-  out <- as.data.frame(ode(y= state, times=times,  func=sp_model(), parms=pars))
-  return(-sp_loglike(out,pars,sp_daily)) 
+  out <- as.data.frame(ode(y = my_state, times=times, func=sp_model(), parms=pars))
+  return(-sp_loglike(out, pars, sp_daily)) 
   # NOTE optim will minimize by default, min ( -loglike) = max (log like)
 }
 ```
 
-*TODO* can remove this next section I think...
-Make a plot showing the data and the model predictions. By eye, a high $R_0$ of 3.5 looks quite good - perhaps a bit too high. We can maximize the likelihood to estimate the $R_0$ value.
+
+Make a plot showing the data and the model predictions. By eye, the prediction is too low at the start of the epidemicfor the data. 
+Perhaps we can maximize the likelihood to estimate the $R_0$ value, start with a larger number for I at the initial state, and/or start the outbreak at an earlier time.
 ```{r}
-mypars <- list(N=19000000, 
+mypars <- list(N = 5638700, 
                DL = 6,
-               R0=3.5, 
+               R0 = 2.6, 
                DI = 8.4 - 6, 
-               Lwi=3633, 
-               Liw=3546,
-               Lwc=502013, 
-               Lcw=487310, 
-               LwcCH=717226, 
-               LcwCH=810500,
-               startTime=as.Date("2019-11-29"),
-               endTime=as.Date("2020-01-27"))
+               Lsi = 81467, 
+               Lis = 87560,
+               startTime = mdy("Jan 18, 2020"),
+               endTime = mdy("Feb 19, 2020"))
 
-out = as.data.frame(ode(y= state, times=times,  func=ccwumodel, parms=cpars,
-                       chuinput=mychuinput))
+out = as.data.frame(ode(y= i_state, times=times,  func=sp_model, parms=mypars))
 
-mp = modelpreds(out,cpars,ccwufinal) %>% gather(Source, casecounts, prediction:data)
+mp = modelpreds(out, mypars, sp_daily) %>% gather(Source, casecounts, prediction:data)
 
 ggplot(data=mp, aes(x=day,y=casecounts,color=Source))+geom_point() #
 ```
 
-We can use optim to estimate $R_0$ here. Wu et al used a Bayesian approach. We will get errors because optim expects more than one parameter to optimize over -- try it! Set up the function as a function of two parameters rather than one, and optimize them simultaneously. 
+
+We can use optim to estimate $R_0$ here. Wu et al used a Bayesian approach but CC used a maximum likelihood approach. 
 
 ```{r}
+i_state = c(S = 5638700, E = 0, I = 2)
 myfit <- optim(2.5, 
-               function(R0) negloglike(R0, pars, sp_daily, state, times))
+              function(R0) negloglike(R0, pars, sp_daily, my_state = i_state, times))
+  # Keeps returning an error: 'Error in as.list(state) : argument "state" is missing, with no default'
+  #I've tried renaming state to my_state (as argument name) and i_state (for initial values) but still get this error re: can't find "state" and I'm unsure where the issue is; it seems that the issue is in turning the ode output into a dataframe using the as.data.frame function
+  #Ran out of time for troubleshooting
+
+myfit <- optimize(f = function(R0) negloglike(R0, pars, sp_daily, state, times),
+                  interval = c(0, 20))
+
+myfit <- optim(2.5, negloglike, pars, sp_daily, state, times)
 
 myfit_Brent <- optim(2.5, 
                      function(R0) negloglike(R0, pars, sp_daily, state, times),
