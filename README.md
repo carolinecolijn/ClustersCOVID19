@@ -12,7 +12,7 @@
 * [Venus Lau](https://github.com/vlauu)
 
 ## Singapore Cluster
-84 confirmed cases as of February 19, 2019. The data was scrape from press releases from the Ministry of Health Singapore [website](https://www.moh.gov.sg/covid-19). 
+84 confirmed cases as of February 19, 2019. The data was scraped from press releases from the Ministry of Health Singapore [website](https://www.moh.gov.sg/covid-19). 
 
 ### Curation of Singapore Cases
 Centralize all details of the Singapore cases into an analysis-friendly text file. 
