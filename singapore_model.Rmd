@@ -2,8 +2,9 @@
 title: "singapore_model"
 author: "Michelle Coombe"
 date: "19/02/2020"
-output: html_document:
-  keep_md: TRUE
+output: 
+  html_document:
+     keep_md: TRUE
 ---
 
 ## Modeling initial Singapore data
@@ -80,8 +81,8 @@ ban = what happens if Singapore starts a travel ban?
 
 
 ```{r}
-sp_model <- function(t,state,pars) {
-  with(c(as.list(state),pars), {     # make it so we can use variable and par names
+sp_model <- function(t, state, pars) {
+  with(c(as.list(state), pars), {     # make it so we can use variable and par names
 # No source of zoonotic infections
 # No modeling of within Singapore travel as data is at the country level and infections should be spreading from the two initial cases and/or additional imported cases
 #    LcwT = LcwT*travelban(t) # 1 or 0 # we should add the travelban, control measures 
@@ -110,7 +111,7 @@ pars=list(N = 5638700,
 
 Run the model
 ```{r}
-out <-  as.data.frame(ode(y= state, times=times, func=sp_model, parms=pars))
+out <-  as.data.frame(ode(y= i_state, times=times, func=sp_model, parms=pars))
 
 out$realtime <- out$time + min(singapore$presumed_infected_date, na.rm = T)
 
