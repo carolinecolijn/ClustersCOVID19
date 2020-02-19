@@ -5,7 +5,8 @@ date: "2/18/2020"
 output: html_document
 ---
 
-#Set the working directory to be EpiCoronaHack_Cluster/Clustering/network_diagram
+**Set the working directory to be EpiCoronaHack_Cluster/Clustering/network_diagram**
+
 Load all the libraries we will need 
 ```{r}
 library(ggplot2)
@@ -14,6 +15,7 @@ library(ggnetwork)
 library(OneR)
 library(igraph)
 library(here)
+library(viridis)
 ```
 
 load up all the links we have (just the first two column of the dataframe expanded)
@@ -25,20 +27,26 @@ names(ncov_sing)[1] <- 'CaseID'
 ```
 
 ```{r}
-links_condense=ncov_sing[,c(1,2)]
-links_exp=separate(links_condense, 'Related.cases', paste("relations", 1:7, sep=""), sep=",", extra="drop")
-links_long=gather(links_exp,rel,link,relations1:relations7)%>%select("CaseID","link")
+links_two=ncov_sing[,c(1:3)]
+links_condense=gather(links_two,key="linktype",value="relations",Related.cases:Cluster.links)
+```
+
+```{r}
+links_exp=separate(links_condense, 'relations', paste("relations", 1:21, sep=""), sep=",", extra="drop")
+links_long=gather(links_exp,rel,link,relations1:relations21)%>%select("CaseID","link","linktype")
 write.csv(links_long,("../data/links_long.csv"))
 ```
 make it clear that those links are the edges we will be using. Also omit any of the cases that don't have  links to others in the dataset 
 ```{r}
 edges=links_long
-names(edges)=c("from","to")
+names(edges)=c("from","to","linktype")
 edges$from=as.character(edges$from)
 edges$from=as.integer(edges$from)
 edges$to=as.character(edges$to)
 edges$to=as.integer(edges$to)
 edges_reduced=edges[!(is.na(edges$to) | edges$to==""| edges$to==" "), ]
+
+edges_cluster=edges_reduced[edges_reduced$linktype=="Cluster.links",]
 ```
 
 Load the node info. This basically just supplies the metadata about each of the nodes in the edges df. 
@@ -62,18 +70,20 @@ n$age_bin=bin(n$age,nbins=5)
 ```
 Make the plot! 
 We can subset by 
-* age (binned)
-* cluster 
-* hospital 
-* outcomes 
-* travel_history_location 
+
+ * age (binned)
+ * cluster 
+ * hospital 
+ * outcomes 
+ * travel_history_location 
 ```{r}
 
-cov_net=ggplot(n)+
-  geom_edges(aes(x = x, y = y, xend = xend, yend = yend),arrow = NULL)+
+cov_net=ggplot(n,aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_edges(aes(),subset(n,Related.cases!=""),linetype="solid")+
   geom_nodes(aes(x = x, y = y,color=cluster),size=8)+
   geom_text(aes(x = x, y = y,label=name),check_overlap = TRUE)+
   guides(colour = guide_legend(title.position="top",title.hjust = 0.5,override.aes = list(size=3)))+
+  scale_color_viridis_d(na.value="grey50")+
   theme_bw()+
   theme(panel.grid = element_blank(),
         axis.title = element_blank(),
@@ -83,6 +93,7 @@ cov_net=ggplot(n)+
         panel.border = element_blank(),
         legend.position = "bottom",
         legend.direction = "horizontal")
+
  
 cov_net
 
