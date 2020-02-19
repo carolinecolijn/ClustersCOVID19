@@ -1,0 +1,2773 @@
+"","X","case","date","status"
+"1",1,"Case 1, 66M, Wuhan","01/18/2020",0
+"2",2,"Case 2, 53F, Wuhan","01/18/2020",0
+"3",3,"Case 3, 37M, Wuhan","01/18/2020",0
+"4",4,"Case 4, 36M, Wuhan","01/18/2020",0
+"5",5,"Case 5, 56F, Wuhan","01/18/2020",1
+"6",6,"Case 6, 56M, Wuhan","01/18/2020",1
+"7",7,"Case 7, 35M, Wuhan","01/18/2020",0
+"8",8,"Case 8, 56F, Life Church, Wuhan","01/18/2020",0
+"9",9,"Case 9, 56M, Life Church, Wuhan","01/18/2020",0
+"10",10,"Case 10, 56M, Wuhan","01/18/2020",0
+"11",11,"Case 11, 31F, Wuhan","01/18/2020",0
+"12",12,"Case 12, 37F, Wuhan","01/18/2020",0
+"13",13,"Case 13, 73F, Wuhan","01/18/2020",0
+"14",14,"Case 14, 31M, Wuhan","01/18/2020",0
+"15",15,"Case 15, 47F, Wuhan","01/18/2020",0
+"16",16,"Case 16, 38M, Wuhan","01/18/2020",0
+"17",17,"Case 17, 47F, Wuhan","01/18/2020",0
+"18",18,"Case 18, 31F, Wuhan","01/18/2020",0
+"19",19,"Case 19, 28F, Yong Thai Hang","01/18/2020",0
+"20",20,"Case 20, 48F, Yong Thai Hang","01/18/2020",0
+"21",21,"Case 21, 44F, Yong Thai Hang","01/18/2020",0
+"22",22,"Case 22, 21M, Wuhan","01/18/2020",0
+"23",23,"Case 23, 17M, Wuhan","01/18/2020",0
+"24",24,"Case 24, 32F, Yong Thai Hang","01/18/2020",0
+"25",25,"Case 25, 40M, Yong Thai Hang","01/18/2020",0
+"26",26,"Case 26, 42F , Wuhan","01/18/2020",0
+"27",27,"Case 27, 45M, Yong Thai Hang","01/18/2020",0
+"28",28,"Case 28, 0/5M, Yong Thai Hang","01/18/2020",0
+"29",29,"Case 29, 41M, NA","01/18/2020",0
+"30",30,"Case 30, 27M, Grand Hyatt Singapore","01/18/2020",0
+"31",31,"Case 31, 53M, Life Church","01/18/2020",0
+"32",32,"Case 32, 42F, NA","01/18/2020",0
+"33",33,"Case 33, 39F, Life Church","01/18/2020",0
+"34",34,"Case 34, 40F, Yong Thai Hang","01/18/2020",0
+"35",35,"Case 35, 64F, NA","01/18/2020",0
+"36",36,"Case 36, 38F, Grand Hyatt Singapore","01/18/2020",0
+"37",37,"Case 37, 53M, NA","01/18/2020",0
+"38",38,"Case 38, 52F, Life Church","01/18/2020",0
+"39",39,"Case 39, 51M, Grand Hyatt Singapore","01/18/2020",0
+"40",40,"Case 40, 36M, Yong Thai Hang","01/18/2020",0
+"41",41,"Case 41, 71M, NA","01/18/2020",0
+"42",42,"Case 42, 39M, Seletar Aerospace Heights","01/18/2020",0
+"43",43,"Case 43, 54M, NA","01/18/2020",0
+"44",44,"Case 44, 37M, NA","01/18/2020",0
+"45",45,"Case 45, 2F, Wuhan","01/18/2020",0
+"46",46,"Case 46, 35M, NA","01/18/2020",0
+"47",47,"Case 47, 39M, Seletar Aerospace Heights","01/18/2020",0
+"48",48,"Case 48, 34M, Grace Assembly of God","01/18/2020",0
+"49",49,"Case 49, 46M, Grace Assembly of God","01/18/2020",0
+"50",50,"Case 50, 62M, NA","01/18/2020",0
+"51",51,"Case 51, 48M, Grace Assembly of God","01/18/2020",0
+"52",52,"Case 52, 37M, Seletar Aerospace Heights","01/18/2020",0
+"53",53,"Case 53, 54M, Grace Assembly of God","01/18/2020",0
+"54",54,"Case 54, 54F, Grace Assembly of God","01/18/2020",0
+"55",55,"Case 55, 30M, NA","01/18/2020",0
+"56",56,"Case 56, 30M, Seletar Aerospace Heights","01/18/2020",0
+"57",57,"Case 57, 26M, Grace Assembly of God","01/18/2020",0
+"58",58,"Case 58, 55M, Grace Assembly of God","01/18/2020",0
+"59",59,"Case 59, 61M, NA","01/18/2020",0
+"60",60,"Case 60, 51F, Grace Assembly of God","01/18/2020",0
+"61",61,"Case 61, 57F, Grace Assembly of God","01/18/2020",0
+"62",62,"Case 62, 44F, Grace Assembly of God","01/18/2020",0
+"63",63,"Case 63, 54F, Grace Assembly of God","01/18/2020",0
+"64",64,"Case 64, 50M, NA","01/18/2020",0
+"65",65,"Case 65, 61F, NA","01/18/2020",0
+"66",66,"Case 66, 28M, Grace Assembly of God","01/18/2020",0
+"67",67,"Case 67, 56F, Grace Assembly of God","01/18/2020",0
+"68",68,"Case 68, 79F, Grace Assembly of God","01/18/2020",0
+"69",69,"Case 69, 26M, Seletar Aerospace Heights","01/18/2020",0
+"70",70,"Case 70, 27F, Grace Assembly of God","01/18/2020",0
+"71",71,"Case 71, 25M, Grace Assembly of God","01/18/2020",0
+"72",72,"Case 72, 40M, NA","01/18/2020",0
+"73",73,"Case 73, 43M, Grace Assembly of God","01/18/2020",0
+"74",74,"Case 74, 29M, Grace Assembly of God","01/18/2020",0
+"75",75,"Case 75, 71F, NA","01/18/2020",0
+"76",76,"Case 76, 1M, Wuhan","01/18/2020",0
+"77",77,"Case 77, 35M, NA","01/18/2020",0
+"78",78,"Case 78, 57F, Grace Assembly of God","01/18/2020",0
+"79",79,"Case 79, 35F, NA","01/18/2020",0
+"80",80,"Case 80, 38F, Grace Assembly of God","01/18/2020",0
+"81",81,"Case 81, 50M, Grace Assembly of God","01/18/2020",0
+"82",82,"Case 82, 57F, NA","01/18/2020",0
+"83",83,"Case 83, 54M, Life Church","01/18/2020",0
+"84",84,"Case 84, 35F, Grace Assembly of God","01/18/2020",0
+"85",85,"Case 1, 66M, Wuhan","01/19/2020",0
+"86",86,"Case 2, 53F, Wuhan","01/19/2020",0
+"87",87,"Case 3, 37M, Wuhan","01/19/2020",0
+"88",88,"Case 4, 36M, Wuhan","01/19/2020",0
+"89",89,"Case 5, 56F, Wuhan","01/19/2020",1
+"90",90,"Case 6, 56M, Wuhan","01/19/2020",1
+"91",91,"Case 7, 35M, Wuhan","01/19/2020",0
+"92",92,"Case 8, 56F, Life Church, Wuhan","01/19/2020",1
+"93",93,"Case 9, 56M, Life Church, Wuhan","01/19/2020",1
+"94",94,"Case 10, 56M, Wuhan","01/19/2020",0
+"95",95,"Case 11, 31F, Wuhan","01/19/2020",0
+"96",96,"Case 12, 37F, Wuhan","01/19/2020",0
+"97",97,"Case 13, 73F, Wuhan","01/19/2020",0
+"98",98,"Case 14, 31M, Wuhan","01/19/2020",0
+"99",99,"Case 15, 47F, Wuhan","01/19/2020",0
+"100",100,"Case 16, 38M, Wuhan","01/19/2020",0
+"101",101,"Case 17, 47F, Wuhan","01/19/2020",0
+"102",102,"Case 18, 31F, Wuhan","01/19/2020",0
+"103",103,"Case 19, 28F, Yong Thai Hang","01/19/2020",0
+"104",104,"Case 20, 48F, Yong Thai Hang","01/19/2020",0
+"105",105,"Case 21, 44F, Yong Thai Hang","01/19/2020",0
+"106",106,"Case 22, 21M, Wuhan","01/19/2020",0
+"107",107,"Case 23, 17M, Wuhan","01/19/2020",0
+"108",108,"Case 24, 32F, Yong Thai Hang","01/19/2020",0
+"109",109,"Case 25, 40M, Yong Thai Hang","01/19/2020",0
+"110",110,"Case 26, 42F , Wuhan","01/19/2020",0
+"111",111,"Case 27, 45M, Yong Thai Hang","01/19/2020",0
+"112",112,"Case 28, 0/5M, Yong Thai Hang","01/19/2020",0
+"113",113,"Case 29, 41M, NA","01/19/2020",0
+"114",114,"Case 30, 27M, Grand Hyatt Singapore","01/19/2020",0
+"115",115,"Case 31, 53M, Life Church","01/19/2020",1
+"116",116,"Case 32, 42F, NA","01/19/2020",0
+"117",117,"Case 33, 39F, Life Church","01/19/2020",1
+"118",118,"Case 34, 40F, Yong Thai Hang","01/19/2020",0
+"119",119,"Case 35, 64F, NA","01/19/2020",0
+"120",120,"Case 36, 38F, Grand Hyatt Singapore","01/19/2020",0
+"121",121,"Case 37, 53M, NA","01/19/2020",0
+"122",122,"Case 38, 52F, Life Church","01/19/2020",1
+"123",123,"Case 39, 51M, Grand Hyatt Singapore","01/19/2020",0
+"124",124,"Case 40, 36M, Yong Thai Hang","01/19/2020",0
+"125",125,"Case 41, 71M, NA","01/19/2020",0
+"126",126,"Case 42, 39M, Seletar Aerospace Heights","01/19/2020",0
+"127",127,"Case 43, 54M, NA","01/19/2020",0
+"128",128,"Case 44, 37M, NA","01/19/2020",0
+"129",129,"Case 45, 2F, Wuhan","01/19/2020",0
+"130",130,"Case 46, 35M, NA","01/19/2020",0
+"131",131,"Case 47, 39M, Seletar Aerospace Heights","01/19/2020",0
+"132",132,"Case 48, 34M, Grace Assembly of God","01/19/2020",0
+"133",133,"Case 49, 46M, Grace Assembly of God","01/19/2020",0
+"134",134,"Case 50, 62M, NA","01/19/2020",0
+"135",135,"Case 51, 48M, Grace Assembly of God","01/19/2020",0
+"136",136,"Case 52, 37M, Seletar Aerospace Heights","01/19/2020",0
+"137",137,"Case 53, 54M, Grace Assembly of God","01/19/2020",0
+"138",138,"Case 54, 54F, Grace Assembly of God","01/19/2020",0
+"139",139,"Case 55, 30M, NA","01/19/2020",0
+"140",140,"Case 56, 30M, Seletar Aerospace Heights","01/19/2020",0
+"141",141,"Case 57, 26M, Grace Assembly of God","01/19/2020",0
+"142",142,"Case 58, 55M, Grace Assembly of God","01/19/2020",0
+"143",143,"Case 59, 61M, NA","01/19/2020",0
+"144",144,"Case 60, 51F, Grace Assembly of God","01/19/2020",0
+"145",145,"Case 61, 57F, Grace Assembly of God","01/19/2020",0
+"146",146,"Case 62, 44F, Grace Assembly of God","01/19/2020",0
+"147",147,"Case 63, 54F, Grace Assembly of God","01/19/2020",0
+"148",148,"Case 64, 50M, NA","01/19/2020",0
+"149",149,"Case 65, 61F, NA","01/19/2020",0
+"150",150,"Case 66, 28M, Grace Assembly of God","01/19/2020",0
+"151",151,"Case 67, 56F, Grace Assembly of God","01/19/2020",0
+"152",152,"Case 68, 79F, Grace Assembly of God","01/19/2020",0
+"153",153,"Case 69, 26M, Seletar Aerospace Heights","01/19/2020",0
+"154",154,"Case 70, 27F, Grace Assembly of God","01/19/2020",0
+"155",155,"Case 71, 25M, Grace Assembly of God","01/19/2020",0
+"156",156,"Case 72, 40M, NA","01/19/2020",0
+"157",157,"Case 73, 43M, Grace Assembly of God","01/19/2020",0
+"158",158,"Case 74, 29M, Grace Assembly of God","01/19/2020",0
+"159",159,"Case 75, 71F, NA","01/19/2020",0
+"160",160,"Case 76, 1M, Wuhan","01/19/2020",0
+"161",161,"Case 77, 35M, NA","01/19/2020",0
+"162",162,"Case 78, 57F, Grace Assembly of God","01/19/2020",0
+"163",163,"Case 79, 35F, NA","01/19/2020",0
+"164",164,"Case 80, 38F, Grace Assembly of God","01/19/2020",0
+"165",165,"Case 81, 50M, Grace Assembly of God","01/19/2020",0
+"166",166,"Case 82, 57F, NA","01/19/2020",0
+"167",167,"Case 83, 54M, Life Church","01/19/2020",1
+"168",168,"Case 84, 35F, Grace Assembly of God","01/19/2020",0
+"169",169,"Case 1, 66M, Wuhan","01/20/2020",2
+"170",170,"Case 2, 53F, Wuhan","01/20/2020",1
+"171",171,"Case 3, 37M, Wuhan","01/20/2020",1
+"172",172,"Case 4, 36M, Wuhan","01/20/2020",0
+"173",173,"Case 5, 56F, Wuhan","01/20/2020",1
+"174",174,"Case 6, 56M, Wuhan","01/20/2020",1
+"175",175,"Case 7, 35M, Wuhan","01/20/2020",0
+"176",176,"Case 8, 56F, Life Church, Wuhan","01/20/2020",1
+"177",177,"Case 9, 56M, Life Church, Wuhan","01/20/2020",1
+"178",178,"Case 10, 56M, Wuhan","01/20/2020",1
+"179",179,"Case 11, 31F, Wuhan","01/20/2020",0
+"180",180,"Case 12, 37F, Wuhan","01/20/2020",0
+"181",181,"Case 13, 73F, Wuhan","01/20/2020",0
+"182",182,"Case 14, 31M, Wuhan","01/20/2020",0
+"183",183,"Case 15, 47F, Wuhan","01/20/2020",0
+"184",184,"Case 16, 38M, Wuhan","01/20/2020",0
+"185",185,"Case 17, 47F, Wuhan","01/20/2020",0
+"186",186,"Case 18, 31F, Wuhan","01/20/2020",0
+"187",187,"Case 19, 28F, Yong Thai Hang","01/20/2020",0
+"188",188,"Case 20, 48F, Yong Thai Hang","01/20/2020",0
+"189",189,"Case 21, 44F, Yong Thai Hang","01/20/2020",0
+"190",190,"Case 22, 21M, Wuhan","01/20/2020",0
+"191",191,"Case 23, 17M, Wuhan","01/20/2020",0
+"192",192,"Case 24, 32F, Yong Thai Hang","01/20/2020",0
+"193",193,"Case 25, 40M, Yong Thai Hang","01/20/2020",0
+"194",194,"Case 26, 42F , Wuhan","01/20/2020",0
+"195",195,"Case 27, 45M, Yong Thai Hang","01/20/2020",0
+"196",196,"Case 28, 0/5M, Yong Thai Hang","01/20/2020",0
+"197",197,"Case 29, 41M, NA","01/20/2020",0
+"198",198,"Case 30, 27M, Grand Hyatt Singapore","01/20/2020",1
+"199",199,"Case 31, 53M, Life Church","01/20/2020",1
+"200",200,"Case 32, 42F, NA","01/20/2020",0
+"201",201,"Case 33, 39F, Life Church","01/20/2020",1
+"202",202,"Case 34, 40F, Yong Thai Hang","01/20/2020",0
+"203",203,"Case 35, 64F, NA","01/20/2020",0
+"204",204,"Case 36, 38F, Grand Hyatt Singapore","01/20/2020",1
+"205",205,"Case 37, 53M, NA","01/20/2020",0
+"206",206,"Case 38, 52F, Life Church","01/20/2020",1
+"207",207,"Case 39, 51M, Grand Hyatt Singapore","01/20/2020",1
+"208",208,"Case 40, 36M, Yong Thai Hang","01/20/2020",0
+"209",209,"Case 41, 71M, NA","01/20/2020",0
+"210",210,"Case 42, 39M, Seletar Aerospace Heights","01/20/2020",0
+"211",211,"Case 43, 54M, NA","01/20/2020",0
+"212",212,"Case 44, 37M, NA","01/20/2020",0
+"213",213,"Case 45, 2F, Wuhan","01/20/2020",0
+"214",214,"Case 46, 35M, NA","01/20/2020",0
+"215",215,"Case 47, 39M, Seletar Aerospace Heights","01/20/2020",0
+"216",216,"Case 48, 34M, Grace Assembly of God","01/20/2020",0
+"217",217,"Case 49, 46M, Grace Assembly of God","01/20/2020",0
+"218",218,"Case 50, 62M, NA","01/20/2020",0
+"219",219,"Case 51, 48M, Grace Assembly of God","01/20/2020",0
+"220",220,"Case 52, 37M, Seletar Aerospace Heights","01/20/2020",0
+"221",221,"Case 53, 54M, Grace Assembly of God","01/20/2020",0
+"222",222,"Case 54, 54F, Grace Assembly of God","01/20/2020",0
+"223",223,"Case 55, 30M, NA","01/20/2020",0
+"224",224,"Case 56, 30M, Seletar Aerospace Heights","01/20/2020",0
+"225",225,"Case 57, 26M, Grace Assembly of God","01/20/2020",0
+"226",226,"Case 58, 55M, Grace Assembly of God","01/20/2020",0
+"227",227,"Case 59, 61M, NA","01/20/2020",0
+"228",228,"Case 60, 51F, Grace Assembly of God","01/20/2020",0
+"229",229,"Case 61, 57F, Grace Assembly of God","01/20/2020",0
+"230",230,"Case 62, 44F, Grace Assembly of God","01/20/2020",0
+"231",231,"Case 63, 54F, Grace Assembly of God","01/20/2020",0
+"232",232,"Case 64, 50M, NA","01/20/2020",0
+"233",233,"Case 65, 61F, NA","01/20/2020",0
+"234",234,"Case 66, 28M, Grace Assembly of God","01/20/2020",0
+"235",235,"Case 67, 56F, Grace Assembly of God","01/20/2020",0
+"236",236,"Case 68, 79F, Grace Assembly of God","01/20/2020",0
+"237",237,"Case 69, 26M, Seletar Aerospace Heights","01/20/2020",0
+"238",238,"Case 70, 27F, Grace Assembly of God","01/20/2020",0
+"239",239,"Case 71, 25M, Grace Assembly of God","01/20/2020",0
+"240",240,"Case 72, 40M, NA","01/20/2020",0
+"241",241,"Case 73, 43M, Grace Assembly of God","01/20/2020",0
+"242",242,"Case 74, 29M, Grace Assembly of God","01/20/2020",0
+"243",243,"Case 75, 71F, NA","01/20/2020",0
+"244",244,"Case 76, 1M, Wuhan","01/20/2020",0
+"245",245,"Case 77, 35M, NA","01/20/2020",0
+"246",246,"Case 78, 57F, Grace Assembly of God","01/20/2020",0
+"247",247,"Case 79, 35F, NA","01/20/2020",0
+"248",248,"Case 80, 38F, Grace Assembly of God","01/20/2020",0
+"249",249,"Case 81, 50M, Grace Assembly of God","01/20/2020",0
+"250",250,"Case 82, 57F, NA","01/20/2020",0
+"251",251,"Case 83, 54M, Life Church","01/20/2020",1
+"252",252,"Case 84, 35F, Grace Assembly of God","01/20/2020",0
+"253",253,"Case 1, 66M, Wuhan","01/21/2020",2
+"254",254,"Case 2, 53F, Wuhan","01/21/2020",2
+"255",255,"Case 3, 37M, Wuhan","01/21/2020",1
+"256",256,"Case 4, 36M, Wuhan","01/21/2020",0
+"257",257,"Case 5, 56F, Wuhan","01/21/2020",1
+"258",258,"Case 6, 56M, Wuhan","01/21/2020",1
+"259",259,"Case 7, 35M, Wuhan","01/21/2020",0
+"260",260,"Case 8, 56F, Life Church, Wuhan","01/21/2020",1
+"261",261,"Case 9, 56M, Life Church, Wuhan","01/21/2020",1
+"262",262,"Case 10, 56M, Wuhan","01/21/2020",2
+"263",263,"Case 11, 31F, Wuhan","01/21/2020",0
+"264",264,"Case 12, 37F, Wuhan","01/21/2020",0
+"265",265,"Case 13, 73F, Wuhan","01/21/2020",1
+"266",266,"Case 14, 31M, Wuhan","01/21/2020",0
+"267",267,"Case 15, 47F, Wuhan","01/21/2020",0
+"268",268,"Case 16, 38M, Wuhan","01/21/2020",0
+"269",269,"Case 17, 47F, Wuhan","01/21/2020",0
+"270",270,"Case 18, 31F, Wuhan","01/21/2020",0
+"271",271,"Case 19, 28F, Yong Thai Hang","01/21/2020",0
+"272",272,"Case 20, 48F, Yong Thai Hang","01/21/2020",0
+"273",273,"Case 21, 44F, Yong Thai Hang","01/21/2020",0
+"274",274,"Case 22, 21M, Wuhan","01/21/2020",0
+"275",275,"Case 23, 17M, Wuhan","01/21/2020",0
+"276",276,"Case 24, 32F, Yong Thai Hang","01/21/2020",0
+"277",277,"Case 25, 40M, Yong Thai Hang","01/21/2020",0
+"278",278,"Case 26, 42F , Wuhan","01/21/2020",1
+"279",279,"Case 27, 45M, Yong Thai Hang","01/21/2020",0
+"280",280,"Case 28, 0/5M, Yong Thai Hang","01/21/2020",0
+"281",281,"Case 29, 41M, NA","01/21/2020",0
+"282",282,"Case 30, 27M, Grand Hyatt Singapore","01/21/2020",2
+"283",283,"Case 31, 53M, Life Church","01/21/2020",1
+"284",284,"Case 32, 42F, NA","01/21/2020",0
+"285",285,"Case 33, 39F, Life Church","01/21/2020",1
+"286",286,"Case 34, 40F, Yong Thai Hang","01/21/2020",0
+"287",287,"Case 35, 64F, NA","01/21/2020",0
+"288",288,"Case 36, 38F, Grand Hyatt Singapore","01/21/2020",1
+"289",289,"Case 37, 53M, NA","01/21/2020",0
+"290",290,"Case 38, 52F, Life Church","01/21/2020",1
+"291",291,"Case 39, 51M, Grand Hyatt Singapore","01/21/2020",1
+"292",292,"Case 40, 36M, Yong Thai Hang","01/21/2020",0
+"293",293,"Case 41, 71M, NA","01/21/2020",0
+"294",294,"Case 42, 39M, Seletar Aerospace Heights","01/21/2020",0
+"295",295,"Case 43, 54M, NA","01/21/2020",0
+"296",296,"Case 44, 37M, NA","01/21/2020",0
+"297",297,"Case 45, 2F, Wuhan","01/21/2020",0
+"298",298,"Case 46, 35M, NA","01/21/2020",0
+"299",299,"Case 47, 39M, Seletar Aerospace Heights","01/21/2020",0
+"300",300,"Case 48, 34M, Grace Assembly of God","01/21/2020",0
+"301",301,"Case 49, 46M, Grace Assembly of God","01/21/2020",0
+"302",302,"Case 50, 62M, NA","01/21/2020",0
+"303",303,"Case 51, 48M, Grace Assembly of God","01/21/2020",0
+"304",304,"Case 52, 37M, Seletar Aerospace Heights","01/21/2020",0
+"305",305,"Case 53, 54M, Grace Assembly of God","01/21/2020",0
+"306",306,"Case 54, 54F, Grace Assembly of God","01/21/2020",0
+"307",307,"Case 55, 30M, NA","01/21/2020",0
+"308",308,"Case 56, 30M, Seletar Aerospace Heights","01/21/2020",0
+"309",309,"Case 57, 26M, Grace Assembly of God","01/21/2020",0
+"310",310,"Case 58, 55M, Grace Assembly of God","01/21/2020",0
+"311",311,"Case 59, 61M, NA","01/21/2020",0
+"312",312,"Case 60, 51F, Grace Assembly of God","01/21/2020",0
+"313",313,"Case 61, 57F, Grace Assembly of God","01/21/2020",0
+"314",314,"Case 62, 44F, Grace Assembly of God","01/21/2020",0
+"315",315,"Case 63, 54F, Grace Assembly of God","01/21/2020",0
+"316",316,"Case 64, 50M, NA","01/21/2020",0
+"317",317,"Case 65, 61F, NA","01/21/2020",0
+"318",318,"Case 66, 28M, Grace Assembly of God","01/21/2020",0
+"319",319,"Case 67, 56F, Grace Assembly of God","01/21/2020",0
+"320",320,"Case 68, 79F, Grace Assembly of God","01/21/2020",0
+"321",321,"Case 69, 26M, Seletar Aerospace Heights","01/21/2020",0
+"322",322,"Case 70, 27F, Grace Assembly of God","01/21/2020",0
+"323",323,"Case 71, 25M, Grace Assembly of God","01/21/2020",0
+"324",324,"Case 72, 40M, NA","01/21/2020",0
+"325",325,"Case 73, 43M, Grace Assembly of God","01/21/2020",0
+"326",326,"Case 74, 29M, Grace Assembly of God","01/21/2020",0
+"327",327,"Case 75, 71F, NA","01/21/2020",0
+"328",328,"Case 76, 1M, Wuhan","01/21/2020",0
+"329",329,"Case 77, 35M, NA","01/21/2020",0
+"330",330,"Case 78, 57F, Grace Assembly of God","01/21/2020",0
+"331",331,"Case 79, 35F, NA","01/21/2020",0
+"332",332,"Case 80, 38F, Grace Assembly of God","01/21/2020",0
+"333",333,"Case 81, 50M, Grace Assembly of God","01/21/2020",0
+"334",334,"Case 82, 57F, NA","01/21/2020",0
+"335",335,"Case 83, 54M, Life Church","01/21/2020",1
+"336",336,"Case 84, 35F, Grace Assembly of God","01/21/2020",0
+"337",337,"Case 1, 66M, Wuhan","01/22/2020",3
+"338",338,"Case 2, 53F, Wuhan","01/22/2020",3
+"339",339,"Case 3, 37M, Wuhan","01/22/2020",1
+"340",340,"Case 4, 36M, Wuhan","01/22/2020",1
+"341",341,"Case 5, 56F, Wuhan","01/22/2020",1
+"342",342,"Case 6, 56M, Wuhan","01/22/2020",1
+"343",343,"Case 7, 35M, Wuhan","01/22/2020",0
+"344",344,"Case 8, 56F, Life Church, Wuhan","01/22/2020",1
+"345",345,"Case 9, 56M, Life Church, Wuhan","01/22/2020",1
+"346",346,"Case 10, 56M, Wuhan","01/22/2020",2
+"347",347,"Case 11, 31F, Wuhan","01/22/2020",1
+"348",348,"Case 12, 37F, Wuhan","01/22/2020",1
+"349",349,"Case 13, 73F, Wuhan","01/22/2020",1
+"350",350,"Case 14, 31M, Wuhan","01/22/2020",0
+"351",351,"Case 15, 47F, Wuhan","01/22/2020",0
+"352",352,"Case 16, 38M, Wuhan","01/22/2020",1
+"353",353,"Case 17, 47F, Wuhan","01/22/2020",0
+"354",354,"Case 18, 31F, Wuhan","01/22/2020",1
+"355",355,"Case 19, 28F, Yong Thai Hang","01/22/2020",0
+"356",356,"Case 20, 48F, Yong Thai Hang","01/22/2020",0
+"357",357,"Case 21, 44F, Yong Thai Hang","01/22/2020",0
+"358",358,"Case 22, 21M, Wuhan","01/22/2020",0
+"359",359,"Case 23, 17M, Wuhan","01/22/2020",0
+"360",360,"Case 24, 32F, Yong Thai Hang","01/22/2020",0
+"361",361,"Case 25, 40M, Yong Thai Hang","01/22/2020",0
+"362",362,"Case 26, 42F , Wuhan","01/22/2020",1
+"363",363,"Case 27, 45M, Yong Thai Hang","01/22/2020",0
+"364",364,"Case 28, 0/5M, Yong Thai Hang","01/22/2020",0
+"365",365,"Case 29, 41M, NA","01/22/2020",0
+"366",366,"Case 30, 27M, Grand Hyatt Singapore","01/22/2020",2
+"367",367,"Case 31, 53M, Life Church","01/22/2020",1
+"368",368,"Case 32, 42F, NA","01/22/2020",0
+"369",369,"Case 33, 39F, Life Church","01/22/2020",1
+"370",370,"Case 34, 40F, Yong Thai Hang","01/22/2020",0
+"371",371,"Case 35, 64F, NA","01/22/2020",0
+"372",372,"Case 36, 38F, Grand Hyatt Singapore","01/22/2020",1
+"373",373,"Case 37, 53M, NA","01/22/2020",0
+"374",374,"Case 38, 52F, Life Church","01/22/2020",1
+"375",375,"Case 39, 51M, Grand Hyatt Singapore","01/22/2020",1
+"376",376,"Case 40, 36M, Yong Thai Hang","01/22/2020",0
+"377",377,"Case 41, 71M, NA","01/22/2020",0
+"378",378,"Case 42, 39M, Seletar Aerospace Heights","01/22/2020",0
+"379",379,"Case 43, 54M, NA","01/22/2020",0
+"380",380,"Case 44, 37M, NA","01/22/2020",0
+"381",381,"Case 45, 2F, Wuhan","01/22/2020",0
+"382",382,"Case 46, 35M, NA","01/22/2020",0
+"383",383,"Case 47, 39M, Seletar Aerospace Heights","01/22/2020",0
+"384",384,"Case 48, 34M, Grace Assembly of God","01/22/2020",0
+"385",385,"Case 49, 46M, Grace Assembly of God","01/22/2020",0
+"386",386,"Case 50, 62M, NA","01/22/2020",0
+"387",387,"Case 51, 48M, Grace Assembly of God","01/22/2020",0
+"388",388,"Case 52, 37M, Seletar Aerospace Heights","01/22/2020",0
+"389",389,"Case 53, 54M, Grace Assembly of God","01/22/2020",0
+"390",390,"Case 54, 54F, Grace Assembly of God","01/22/2020",0
+"391",391,"Case 55, 30M, NA","01/22/2020",0
+"392",392,"Case 56, 30M, Seletar Aerospace Heights","01/22/2020",0
+"393",393,"Case 57, 26M, Grace Assembly of God","01/22/2020",0
+"394",394,"Case 58, 55M, Grace Assembly of God","01/22/2020",0
+"395",395,"Case 59, 61M, NA","01/22/2020",0
+"396",396,"Case 60, 51F, Grace Assembly of God","01/22/2020",0
+"397",397,"Case 61, 57F, Grace Assembly of God","01/22/2020",0
+"398",398,"Case 62, 44F, Grace Assembly of God","01/22/2020",0
+"399",399,"Case 63, 54F, Grace Assembly of God","01/22/2020",0
+"400",400,"Case 64, 50M, NA","01/22/2020",0
+"401",401,"Case 65, 61F, NA","01/22/2020",0
+"402",402,"Case 66, 28M, Grace Assembly of God","01/22/2020",0
+"403",403,"Case 67, 56F, Grace Assembly of God","01/22/2020",0
+"404",404,"Case 68, 79F, Grace Assembly of God","01/22/2020",0
+"405",405,"Case 69, 26M, Seletar Aerospace Heights","01/22/2020",0
+"406",406,"Case 70, 27F, Grace Assembly of God","01/22/2020",0
+"407",407,"Case 71, 25M, Grace Assembly of God","01/22/2020",0
+"408",408,"Case 72, 40M, NA","01/22/2020",0
+"409",409,"Case 73, 43M, Grace Assembly of God","01/22/2020",0
+"410",410,"Case 74, 29M, Grace Assembly of God","01/22/2020",0
+"411",411,"Case 75, 71F, NA","01/22/2020",0
+"412",412,"Case 76, 1M, Wuhan","01/22/2020",0
+"413",413,"Case 77, 35M, NA","01/22/2020",0
+"414",414,"Case 78, 57F, Grace Assembly of God","01/22/2020",0
+"415",415,"Case 79, 35F, NA","01/22/2020",0
+"416",416,"Case 80, 38F, Grace Assembly of God","01/22/2020",0
+"417",417,"Case 81, 50M, Grace Assembly of God","01/22/2020",0
+"418",418,"Case 82, 57F, NA","01/22/2020",0
+"419",419,"Case 83, 54M, Life Church","01/22/2020",1
+"420",420,"Case 84, 35F, Grace Assembly of God","01/22/2020",0
+"421",421,"Case 1, 66M, Wuhan","01/23/2020",3
+"422",422,"Case 2, 53F, Wuhan","01/23/2020",3
+"423",423,"Case 3, 37M, Wuhan","01/23/2020",3
+"424",424,"Case 4, 36M, Wuhan","01/23/2020",2
+"425",425,"Case 5, 56F, Wuhan","01/23/2020",1
+"426",426,"Case 6, 56M, Wuhan","01/23/2020",1
+"427",427,"Case 7, 35M, Wuhan","01/23/2020",1
+"428",428,"Case 8, 56F, Life Church, Wuhan","01/23/2020",1
+"429",429,"Case 9, 56M, Life Church, Wuhan","01/23/2020",1
+"430",430,"Case 10, 56M, Wuhan","01/23/2020",2
+"431",431,"Case 11, 31F, Wuhan","01/23/2020",1
+"432",432,"Case 12, 37F, Wuhan","01/23/2020",1
+"433",433,"Case 13, 73F, Wuhan","01/23/2020",1
+"434",434,"Case 14, 31M, Wuhan","01/23/2020",0
+"435",435,"Case 15, 47F, Wuhan","01/23/2020",0
+"436",436,"Case 16, 38M, Wuhan","01/23/2020",2
+"437",437,"Case 17, 47F, Wuhan","01/23/2020",0
+"438",438,"Case 18, 31F, Wuhan","01/23/2020",1
+"439",439,"Case 19, 28F, Yong Thai Hang","01/23/2020",0
+"440",440,"Case 20, 48F, Yong Thai Hang","01/23/2020",1
+"441",441,"Case 21, 44F, Yong Thai Hang","01/23/2020",1
+"442",442,"Case 22, 21M, Wuhan","01/23/2020",0
+"443",443,"Case 23, 17M, Wuhan","01/23/2020",0
+"444",444,"Case 24, 32F, Yong Thai Hang","01/23/2020",1
+"445",445,"Case 25, 40M, Yong Thai Hang","01/23/2020",1
+"446",446,"Case 26, 42F , Wuhan","01/23/2020",1
+"447",447,"Case 27, 45M, Yong Thai Hang","01/23/2020",1
+"448",448,"Case 28, 0/5M, Yong Thai Hang","01/23/2020",1
+"449",449,"Case 29, 41M, NA","01/23/2020",0
+"450",450,"Case 30, 27M, Grand Hyatt Singapore","01/23/2020",2
+"451",451,"Case 31, 53M, Life Church","01/23/2020",2
+"452",452,"Case 32, 42F, NA","01/23/2020",0
+"453",453,"Case 33, 39F, Life Church","01/23/2020",1
+"454",454,"Case 34, 40F, Yong Thai Hang","01/23/2020",1
+"455",455,"Case 35, 64F, NA","01/23/2020",0
+"456",456,"Case 36, 38F, Grand Hyatt Singapore","01/23/2020",1
+"457",457,"Case 37, 53M, NA","01/23/2020",0
+"458",458,"Case 38, 52F, Life Church","01/23/2020",1
+"459",459,"Case 39, 51M, Grand Hyatt Singapore","01/23/2020",1
+"460",460,"Case 40, 36M, Yong Thai Hang","01/23/2020",1
+"461",461,"Case 41, 71M, NA","01/23/2020",0
+"462",462,"Case 42, 39M, Seletar Aerospace Heights","01/23/2020",0
+"463",463,"Case 43, 54M, NA","01/23/2020",0
+"464",464,"Case 44, 37M, NA","01/23/2020",0
+"465",465,"Case 45, 2F, Wuhan","01/23/2020",0
+"466",466,"Case 46, 35M, NA","01/23/2020",0
+"467",467,"Case 47, 39M, Seletar Aerospace Heights","01/23/2020",0
+"468",468,"Case 48, 34M, Grace Assembly of God","01/23/2020",0
+"469",469,"Case 49, 46M, Grace Assembly of God","01/23/2020",0
+"470",470,"Case 50, 62M, NA","01/23/2020",0
+"471",471,"Case 51, 48M, Grace Assembly of God","01/23/2020",0
+"472",472,"Case 52, 37M, Seletar Aerospace Heights","01/23/2020",0
+"473",473,"Case 53, 54M, Grace Assembly of God","01/23/2020",0
+"474",474,"Case 54, 54F, Grace Assembly of God","01/23/2020",0
+"475",475,"Case 55, 30M, NA","01/23/2020",0
+"476",476,"Case 56, 30M, Seletar Aerospace Heights","01/23/2020",0
+"477",477,"Case 57, 26M, Grace Assembly of God","01/23/2020",0
+"478",478,"Case 58, 55M, Grace Assembly of God","01/23/2020",0
+"479",479,"Case 59, 61M, NA","01/23/2020",0
+"480",480,"Case 60, 51F, Grace Assembly of God","01/23/2020",0
+"481",481,"Case 61, 57F, Grace Assembly of God","01/23/2020",0
+"482",482,"Case 62, 44F, Grace Assembly of God","01/23/2020",0
+"483",483,"Case 63, 54F, Grace Assembly of God","01/23/2020",0
+"484",484,"Case 64, 50M, NA","01/23/2020",0
+"485",485,"Case 65, 61F, NA","01/23/2020",0
+"486",486,"Case 66, 28M, Grace Assembly of God","01/23/2020",0
+"487",487,"Case 67, 56F, Grace Assembly of God","01/23/2020",0
+"488",488,"Case 68, 79F, Grace Assembly of God","01/23/2020",0
+"489",489,"Case 69, 26M, Seletar Aerospace Heights","01/23/2020",0
+"490",490,"Case 70, 27F, Grace Assembly of God","01/23/2020",0
+"491",491,"Case 71, 25M, Grace Assembly of God","01/23/2020",0
+"492",492,"Case 72, 40M, NA","01/23/2020",0
+"493",493,"Case 73, 43M, Grace Assembly of God","01/23/2020",0
+"494",494,"Case 74, 29M, Grace Assembly of God","01/23/2020",0
+"495",495,"Case 75, 71F, NA","01/23/2020",0
+"496",496,"Case 76, 1M, Wuhan","01/23/2020",0
+"497",497,"Case 77, 35M, NA","01/23/2020",0
+"498",498,"Case 78, 57F, Grace Assembly of God","01/23/2020",0
+"499",499,"Case 79, 35F, NA","01/23/2020",0
+"500",500,"Case 80, 38F, Grace Assembly of God","01/23/2020",0
+"501",501,"Case 81, 50M, Grace Assembly of God","01/23/2020",0
+"502",502,"Case 82, 57F, NA","01/23/2020",0
+"503",503,"Case 83, 54M, Life Church","01/23/2020",1
+"504",504,"Case 84, 35F, Grace Assembly of God","01/23/2020",0
+"505",505,"Case 1, 66M, Wuhan","01/24/2020",3
+"506",506,"Case 2, 53F, Wuhan","01/24/2020",3
+"507",507,"Case 3, 37M, Wuhan","01/24/2020",3
+"508",508,"Case 4, 36M, Wuhan","01/24/2020",3
+"509",509,"Case 5, 56F, Wuhan","01/24/2020",2
+"510",510,"Case 6, 56M, Wuhan","01/24/2020",1
+"511",511,"Case 7, 35M, Wuhan","01/24/2020",3
+"512",512,"Case 8, 56F, Life Church, Wuhan","01/24/2020",2
+"513",513,"Case 9, 56M, Life Church, Wuhan","01/24/2020",2
+"514",514,"Case 10, 56M, Wuhan","01/24/2020",2
+"515",515,"Case 11, 31F, Wuhan","01/24/2020",1
+"516",516,"Case 12, 37F, Wuhan","01/24/2020",1
+"517",517,"Case 13, 73F, Wuhan","01/24/2020",1
+"518",518,"Case 14, 31M, Wuhan","01/24/2020",0
+"519",519,"Case 15, 47F, Wuhan","01/24/2020",0
+"520",520,"Case 16, 38M, Wuhan","01/24/2020",2
+"521",521,"Case 17, 47F, Wuhan","01/24/2020",0
+"522",522,"Case 18, 31F, Wuhan","01/24/2020",1
+"523",523,"Case 19, 28F, Yong Thai Hang","01/24/2020",0
+"524",524,"Case 20, 48F, Yong Thai Hang","01/24/2020",1
+"525",525,"Case 21, 44F, Yong Thai Hang","01/24/2020",1
+"526",526,"Case 22, 21M, Wuhan","01/24/2020",0
+"527",527,"Case 23, 17M, Wuhan","01/24/2020",0
+"528",528,"Case 24, 32F, Yong Thai Hang","01/24/2020",1
+"529",529,"Case 25, 40M, Yong Thai Hang","01/24/2020",2
+"530",530,"Case 26, 42F , Wuhan","01/24/2020",1
+"531",531,"Case 27, 45M, Yong Thai Hang","01/24/2020",1
+"532",532,"Case 28, 0/5M, Yong Thai Hang","01/24/2020",1
+"533",533,"Case 29, 41M, NA","01/24/2020",0
+"534",534,"Case 30, 27M, Grand Hyatt Singapore","01/24/2020",2
+"535",535,"Case 31, 53M, Life Church","01/24/2020",2
+"536",536,"Case 32, 42F, NA","01/24/2020",0
+"537",537,"Case 33, 39F, Life Church","01/24/2020",1
+"538",538,"Case 34, 40F, Yong Thai Hang","01/24/2020",1
+"539",539,"Case 35, 64F, NA","01/24/2020",0
+"540",540,"Case 36, 38F, Grand Hyatt Singapore","01/24/2020",2
+"541",541,"Case 37, 53M, NA","01/24/2020",0
+"542",542,"Case 38, 52F, Life Church","01/24/2020",1
+"543",543,"Case 39, 51M, Grand Hyatt Singapore","01/24/2020",1
+"544",544,"Case 40, 36M, Yong Thai Hang","01/24/2020",1
+"545",545,"Case 41, 71M, NA","01/24/2020",0
+"546",546,"Case 42, 39M, Seletar Aerospace Heights","01/24/2020",0
+"547",547,"Case 43, 54M, NA","01/24/2020",0
+"548",548,"Case 44, 37M, NA","01/24/2020",0
+"549",549,"Case 45, 2F, Wuhan","01/24/2020",0
+"550",550,"Case 46, 35M, NA","01/24/2020",0
+"551",551,"Case 47, 39M, Seletar Aerospace Heights","01/24/2020",0
+"552",552,"Case 48, 34M, Grace Assembly of God","01/24/2020",0
+"553",553,"Case 49, 46M, Grace Assembly of God","01/24/2020",0
+"554",554,"Case 50, 62M, NA","01/24/2020",0
+"555",555,"Case 51, 48M, Grace Assembly of God","01/24/2020",0
+"556",556,"Case 52, 37M, Seletar Aerospace Heights","01/24/2020",0
+"557",557,"Case 53, 54M, Grace Assembly of God","01/24/2020",0
+"558",558,"Case 54, 54F, Grace Assembly of God","01/24/2020",0
+"559",559,"Case 55, 30M, NA","01/24/2020",0
+"560",560,"Case 56, 30M, Seletar Aerospace Heights","01/24/2020",0
+"561",561,"Case 57, 26M, Grace Assembly of God","01/24/2020",0
+"562",562,"Case 58, 55M, Grace Assembly of God","01/24/2020",0
+"563",563,"Case 59, 61M, NA","01/24/2020",0
+"564",564,"Case 60, 51F, Grace Assembly of God","01/24/2020",0
+"565",565,"Case 61, 57F, Grace Assembly of God","01/24/2020",0
+"566",566,"Case 62, 44F, Grace Assembly of God","01/24/2020",0
+"567",567,"Case 63, 54F, Grace Assembly of God","01/24/2020",0
+"568",568,"Case 64, 50M, NA","01/24/2020",0
+"569",569,"Case 65, 61F, NA","01/24/2020",0
+"570",570,"Case 66, 28M, Grace Assembly of God","01/24/2020",0
+"571",571,"Case 67, 56F, Grace Assembly of God","01/24/2020",0
+"572",572,"Case 68, 79F, Grace Assembly of God","01/24/2020",0
+"573",573,"Case 69, 26M, Seletar Aerospace Heights","01/24/2020",0
+"574",574,"Case 70, 27F, Grace Assembly of God","01/24/2020",0
+"575",575,"Case 71, 25M, Grace Assembly of God","01/24/2020",0
+"576",576,"Case 72, 40M, NA","01/24/2020",0
+"577",577,"Case 73, 43M, Grace Assembly of God","01/24/2020",0
+"578",578,"Case 74, 29M, Grace Assembly of God","01/24/2020",0
+"579",579,"Case 75, 71F, NA","01/24/2020",0
+"580",580,"Case 76, 1M, Wuhan","01/24/2020",0
+"581",581,"Case 77, 35M, NA","01/24/2020",0
+"582",582,"Case 78, 57F, Grace Assembly of God","01/24/2020",0
+"583",583,"Case 79, 35F, NA","01/24/2020",0
+"584",584,"Case 80, 38F, Grace Assembly of God","01/24/2020",0
+"585",585,"Case 81, 50M, Grace Assembly of God","01/24/2020",0
+"586",586,"Case 82, 57F, NA","01/24/2020",0
+"587",587,"Case 83, 54M, Life Church","01/24/2020",1
+"588",588,"Case 84, 35F, Grace Assembly of God","01/24/2020",0
+"589",589,"Case 1, 66M, Wuhan","01/25/2020",3
+"590",590,"Case 2, 53F, Wuhan","01/25/2020",3
+"591",591,"Case 3, 37M, Wuhan","01/25/2020",3
+"592",592,"Case 4, 36M, Wuhan","01/25/2020",3
+"593",593,"Case 5, 56F, Wuhan","01/25/2020",2
+"594",594,"Case 6, 56M, Wuhan","01/25/2020",2
+"595",595,"Case 7, 35M, Wuhan","01/25/2020",3
+"596",596,"Case 8, 56F, Life Church, Wuhan","01/25/2020",2
+"597",597,"Case 9, 56M, Life Church, Wuhan","01/25/2020",2
+"598",598,"Case 10, 56M, Wuhan","01/25/2020",2
+"599",599,"Case 11, 31F, Wuhan","01/25/2020",1
+"600",600,"Case 12, 37F, Wuhan","01/25/2020",1
+"601",601,"Case 13, 73F, Wuhan","01/25/2020",1
+"602",602,"Case 14, 31M, Wuhan","01/25/2020",0
+"603",603,"Case 15, 47F, Wuhan","01/25/2020",0
+"604",604,"Case 16, 38M, Wuhan","01/25/2020",2
+"605",605,"Case 17, 47F, Wuhan","01/25/2020",0
+"606",606,"Case 18, 31F, Wuhan","01/25/2020",1
+"607",607,"Case 19, 28F, Yong Thai Hang","01/25/2020",0
+"608",608,"Case 20, 48F, Yong Thai Hang","01/25/2020",2
+"609",609,"Case 21, 44F, Yong Thai Hang","01/25/2020",1
+"610",610,"Case 22, 21M, Wuhan","01/25/2020",0
+"611",611,"Case 23, 17M, Wuhan","01/25/2020",0
+"612",612,"Case 24, 32F, Yong Thai Hang","01/25/2020",1
+"613",613,"Case 25, 40M, Yong Thai Hang","01/25/2020",2
+"614",614,"Case 26, 42F , Wuhan","01/25/2020",1
+"615",615,"Case 27, 45M, Yong Thai Hang","01/25/2020",1
+"616",616,"Case 28, 0/5M, Yong Thai Hang","01/25/2020",1
+"617",617,"Case 29, 41M, NA","01/25/2020",0
+"618",618,"Case 30, 27M, Grand Hyatt Singapore","01/25/2020",2
+"619",619,"Case 31, 53M, Life Church","01/25/2020",2
+"620",620,"Case 32, 42F, NA","01/25/2020",0
+"621",621,"Case 33, 39F, Life Church","01/25/2020",1
+"622",622,"Case 34, 40F, Yong Thai Hang","01/25/2020",1
+"623",623,"Case 35, 64F, NA","01/25/2020",0
+"624",624,"Case 36, 38F, Grand Hyatt Singapore","01/25/2020",2
+"625",625,"Case 37, 53M, NA","01/25/2020",0
+"626",626,"Case 38, 52F, Life Church","01/25/2020",1
+"627",627,"Case 39, 51M, Grand Hyatt Singapore","01/25/2020",1
+"628",628,"Case 40, 36M, Yong Thai Hang","01/25/2020",1
+"629",629,"Case 41, 71M, NA","01/25/2020",0
+"630",630,"Case 42, 39M, Seletar Aerospace Heights","01/25/2020",0
+"631",631,"Case 43, 54M, NA","01/25/2020",0
+"632",632,"Case 44, 37M, NA","01/25/2020",0
+"633",633,"Case 45, 2F, Wuhan","01/25/2020",0
+"634",634,"Case 46, 35M, NA","01/25/2020",0
+"635",635,"Case 47, 39M, Seletar Aerospace Heights","01/25/2020",0
+"636",636,"Case 48, 34M, Grace Assembly of God","01/25/2020",0
+"637",637,"Case 49, 46M, Grace Assembly of God","01/25/2020",0
+"638",638,"Case 50, 62M, NA","01/25/2020",0
+"639",639,"Case 51, 48M, Grace Assembly of God","01/25/2020",0
+"640",640,"Case 52, 37M, Seletar Aerospace Heights","01/25/2020",0
+"641",641,"Case 53, 54M, Grace Assembly of God","01/25/2020",0
+"642",642,"Case 54, 54F, Grace Assembly of God","01/25/2020",0
+"643",643,"Case 55, 30M, NA","01/25/2020",0
+"644",644,"Case 56, 30M, Seletar Aerospace Heights","01/25/2020",0
+"645",645,"Case 57, 26M, Grace Assembly of God","01/25/2020",0
+"646",646,"Case 58, 55M, Grace Assembly of God","01/25/2020",0
+"647",647,"Case 59, 61M, NA","01/25/2020",0
+"648",648,"Case 60, 51F, Grace Assembly of God","01/25/2020",0
+"649",649,"Case 61, 57F, Grace Assembly of God","01/25/2020",0
+"650",650,"Case 62, 44F, Grace Assembly of God","01/25/2020",0
+"651",651,"Case 63, 54F, Grace Assembly of God","01/25/2020",0
+"652",652,"Case 64, 50M, NA","01/25/2020",0
+"653",653,"Case 65, 61F, NA","01/25/2020",0
+"654",654,"Case 66, 28M, Grace Assembly of God","01/25/2020",0
+"655",655,"Case 67, 56F, Grace Assembly of God","01/25/2020",0
+"656",656,"Case 68, 79F, Grace Assembly of God","01/25/2020",0
+"657",657,"Case 69, 26M, Seletar Aerospace Heights","01/25/2020",0
+"658",658,"Case 70, 27F, Grace Assembly of God","01/25/2020",0
+"659",659,"Case 71, 25M, Grace Assembly of God","01/25/2020",0
+"660",660,"Case 72, 40M, NA","01/25/2020",0
+"661",661,"Case 73, 43M, Grace Assembly of God","01/25/2020",0
+"662",662,"Case 74, 29M, Grace Assembly of God","01/25/2020",0
+"663",663,"Case 75, 71F, NA","01/25/2020",0
+"664",664,"Case 76, 1M, Wuhan","01/25/2020",0
+"665",665,"Case 77, 35M, NA","01/25/2020",0
+"666",666,"Case 78, 57F, Grace Assembly of God","01/25/2020",0
+"667",667,"Case 79, 35F, NA","01/25/2020",0
+"668",668,"Case 80, 38F, Grace Assembly of God","01/25/2020",0
+"669",669,"Case 81, 50M, Grace Assembly of God","01/25/2020",0
+"670",670,"Case 82, 57F, NA","01/25/2020",0
+"671",671,"Case 83, 54M, Life Church","01/25/2020",1
+"672",672,"Case 84, 35F, Grace Assembly of God","01/25/2020",0
+"673",673,"Case 1, 66M, Wuhan","01/26/2020",3
+"674",674,"Case 2, 53F, Wuhan","01/26/2020",3
+"675",675,"Case 3, 37M, Wuhan","01/26/2020",3
+"676",676,"Case 4, 36M, Wuhan","01/26/2020",3
+"677",677,"Case 5, 56F, Wuhan","01/26/2020",3
+"678",678,"Case 6, 56M, Wuhan","01/26/2020",3
+"679",679,"Case 7, 35M, Wuhan","01/26/2020",3
+"680",680,"Case 8, 56F, Life Church, Wuhan","01/26/2020",2
+"681",681,"Case 9, 56M, Life Church, Wuhan","01/26/2020",2
+"682",682,"Case 10, 56M, Wuhan","01/26/2020",2
+"683",683,"Case 11, 31F, Wuhan","01/26/2020",1
+"684",684,"Case 12, 37F, Wuhan","01/26/2020",2
+"685",685,"Case 13, 73F, Wuhan","01/26/2020",1
+"686",686,"Case 14, 31M, Wuhan","01/26/2020",1
+"687",687,"Case 15, 47F, Wuhan","01/26/2020",0
+"688",688,"Case 16, 38M, Wuhan","01/26/2020",2
+"689",689,"Case 17, 47F, Wuhan","01/26/2020",0
+"690",690,"Case 18, 31F, Wuhan","01/26/2020",1
+"691",691,"Case 19, 28F, Yong Thai Hang","01/26/2020",0
+"692",692,"Case 20, 48F, Yong Thai Hang","01/26/2020",2
+"693",693,"Case 21, 44F, Yong Thai Hang","01/26/2020",1
+"694",694,"Case 22, 21M, Wuhan","01/26/2020",0
+"695",695,"Case 23, 17M, Wuhan","01/26/2020",0
+"696",696,"Case 24, 32F, Yong Thai Hang","01/26/2020",1
+"697",697,"Case 25, 40M, Yong Thai Hang","01/26/2020",2
+"698",698,"Case 26, 42F , Wuhan","01/26/2020",1
+"699",699,"Case 27, 45M, Yong Thai Hang","01/26/2020",1
+"700",700,"Case 28, 0/5M, Yong Thai Hang","01/26/2020",1
+"701",701,"Case 29, 41M, NA","01/26/2020",0
+"702",702,"Case 30, 27M, Grand Hyatt Singapore","01/26/2020",2
+"703",703,"Case 31, 53M, Life Church","01/26/2020",2
+"704",704,"Case 32, 42F, NA","01/26/2020",0
+"705",705,"Case 33, 39F, Life Church","01/26/2020",1
+"706",706,"Case 34, 40F, Yong Thai Hang","01/26/2020",1
+"707",707,"Case 35, 64F, NA","01/26/2020",0
+"708",708,"Case 36, 38F, Grand Hyatt Singapore","01/26/2020",2
+"709",709,"Case 37, 53M, NA","01/26/2020",0
+"710",710,"Case 38, 52F, Life Church","01/26/2020",1
+"711",711,"Case 39, 51M, Grand Hyatt Singapore","01/26/2020",1
+"712",712,"Case 40, 36M, Yong Thai Hang","01/26/2020",1
+"713",713,"Case 41, 71M, NA","01/26/2020",0
+"714",714,"Case 42, 39M, Seletar Aerospace Heights","01/26/2020",0
+"715",715,"Case 43, 54M, NA","01/26/2020",0
+"716",716,"Case 44, 37M, NA","01/26/2020",0
+"717",717,"Case 45, 2F, Wuhan","01/26/2020",0
+"718",718,"Case 46, 35M, NA","01/26/2020",0
+"719",719,"Case 47, 39M, Seletar Aerospace Heights","01/26/2020",0
+"720",720,"Case 48, 34M, Grace Assembly of God","01/26/2020",0
+"721",721,"Case 49, 46M, Grace Assembly of God","01/26/2020",0
+"722",722,"Case 50, 62M, NA","01/26/2020",0
+"723",723,"Case 51, 48M, Grace Assembly of God","01/26/2020",0
+"724",724,"Case 52, 37M, Seletar Aerospace Heights","01/26/2020",0
+"725",725,"Case 53, 54M, Grace Assembly of God","01/26/2020",0
+"726",726,"Case 54, 54F, Grace Assembly of God","01/26/2020",0
+"727",727,"Case 55, 30M, NA","01/26/2020",0
+"728",728,"Case 56, 30M, Seletar Aerospace Heights","01/26/2020",0
+"729",729,"Case 57, 26M, Grace Assembly of God","01/26/2020",0
+"730",730,"Case 58, 55M, Grace Assembly of God","01/26/2020",0
+"731",731,"Case 59, 61M, NA","01/26/2020",0
+"732",732,"Case 60, 51F, Grace Assembly of God","01/26/2020",0
+"733",733,"Case 61, 57F, Grace Assembly of God","01/26/2020",0
+"734",734,"Case 62, 44F, Grace Assembly of God","01/26/2020",0
+"735",735,"Case 63, 54F, Grace Assembly of God","01/26/2020",0
+"736",736,"Case 64, 50M, NA","01/26/2020",0
+"737",737,"Case 65, 61F, NA","01/26/2020",0
+"738",738,"Case 66, 28M, Grace Assembly of God","01/26/2020",0
+"739",739,"Case 67, 56F, Grace Assembly of God","01/26/2020",0
+"740",740,"Case 68, 79F, Grace Assembly of God","01/26/2020",0
+"741",741,"Case 69, 26M, Seletar Aerospace Heights","01/26/2020",0
+"742",742,"Case 70, 27F, Grace Assembly of God","01/26/2020",0
+"743",743,"Case 71, 25M, Grace Assembly of God","01/26/2020",0
+"744",744,"Case 72, 40M, NA","01/26/2020",0
+"745",745,"Case 73, 43M, Grace Assembly of God","01/26/2020",0
+"746",746,"Case 74, 29M, Grace Assembly of God","01/26/2020",0
+"747",747,"Case 75, 71F, NA","01/26/2020",0
+"748",748,"Case 76, 1M, Wuhan","01/26/2020",0
+"749",749,"Case 77, 35M, NA","01/26/2020",0
+"750",750,"Case 78, 57F, Grace Assembly of God","01/26/2020",0
+"751",751,"Case 79, 35F, NA","01/26/2020",0
+"752",752,"Case 80, 38F, Grace Assembly of God","01/26/2020",0
+"753",753,"Case 81, 50M, Grace Assembly of God","01/26/2020",0
+"754",754,"Case 82, 57F, NA","01/26/2020",0
+"755",755,"Case 83, 54M, Life Church","01/26/2020",1
+"756",756,"Case 84, 35F, Grace Assembly of God","01/26/2020",0
+"757",757,"Case 1, 66M, Wuhan","01/27/2020",3
+"758",758,"Case 2, 53F, Wuhan","01/27/2020",3
+"759",759,"Case 3, 37M, Wuhan","01/27/2020",3
+"760",760,"Case 4, 36M, Wuhan","01/27/2020",3
+"761",761,"Case 5, 56F, Wuhan","01/27/2020",3
+"762",762,"Case 6, 56M, Wuhan","01/27/2020",3
+"763",763,"Case 7, 35M, Wuhan","01/27/2020",3
+"764",764,"Case 8, 56F, Life Church, Wuhan","01/27/2020",3
+"765",765,"Case 9, 56M, Life Church, Wuhan","01/27/2020",3
+"766",766,"Case 10, 56M, Wuhan","01/27/2020",2
+"767",767,"Case 11, 31F, Wuhan","01/27/2020",3
+"768",768,"Case 12, 37F, Wuhan","01/27/2020",2
+"769",769,"Case 13, 73F, Wuhan","01/27/2020",1
+"770",770,"Case 14, 31M, Wuhan","01/27/2020",1
+"771",771,"Case 15, 47F, Wuhan","01/27/2020",0
+"772",772,"Case 16, 38M, Wuhan","01/27/2020",2
+"773",773,"Case 17, 47F, Wuhan","01/27/2020",0
+"774",774,"Case 18, 31F, Wuhan","01/27/2020",1
+"775",775,"Case 19, 28F, Yong Thai Hang","01/27/2020",0
+"776",776,"Case 20, 48F, Yong Thai Hang","01/27/2020",2
+"777",777,"Case 21, 44F, Yong Thai Hang","01/27/2020",1
+"778",778,"Case 22, 21M, Wuhan","01/27/2020",0
+"779",779,"Case 23, 17M, Wuhan","01/27/2020",0
+"780",780,"Case 24, 32F, Yong Thai Hang","01/27/2020",1
+"781",781,"Case 25, 40M, Yong Thai Hang","01/27/2020",2
+"782",782,"Case 26, 42F , Wuhan","01/27/2020",1
+"783",783,"Case 27, 45M, Yong Thai Hang","01/27/2020",1
+"784",784,"Case 28, 0/5M, Yong Thai Hang","01/27/2020",1
+"785",785,"Case 29, 41M, NA","01/27/2020",0
+"786",786,"Case 30, 27M, Grand Hyatt Singapore","01/27/2020",2
+"787",787,"Case 31, 53M, Life Church","01/27/2020",2
+"788",788,"Case 32, 42F, NA","01/27/2020",0
+"789",789,"Case 33, 39F, Life Church","01/27/2020",1
+"790",790,"Case 34, 40F, Yong Thai Hang","01/27/2020",2
+"791",791,"Case 35, 64F, NA","01/27/2020",0
+"792",792,"Case 36, 38F, Grand Hyatt Singapore","01/27/2020",2
+"793",793,"Case 37, 53M, NA","01/27/2020",0
+"794",794,"Case 38, 52F, Life Church","01/27/2020",1
+"795",795,"Case 39, 51M, Grand Hyatt Singapore","01/27/2020",1
+"796",796,"Case 40, 36M, Yong Thai Hang","01/27/2020",1
+"797",797,"Case 41, 71M, NA","01/27/2020",0
+"798",798,"Case 42, 39M, Seletar Aerospace Heights","01/27/2020",0
+"799",799,"Case 43, 54M, NA","01/27/2020",0
+"800",800,"Case 44, 37M, NA","01/27/2020",0
+"801",801,"Case 45, 2F, Wuhan","01/27/2020",0
+"802",802,"Case 46, 35M, NA","01/27/2020",0
+"803",803,"Case 47, 39M, Seletar Aerospace Heights","01/27/2020",0
+"804",804,"Case 48, 34M, Grace Assembly of God","01/27/2020",0
+"805",805,"Case 49, 46M, Grace Assembly of God","01/27/2020",0
+"806",806,"Case 50, 62M, NA","01/27/2020",0
+"807",807,"Case 51, 48M, Grace Assembly of God","01/27/2020",0
+"808",808,"Case 52, 37M, Seletar Aerospace Heights","01/27/2020",0
+"809",809,"Case 53, 54M, Grace Assembly of God","01/27/2020",0
+"810",810,"Case 54, 54F, Grace Assembly of God","01/27/2020",0
+"811",811,"Case 55, 30M, NA","01/27/2020",0
+"812",812,"Case 56, 30M, Seletar Aerospace Heights","01/27/2020",0
+"813",813,"Case 57, 26M, Grace Assembly of God","01/27/2020",0
+"814",814,"Case 58, 55M, Grace Assembly of God","01/27/2020",0
+"815",815,"Case 59, 61M, NA","01/27/2020",0
+"816",816,"Case 60, 51F, Grace Assembly of God","01/27/2020",0
+"817",817,"Case 61, 57F, Grace Assembly of God","01/27/2020",0
+"818",818,"Case 62, 44F, Grace Assembly of God","01/27/2020",0
+"819",819,"Case 63, 54F, Grace Assembly of God","01/27/2020",0
+"820",820,"Case 64, 50M, NA","01/27/2020",0
+"821",821,"Case 65, 61F, NA","01/27/2020",0
+"822",822,"Case 66, 28M, Grace Assembly of God","01/27/2020",0
+"823",823,"Case 67, 56F, Grace Assembly of God","01/27/2020",0
+"824",824,"Case 68, 79F, Grace Assembly of God","01/27/2020",0
+"825",825,"Case 69, 26M, Seletar Aerospace Heights","01/27/2020",0
+"826",826,"Case 70, 27F, Grace Assembly of God","01/27/2020",0
+"827",827,"Case 71, 25M, Grace Assembly of God","01/27/2020",0
+"828",828,"Case 72, 40M, NA","01/27/2020",0
+"829",829,"Case 73, 43M, Grace Assembly of God","01/27/2020",0
+"830",830,"Case 74, 29M, Grace Assembly of God","01/27/2020",0
+"831",831,"Case 75, 71F, NA","01/27/2020",0
+"832",832,"Case 76, 1M, Wuhan","01/27/2020",0
+"833",833,"Case 77, 35M, NA","01/27/2020",0
+"834",834,"Case 78, 57F, Grace Assembly of God","01/27/2020",0
+"835",835,"Case 79, 35F, NA","01/27/2020",0
+"836",836,"Case 80, 38F, Grace Assembly of God","01/27/2020",0
+"837",837,"Case 81, 50M, Grace Assembly of God","01/27/2020",0
+"838",838,"Case 82, 57F, NA","01/27/2020",0
+"839",839,"Case 83, 54M, Life Church","01/27/2020",1
+"840",840,"Case 84, 35F, Grace Assembly of God","01/27/2020",0
+"841",841,"Case 1, 66M, Wuhan","01/28/2020",3
+"842",842,"Case 2, 53F, Wuhan","01/28/2020",3
+"843",843,"Case 3, 37M, Wuhan","01/28/2020",3
+"844",844,"Case 4, 36M, Wuhan","01/28/2020",3
+"845",845,"Case 5, 56F, Wuhan","01/28/2020",3
+"846",846,"Case 6, 56M, Wuhan","01/28/2020",3
+"847",847,"Case 7, 35M, Wuhan","01/28/2020",3
+"848",848,"Case 8, 56F, Life Church, Wuhan","01/28/2020",3
+"849",849,"Case 9, 56M, Life Church, Wuhan","01/28/2020",3
+"850",850,"Case 10, 56M, Wuhan","01/28/2020",3
+"851",851,"Case 11, 31F, Wuhan","01/28/2020",3
+"852",852,"Case 12, 37F, Wuhan","01/28/2020",2
+"853",853,"Case 13, 73F, Wuhan","01/28/2020",3
+"854",854,"Case 14, 31M, Wuhan","01/28/2020",2
+"855",855,"Case 15, 47F, Wuhan","01/28/2020",0
+"856",856,"Case 16, 38M, Wuhan","01/28/2020",2
+"857",857,"Case 17, 47F, Wuhan","01/28/2020",0
+"858",858,"Case 18, 31F, Wuhan","01/28/2020",1
+"859",859,"Case 19, 28F, Yong Thai Hang","01/28/2020",0
+"860",860,"Case 20, 48F, Yong Thai Hang","01/28/2020",2
+"861",861,"Case 21, 44F, Yong Thai Hang","01/28/2020",1
+"862",862,"Case 22, 21M, Wuhan","01/28/2020",0
+"863",863,"Case 23, 17M, Wuhan","01/28/2020",0
+"864",864,"Case 24, 32F, Yong Thai Hang","01/28/2020",1
+"865",865,"Case 25, 40M, Yong Thai Hang","01/28/2020",2
+"866",866,"Case 26, 42F , Wuhan","01/28/2020",3
+"867",867,"Case 27, 45M, Yong Thai Hang","01/28/2020",1
+"868",868,"Case 28, 0/5M, Yong Thai Hang","01/28/2020",1
+"869",869,"Case 29, 41M, NA","01/28/2020",2
+"870",870,"Case 30, 27M, Grand Hyatt Singapore","01/28/2020",2
+"871",871,"Case 31, 53M, Life Church","01/28/2020",2
+"872",872,"Case 32, 42F, NA","01/28/2020",0
+"873",873,"Case 33, 39F, Life Church","01/28/2020",1
+"874",874,"Case 34, 40F, Yong Thai Hang","01/28/2020",2
+"875",875,"Case 35, 64F, NA","01/28/2020",0
+"876",876,"Case 36, 38F, Grand Hyatt Singapore","01/28/2020",2
+"877",877,"Case 37, 53M, NA","01/28/2020",0
+"878",878,"Case 38, 52F, Life Church","01/28/2020",1
+"879",879,"Case 39, 51M, Grand Hyatt Singapore","01/28/2020",1
+"880",880,"Case 40, 36M, Yong Thai Hang","01/28/2020",1
+"881",881,"Case 41, 71M, NA","01/28/2020",0
+"882",882,"Case 42, 39M, Seletar Aerospace Heights","01/28/2020",0
+"883",883,"Case 43, 54M, NA","01/28/2020",0
+"884",884,"Case 44, 37M, NA","01/28/2020",1
+"885",885,"Case 45, 2F, Wuhan","01/28/2020",0
+"886",886,"Case 46, 35M, NA","01/28/2020",0
+"887",887,"Case 47, 39M, Seletar Aerospace Heights","01/28/2020",0
+"888",888,"Case 48, 34M, Grace Assembly of God","01/28/2020",0
+"889",889,"Case 49, 46M, Grace Assembly of God","01/28/2020",0
+"890",890,"Case 50, 62M, NA","01/28/2020",0
+"891",891,"Case 51, 48M, Grace Assembly of God","01/28/2020",0
+"892",892,"Case 52, 37M, Seletar Aerospace Heights","01/28/2020",0
+"893",893,"Case 53, 54M, Grace Assembly of God","01/28/2020",0
+"894",894,"Case 54, 54F, Grace Assembly of God","01/28/2020",0
+"895",895,"Case 55, 30M, NA","01/28/2020",0
+"896",896,"Case 56, 30M, Seletar Aerospace Heights","01/28/2020",0
+"897",897,"Case 57, 26M, Grace Assembly of God","01/28/2020",0
+"898",898,"Case 58, 55M, Grace Assembly of God","01/28/2020",0
+"899",899,"Case 59, 61M, NA","01/28/2020",0
+"900",900,"Case 60, 51F, Grace Assembly of God","01/28/2020",0
+"901",901,"Case 61, 57F, Grace Assembly of God","01/28/2020",0
+"902",902,"Case 62, 44F, Grace Assembly of God","01/28/2020",0
+"903",903,"Case 63, 54F, Grace Assembly of God","01/28/2020",0
+"904",904,"Case 64, 50M, NA","01/28/2020",0
+"905",905,"Case 65, 61F, NA","01/28/2020",0
+"906",906,"Case 66, 28M, Grace Assembly of God","01/28/2020",0
+"907",907,"Case 67, 56F, Grace Assembly of God","01/28/2020",0
+"908",908,"Case 68, 79F, Grace Assembly of God","01/28/2020",0
+"909",909,"Case 69, 26M, Seletar Aerospace Heights","01/28/2020",0
+"910",910,"Case 70, 27F, Grace Assembly of God","01/28/2020",0
+"911",911,"Case 71, 25M, Grace Assembly of God","01/28/2020",0
+"912",912,"Case 72, 40M, NA","01/28/2020",0
+"913",913,"Case 73, 43M, Grace Assembly of God","01/28/2020",0
+"914",914,"Case 74, 29M, Grace Assembly of God","01/28/2020",0
+"915",915,"Case 75, 71F, NA","01/28/2020",0
+"916",916,"Case 76, 1M, Wuhan","01/28/2020",0
+"917",917,"Case 77, 35M, NA","01/28/2020",0
+"918",918,"Case 78, 57F, Grace Assembly of God","01/28/2020",0
+"919",919,"Case 79, 35F, NA","01/28/2020",0
+"920",920,"Case 80, 38F, Grace Assembly of God","01/28/2020",0
+"921",921,"Case 81, 50M, Grace Assembly of God","01/28/2020",0
+"922",922,"Case 82, 57F, NA","01/28/2020",0
+"923",923,"Case 83, 54M, Life Church","01/28/2020",1
+"924",924,"Case 84, 35F, Grace Assembly of God","01/28/2020",0
+"925",925,"Case 1, 66M, Wuhan","01/29/2020",3
+"926",926,"Case 2, 53F, Wuhan","01/29/2020",3
+"927",927,"Case 3, 37M, Wuhan","01/29/2020",3
+"928",928,"Case 4, 36M, Wuhan","01/29/2020",3
+"929",929,"Case 5, 56F, Wuhan","01/29/2020",3
+"930",930,"Case 6, 56M, Wuhan","01/29/2020",3
+"931",931,"Case 7, 35M, Wuhan","01/29/2020",3
+"932",932,"Case 8, 56F, Life Church, Wuhan","01/29/2020",3
+"933",933,"Case 9, 56M, Life Church, Wuhan","01/29/2020",3
+"934",934,"Case 10, 56M, Wuhan","01/29/2020",3
+"935",935,"Case 11, 31F, Wuhan","01/29/2020",3
+"936",936,"Case 12, 37F, Wuhan","01/29/2020",3
+"937",937,"Case 13, 73F, Wuhan","01/29/2020",3
+"938",938,"Case 14, 31M, Wuhan","01/29/2020",2
+"939",939,"Case 15, 47F, Wuhan","01/29/2020",0
+"940",940,"Case 16, 38M, Wuhan","01/29/2020",3
+"941",941,"Case 17, 47F, Wuhan","01/29/2020",0
+"942",942,"Case 18, 31F, Wuhan","01/29/2020",1
+"943",943,"Case 19, 28F, Yong Thai Hang","01/29/2020",2
+"944",944,"Case 20, 48F, Yong Thai Hang","01/29/2020",2
+"945",945,"Case 21, 44F, Yong Thai Hang","01/29/2020",1
+"946",946,"Case 22, 21M, Wuhan","01/29/2020",0
+"947",947,"Case 23, 17M, Wuhan","01/29/2020",0
+"948",948,"Case 24, 32F, Yong Thai Hang","01/29/2020",1
+"949",949,"Case 25, 40M, Yong Thai Hang","01/29/2020",2
+"950",950,"Case 26, 42F , Wuhan","01/29/2020",3
+"951",951,"Case 27, 45M, Yong Thai Hang","01/29/2020",1
+"952",952,"Case 28, 0/5M, Yong Thai Hang","01/29/2020",1
+"953",953,"Case 29, 41M, NA","01/29/2020",2
+"954",954,"Case 30, 27M, Grand Hyatt Singapore","01/29/2020",2
+"955",955,"Case 31, 53M, Life Church","01/29/2020",2
+"956",956,"Case 32, 42F, NA","01/29/2020",0
+"957",957,"Case 33, 39F, Life Church","01/29/2020",1
+"958",958,"Case 34, 40F, Yong Thai Hang","01/29/2020",2
+"959",959,"Case 35, 64F, NA","01/29/2020",0
+"960",960,"Case 36, 38F, Grand Hyatt Singapore","01/29/2020",2
+"961",961,"Case 37, 53M, NA","01/29/2020",0
+"962",962,"Case 38, 52F, Life Church","01/29/2020",1
+"963",963,"Case 39, 51M, Grand Hyatt Singapore","01/29/2020",2
+"964",964,"Case 40, 36M, Yong Thai Hang","01/29/2020",1
+"965",965,"Case 41, 71M, NA","01/29/2020",0
+"966",966,"Case 42, 39M, Seletar Aerospace Heights","01/29/2020",0
+"967",967,"Case 43, 54M, NA","01/29/2020",0
+"968",968,"Case 44, 37M, NA","01/29/2020",1
+"969",969,"Case 45, 2F, Wuhan","01/29/2020",0
+"970",970,"Case 46, 35M, NA","01/29/2020",0
+"971",971,"Case 47, 39M, Seletar Aerospace Heights","01/29/2020",0
+"972",972,"Case 48, 34M, Grace Assembly of God","01/29/2020",1
+"973",973,"Case 49, 46M, Grace Assembly of God","01/29/2020",1
+"974",974,"Case 50, 62M, NA","01/29/2020",0
+"975",975,"Case 51, 48M, Grace Assembly of God","01/29/2020",1
+"976",976,"Case 52, 37M, Seletar Aerospace Heights","01/29/2020",0
+"977",977,"Case 53, 54M, Grace Assembly of God","01/29/2020",1
+"978",978,"Case 54, 54F, Grace Assembly of God","01/29/2020",1
+"979",979,"Case 55, 30M, NA","01/29/2020",0
+"980",980,"Case 56, 30M, Seletar Aerospace Heights","01/29/2020",0
+"981",981,"Case 57, 26M, Grace Assembly of God","01/29/2020",1
+"982",982,"Case 58, 55M, Grace Assembly of God","01/29/2020",1
+"983",983,"Case 59, 61M, NA","01/29/2020",0
+"984",984,"Case 60, 51F, Grace Assembly of God","01/29/2020",1
+"985",985,"Case 61, 57F, Grace Assembly of God","01/29/2020",1
+"986",986,"Case 62, 44F, Grace Assembly of God","01/29/2020",1
+"987",987,"Case 63, 54F, Grace Assembly of God","01/29/2020",1
+"988",988,"Case 64, 50M, NA","01/29/2020",0
+"989",989,"Case 65, 61F, NA","01/29/2020",0
+"990",990,"Case 66, 28M, Grace Assembly of God","01/29/2020",2
+"991",991,"Case 67, 56F, Grace Assembly of God","01/29/2020",1
+"992",992,"Case 68, 79F, Grace Assembly of God","01/29/2020",1
+"993",993,"Case 69, 26M, Seletar Aerospace Heights","01/29/2020",0
+"994",994,"Case 70, 27F, Grace Assembly of God","01/29/2020",1
+"995",995,"Case 71, 25M, Grace Assembly of God","01/29/2020",1
+"996",996,"Case 72, 40M, NA","01/29/2020",0
+"997",997,"Case 73, 43M, Grace Assembly of God","01/29/2020",1
+"998",998,"Case 74, 29M, Grace Assembly of God","01/29/2020",1
+"999",999,"Case 75, 71F, NA","01/29/2020",0
+"1000",1000,"Case 76, 1M, Wuhan","01/29/2020",0
+"1001",1001,"Case 77, 35M, NA","01/29/2020",0
+"1002",1002,"Case 78, 57F, Grace Assembly of God","01/29/2020",1
+"1003",1003,"Case 79, 35F, NA","01/29/2020",0
+"1004",1004,"Case 80, 38F, Grace Assembly of God","01/29/2020",1
+"1005",1005,"Case 81, 50M, Grace Assembly of God","01/29/2020",1
+"1006",1006,"Case 82, 57F, NA","01/29/2020",0
+"1007",1007,"Case 83, 54M, Life Church","01/29/2020",1
+"1008",1008,"Case 84, 35F, Grace Assembly of God","01/29/2020",1
+"1009",1009,"Case 1, 66M, Wuhan","01/30/2020",3
+"1010",1010,"Case 2, 53F, Wuhan","01/30/2020",3
+"1011",1011,"Case 3, 37M, Wuhan","01/30/2020",3
+"1012",1012,"Case 4, 36M, Wuhan","01/30/2020",3
+"1013",1013,"Case 5, 56F, Wuhan","01/30/2020",3
+"1014",1014,"Case 6, 56M, Wuhan","01/30/2020",3
+"1015",1015,"Case 7, 35M, Wuhan","01/30/2020",3
+"1016",1016,"Case 8, 56F, Life Church, Wuhan","01/30/2020",3
+"1017",1017,"Case 9, 56M, Life Church, Wuhan","01/30/2020",3
+"1018",1018,"Case 10, 56M, Wuhan","01/30/2020",3
+"1019",1019,"Case 11, 31F, Wuhan","01/30/2020",3
+"1020",1020,"Case 12, 37F, Wuhan","01/30/2020",3
+"1021",1021,"Case 13, 73F, Wuhan","01/30/2020",3
+"1022",1022,"Case 14, 31M, Wuhan","01/30/2020",3
+"1023",1023,"Case 15, 47F, Wuhan","01/30/2020",3
+"1024",1024,"Case 16, 38M, Wuhan","01/30/2020",3
+"1025",1025,"Case 17, 47F, Wuhan","01/30/2020",3
+"1026",1026,"Case 18, 31F, Wuhan","01/30/2020",2
+"1027",1027,"Case 19, 28F, Yong Thai Hang","01/30/2020",2
+"1028",1028,"Case 20, 48F, Yong Thai Hang","01/30/2020",2
+"1029",1029,"Case 21, 44F, Yong Thai Hang","01/30/2020",1
+"1030",1030,"Case 22, 21M, Wuhan","01/30/2020",3
+"1031",1031,"Case 23, 17M, Wuhan","01/30/2020",3
+"1032",1032,"Case 24, 32F, Yong Thai Hang","01/30/2020",2
+"1033",1033,"Case 25, 40M, Yong Thai Hang","01/30/2020",3
+"1034",1034,"Case 26, 42F , Wuhan","01/30/2020",3
+"1035",1035,"Case 27, 45M, Yong Thai Hang","01/30/2020",1
+"1036",1036,"Case 28, 0/5M, Yong Thai Hang","01/30/2020",1
+"1037",1037,"Case 29, 41M, NA","01/30/2020",2
+"1038",1038,"Case 30, 27M, Grand Hyatt Singapore","01/30/2020",2
+"1039",1039,"Case 31, 53M, Life Church","01/30/2020",2
+"1040",1040,"Case 32, 42F, NA","01/30/2020",0
+"1041",1041,"Case 33, 39F, Life Church","01/30/2020",2
+"1042",1042,"Case 34, 40F, Yong Thai Hang","01/30/2020",2
+"1043",1043,"Case 35, 64F, NA","01/30/2020",2
+"1044",1044,"Case 36, 38F, Grand Hyatt Singapore","01/30/2020",2
+"1045",1045,"Case 37, 53M, NA","01/30/2020",2
+"1046",1046,"Case 38, 52F, Life Church","01/30/2020",1
+"1047",1047,"Case 39, 51M, Grand Hyatt Singapore","01/30/2020",2
+"1048",1048,"Case 40, 36M, Yong Thai Hang","01/30/2020",2
+"1049",1049,"Case 41, 71M, NA","01/30/2020",0
+"1050",1050,"Case 42, 39M, Seletar Aerospace Heights","01/30/2020",0
+"1051",1051,"Case 43, 54M, NA","01/30/2020",2
+"1052",1052,"Case 44, 37M, NA","01/30/2020",1
+"1053",1053,"Case 45, 2F, Wuhan","01/30/2020",1
+"1054",1054,"Case 46, 35M, NA","01/30/2020",0
+"1055",1055,"Case 47, 39M, Seletar Aerospace Heights","01/30/2020",0
+"1056",1056,"Case 48, 34M, Grace Assembly of God","01/30/2020",1
+"1057",1057,"Case 49, 46M, Grace Assembly of God","01/30/2020",1
+"1058",1058,"Case 50, 62M, NA","01/30/2020",0
+"1059",1059,"Case 51, 48M, Grace Assembly of God","01/30/2020",1
+"1060",1060,"Case 52, 37M, Seletar Aerospace Heights","01/30/2020",0
+"1061",1061,"Case 53, 54M, Grace Assembly of God","01/30/2020",1
+"1062",1062,"Case 54, 54F, Grace Assembly of God","01/30/2020",1
+"1063",1063,"Case 55, 30M, NA","01/30/2020",2
+"1064",1064,"Case 56, 30M, Seletar Aerospace Heights","01/30/2020",0
+"1065",1065,"Case 57, 26M, Grace Assembly of God","01/30/2020",1
+"1066",1066,"Case 58, 55M, Grace Assembly of God","01/30/2020",1
+"1067",1067,"Case 59, 61M, NA","01/30/2020",0
+"1068",1068,"Case 60, 51F, Grace Assembly of God","01/30/2020",1
+"1069",1069,"Case 61, 57F, Grace Assembly of God","01/30/2020",1
+"1070",1070,"Case 62, 44F, Grace Assembly of God","01/30/2020",1
+"1071",1071,"Case 63, 54F, Grace Assembly of God","01/30/2020",1
+"1072",1072,"Case 64, 50M, NA","01/30/2020",0
+"1073",1073,"Case 65, 61F, NA","01/30/2020",1
+"1074",1074,"Case 66, 28M, Grace Assembly of God","01/30/2020",2
+"1075",1075,"Case 67, 56F, Grace Assembly of God","01/30/2020",1
+"1076",1076,"Case 68, 79F, Grace Assembly of God","01/30/2020",2
+"1077",1077,"Case 69, 26M, Seletar Aerospace Heights","01/30/2020",0
+"1078",1078,"Case 70, 27F, Grace Assembly of God","01/30/2020",1
+"1079",1079,"Case 71, 25M, Grace Assembly of God","01/30/2020",1
+"1080",1080,"Case 72, 40M, NA","01/30/2020",0
+"1081",1081,"Case 73, 43M, Grace Assembly of God","01/30/2020",1
+"1082",1082,"Case 74, 29M, Grace Assembly of God","01/30/2020",1
+"1083",1083,"Case 75, 71F, NA","01/30/2020",0
+"1084",1084,"Case 76, 1M, Wuhan","01/30/2020",0
+"1085",1085,"Case 77, 35M, NA","01/30/2020",0
+"1086",1086,"Case 78, 57F, Grace Assembly of God","01/30/2020",1
+"1087",1087,"Case 79, 35F, NA","01/30/2020",0
+"1088",1088,"Case 80, 38F, Grace Assembly of God","01/30/2020",1
+"1089",1089,"Case 81, 50M, Grace Assembly of God","01/30/2020",1
+"1090",1090,"Case 82, 57F, NA","01/30/2020",0
+"1091",1091,"Case 83, 54M, Life Church","01/30/2020",1
+"1092",1092,"Case 84, 35F, Grace Assembly of God","01/30/2020",1
+"1093",1093,"Case 1, 66M, Wuhan","01/31/2020",3
+"1094",1094,"Case 2, 53F, Wuhan","01/31/2020",3
+"1095",1095,"Case 3, 37M, Wuhan","01/31/2020",3
+"1096",1096,"Case 4, 36M, Wuhan","01/31/2020",3
+"1097",1097,"Case 5, 56F, Wuhan","01/31/2020",3
+"1098",1098,"Case 6, 56M, Wuhan","01/31/2020",3
+"1099",1099,"Case 7, 35M, Wuhan","01/31/2020",3
+"1100",1100,"Case 8, 56F, Life Church, Wuhan","01/31/2020",3
+"1101",1101,"Case 9, 56M, Life Church, Wuhan","01/31/2020",3
+"1102",1102,"Case 10, 56M, Wuhan","01/31/2020",3
+"1103",1103,"Case 11, 31F, Wuhan","01/31/2020",3
+"1104",1104,"Case 12, 37F, Wuhan","01/31/2020",3
+"1105",1105,"Case 13, 73F, Wuhan","01/31/2020",3
+"1106",1106,"Case 14, 31M, Wuhan","01/31/2020",3
+"1107",1107,"Case 15, 47F, Wuhan","01/31/2020",3
+"1108",1108,"Case 16, 38M, Wuhan","01/31/2020",3
+"1109",1109,"Case 17, 47F, Wuhan","01/31/2020",3
+"1110",1110,"Case 18, 31F, Wuhan","01/31/2020",3
+"1111",1111,"Case 19, 28F, Yong Thai Hang","01/31/2020",3
+"1112",1112,"Case 20, 48F, Yong Thai Hang","01/31/2020",2
+"1113",1113,"Case 21, 44F, Yong Thai Hang","01/31/2020",1
+"1114",1114,"Case 22, 21M, Wuhan","01/31/2020",3
+"1115",1115,"Case 23, 17M, Wuhan","01/31/2020",3
+"1116",1116,"Case 24, 32F, Yong Thai Hang","01/31/2020",2
+"1117",1117,"Case 25, 40M, Yong Thai Hang","01/31/2020",3
+"1118",1118,"Case 26, 42F , Wuhan","01/31/2020",3
+"1119",1119,"Case 27, 45M, Yong Thai Hang","01/31/2020",1
+"1120",1120,"Case 28, 0/5M, Yong Thai Hang","01/31/2020",1
+"1121",1121,"Case 29, 41M, NA","01/31/2020",2
+"1122",1122,"Case 30, 27M, Grand Hyatt Singapore","01/31/2020",2
+"1123",1123,"Case 31, 53M, Life Church","01/31/2020",2
+"1124",1124,"Case 32, 42F, NA","01/31/2020",0
+"1125",1125,"Case 33, 39F, Life Church","01/31/2020",2
+"1126",1126,"Case 34, 40F, Yong Thai Hang","01/31/2020",2
+"1127",1127,"Case 35, 64F, NA","01/31/2020",2
+"1128",1128,"Case 36, 38F, Grand Hyatt Singapore","01/31/2020",2
+"1129",1129,"Case 37, 53M, NA","01/31/2020",2
+"1130",1130,"Case 38, 52F, Life Church","01/31/2020",1
+"1131",1131,"Case 39, 51M, Grand Hyatt Singapore","01/31/2020",2
+"1132",1132,"Case 40, 36M, Yong Thai Hang","01/31/2020",2
+"1133",1133,"Case 41, 71M, NA","01/31/2020",0
+"1134",1134,"Case 42, 39M, Seletar Aerospace Heights","01/31/2020",0
+"1135",1135,"Case 43, 54M, NA","01/31/2020",2
+"1136",1136,"Case 44, 37M, NA","01/31/2020",2
+"1137",1137,"Case 45, 2F, Wuhan","01/31/2020",1
+"1138",1138,"Case 46, 35M, NA","01/31/2020",0
+"1139",1139,"Case 47, 39M, Seletar Aerospace Heights","01/31/2020",0
+"1140",1140,"Case 48, 34M, Grace Assembly of God","01/31/2020",1
+"1141",1141,"Case 49, 46M, Grace Assembly of God","01/31/2020",1
+"1142",1142,"Case 50, 62M, NA","01/31/2020",0
+"1143",1143,"Case 51, 48M, Grace Assembly of God","01/31/2020",1
+"1144",1144,"Case 52, 37M, Seletar Aerospace Heights","01/31/2020",0
+"1145",1145,"Case 53, 54M, Grace Assembly of God","01/31/2020",1
+"1146",1146,"Case 54, 54F, Grace Assembly of God","01/31/2020",1
+"1147",1147,"Case 55, 30M, NA","01/31/2020",2
+"1148",1148,"Case 56, 30M, Seletar Aerospace Heights","01/31/2020",0
+"1149",1149,"Case 57, 26M, Grace Assembly of God","01/31/2020",1
+"1150",1150,"Case 58, 55M, Grace Assembly of God","01/31/2020",1
+"1151",1151,"Case 59, 61M, NA","01/31/2020",0
+"1152",1152,"Case 60, 51F, Grace Assembly of God","01/31/2020",1
+"1153",1153,"Case 61, 57F, Grace Assembly of God","01/31/2020",1
+"1154",1154,"Case 62, 44F, Grace Assembly of God","01/31/2020",1
+"1155",1155,"Case 63, 54F, Grace Assembly of God","01/31/2020",1
+"1156",1156,"Case 64, 50M, NA","01/31/2020",0
+"1157",1157,"Case 65, 61F, NA","01/31/2020",1
+"1158",1158,"Case 66, 28M, Grace Assembly of God","01/31/2020",2
+"1159",1159,"Case 67, 56F, Grace Assembly of God","01/31/2020",1
+"1160",1160,"Case 68, 79F, Grace Assembly of God","01/31/2020",2
+"1161",1161,"Case 69, 26M, Seletar Aerospace Heights","01/31/2020",0
+"1162",1162,"Case 70, 27F, Grace Assembly of God","01/31/2020",1
+"1163",1163,"Case 71, 25M, Grace Assembly of God","01/31/2020",1
+"1164",1164,"Case 72, 40M, NA","01/31/2020",0
+"1165",1165,"Case 73, 43M, Grace Assembly of God","01/31/2020",1
+"1166",1166,"Case 74, 29M, Grace Assembly of God","01/31/2020",1
+"1167",1167,"Case 75, 71F, NA","01/31/2020",0
+"1168",1168,"Case 76, 1M, Wuhan","01/31/2020",0
+"1169",1169,"Case 77, 35M, NA","01/31/2020",0
+"1170",1170,"Case 78, 57F, Grace Assembly of God","01/31/2020",1
+"1171",1171,"Case 79, 35F, NA","01/31/2020",0
+"1172",1172,"Case 80, 38F, Grace Assembly of God","01/31/2020",1
+"1173",1173,"Case 81, 50M, Grace Assembly of God","01/31/2020",1
+"1174",1174,"Case 82, 57F, NA","01/31/2020",0
+"1175",1175,"Case 83, 54M, Life Church","01/31/2020",1
+"1176",1176,"Case 84, 35F, Grace Assembly of God","01/31/2020",1
+"1177",1177,"Case 1, 66M, Wuhan","02/1/2020",3
+"1178",1178,"Case 2, 53F, Wuhan","02/1/2020",3
+"1179",1179,"Case 3, 37M, Wuhan","02/1/2020",3
+"1180",1180,"Case 4, 36M, Wuhan","02/1/2020",3
+"1181",1181,"Case 5, 56F, Wuhan","02/1/2020",3
+"1182",1182,"Case 6, 56M, Wuhan","02/1/2020",3
+"1183",1183,"Case 7, 35M, Wuhan","02/1/2020",3
+"1184",1184,"Case 8, 56F, Life Church, Wuhan","02/1/2020",3
+"1185",1185,"Case 9, 56M, Life Church, Wuhan","02/1/2020",3
+"1186",1186,"Case 10, 56M, Wuhan","02/1/2020",3
+"1187",1187,"Case 11, 31F, Wuhan","02/1/2020",3
+"1188",1188,"Case 12, 37F, Wuhan","02/1/2020",3
+"1189",1189,"Case 13, 73F, Wuhan","02/1/2020",3
+"1190",1190,"Case 14, 31M, Wuhan","02/1/2020",3
+"1191",1191,"Case 15, 47F, Wuhan","02/1/2020",3
+"1192",1192,"Case 16, 38M, Wuhan","02/1/2020",3
+"1193",1193,"Case 17, 47F, Wuhan","02/1/2020",3
+"1194",1194,"Case 18, 31F, Wuhan","02/1/2020",3
+"1195",1195,"Case 19, 28F, Yong Thai Hang","02/1/2020",3
+"1196",1196,"Case 20, 48F, Yong Thai Hang","02/1/2020",2
+"1197",1197,"Case 21, 44F, Yong Thai Hang","02/1/2020",1
+"1198",1198,"Case 22, 21M, Wuhan","02/1/2020",3
+"1199",1199,"Case 23, 17M, Wuhan","02/1/2020",3
+"1200",1200,"Case 24, 32F, Yong Thai Hang","02/1/2020",2
+"1201",1201,"Case 25, 40M, Yong Thai Hang","02/1/2020",3
+"1202",1202,"Case 26, 42F , Wuhan","02/1/2020",3
+"1203",1203,"Case 27, 45M, Yong Thai Hang","02/1/2020",2
+"1204",1204,"Case 28, 0/5M, Yong Thai Hang","02/1/2020",1
+"1205",1205,"Case 29, 41M, NA","02/1/2020",2
+"1206",1206,"Case 30, 27M, Grand Hyatt Singapore","02/1/2020",2
+"1207",1207,"Case 31, 53M, Life Church","02/1/2020",3
+"1208",1208,"Case 32, 42F, NA","02/1/2020",0
+"1209",1209,"Case 33, 39F, Life Church","02/1/2020",2
+"1210",1210,"Case 34, 40F, Yong Thai Hang","02/1/2020",2
+"1211",1211,"Case 35, 64F, NA","02/1/2020",2
+"1212",1212,"Case 36, 38F, Grand Hyatt Singapore","02/1/2020",2
+"1213",1213,"Case 37, 53M, NA","02/1/2020",2
+"1214",1214,"Case 38, 52F, Life Church","02/1/2020",1
+"1215",1215,"Case 39, 51M, Grand Hyatt Singapore","02/1/2020",2
+"1216",1216,"Case 40, 36M, Yong Thai Hang","02/1/2020",2
+"1217",1217,"Case 41, 71M, NA","02/1/2020",2
+"1218",1218,"Case 42, 39M, Seletar Aerospace Heights","02/1/2020",2
+"1219",1219,"Case 43, 54M, NA","02/1/2020",2
+"1220",1220,"Case 44, 37M, NA","02/1/2020",2
+"1221",1221,"Case 45, 2F, Wuhan","02/1/2020",1
+"1222",1222,"Case 46, 35M, NA","02/1/2020",0
+"1223",1223,"Case 47, 39M, Seletar Aerospace Heights","02/1/2020",1
+"1224",1224,"Case 48, 34M, Grace Assembly of God","02/1/2020",2
+"1225",1225,"Case 49, 46M, Grace Assembly of God","02/1/2020",1
+"1226",1226,"Case 50, 62M, NA","02/1/2020",0
+"1227",1227,"Case 51, 48M, Grace Assembly of God","02/1/2020",1
+"1228",1228,"Case 52, 37M, Seletar Aerospace Heights","02/1/2020",1
+"1229",1229,"Case 53, 54M, Grace Assembly of God","02/1/2020",1
+"1230",1230,"Case 54, 54F, Grace Assembly of God","02/1/2020",1
+"1231",1231,"Case 55, 30M, NA","02/1/2020",2
+"1232",1232,"Case 56, 30M, Seletar Aerospace Heights","02/1/2020",1
+"1233",1233,"Case 57, 26M, Grace Assembly of God","02/1/2020",1
+"1234",1234,"Case 58, 55M, Grace Assembly of God","02/1/2020",1
+"1235",1235,"Case 59, 61M, NA","02/1/2020",0
+"1236",1236,"Case 60, 51F, Grace Assembly of God","02/1/2020",1
+"1237",1237,"Case 61, 57F, Grace Assembly of God","02/1/2020",1
+"1238",1238,"Case 62, 44F, Grace Assembly of God","02/1/2020",1
+"1239",1239,"Case 63, 54F, Grace Assembly of God","02/1/2020",1
+"1240",1240,"Case 64, 50M, NA","02/1/2020",0
+"1241",1241,"Case 65, 61F, NA","02/1/2020",1
+"1242",1242,"Case 66, 28M, Grace Assembly of God","02/1/2020",2
+"1243",1243,"Case 67, 56F, Grace Assembly of God","02/1/2020",1
+"1244",1244,"Case 68, 79F, Grace Assembly of God","02/1/2020",2
+"1245",1245,"Case 69, 26M, Seletar Aerospace Heights","02/1/2020",1
+"1246",1246,"Case 70, 27F, Grace Assembly of God","02/1/2020",1
+"1247",1247,"Case 71, 25M, Grace Assembly of God","02/1/2020",2
+"1248",1248,"Case 72, 40M, NA","02/1/2020",0
+"1249",1249,"Case 73, 43M, Grace Assembly of God","02/1/2020",1
+"1250",1250,"Case 74, 29M, Grace Assembly of God","02/1/2020",1
+"1251",1251,"Case 75, 71F, NA","02/1/2020",1
+"1252",1252,"Case 76, 1M, Wuhan","02/1/2020",0
+"1253",1253,"Case 77, 35M, NA","02/1/2020",0
+"1254",1254,"Case 78, 57F, Grace Assembly of God","02/1/2020",1
+"1255",1255,"Case 79, 35F, NA","02/1/2020",0
+"1256",1256,"Case 80, 38F, Grace Assembly of God","02/1/2020",1
+"1257",1257,"Case 81, 50M, Grace Assembly of God","02/1/2020",1
+"1258",1258,"Case 82, 57F, NA","02/1/2020",0
+"1259",1259,"Case 83, 54M, Life Church","02/1/2020",1
+"1260",1260,"Case 84, 35F, Grace Assembly of God","02/1/2020",1
+"1261",1261,"Case 1, 66M, Wuhan","02/2/2020",3
+"1262",1262,"Case 2, 53F, Wuhan","02/2/2020",3
+"1263",1263,"Case 3, 37M, Wuhan","02/2/2020",3
+"1264",1264,"Case 4, 36M, Wuhan","02/2/2020",3
+"1265",1265,"Case 5, 56F, Wuhan","02/2/2020",3
+"1266",1266,"Case 6, 56M, Wuhan","02/2/2020",3
+"1267",1267,"Case 7, 35M, Wuhan","02/2/2020",3
+"1268",1268,"Case 8, 56F, Life Church, Wuhan","02/2/2020",3
+"1269",1269,"Case 9, 56M, Life Church, Wuhan","02/2/2020",3
+"1270",1270,"Case 10, 56M, Wuhan","02/2/2020",3
+"1271",1271,"Case 11, 31F, Wuhan","02/2/2020",3
+"1272",1272,"Case 12, 37F, Wuhan","02/2/2020",3
+"1273",1273,"Case 13, 73F, Wuhan","02/2/2020",3
+"1274",1274,"Case 14, 31M, Wuhan","02/2/2020",3
+"1275",1275,"Case 15, 47F, Wuhan","02/2/2020",3
+"1276",1276,"Case 16, 38M, Wuhan","02/2/2020",3
+"1277",1277,"Case 17, 47F, Wuhan","02/2/2020",3
+"1278",1278,"Case 18, 31F, Wuhan","02/2/2020",3
+"1279",1279,"Case 19, 28F, Yong Thai Hang","02/2/2020",3
+"1280",1280,"Case 20, 48F, Yong Thai Hang","02/2/2020",2
+"1281",1281,"Case 21, 44F, Yong Thai Hang","02/2/2020",2
+"1282",1282,"Case 22, 21M, Wuhan","02/2/2020",3
+"1283",1283,"Case 23, 17M, Wuhan","02/2/2020",3
+"1284",1284,"Case 24, 32F, Yong Thai Hang","02/2/2020",2
+"1285",1285,"Case 25, 40M, Yong Thai Hang","02/2/2020",3
+"1286",1286,"Case 26, 42F , Wuhan","02/2/2020",3
+"1287",1287,"Case 27, 45M, Yong Thai Hang","02/2/2020",2
+"1288",1288,"Case 28, 0/5M, Yong Thai Hang","02/2/2020",1
+"1289",1289,"Case 29, 41M, NA","02/2/2020",2
+"1290",1290,"Case 30, 27M, Grand Hyatt Singapore","02/2/2020",2
+"1291",1291,"Case 31, 53M, Life Church","02/2/2020",3
+"1292",1292,"Case 32, 42F, NA","02/2/2020",2
+"1293",1293,"Case 33, 39F, Life Church","02/2/2020",3
+"1294",1294,"Case 34, 40F, Yong Thai Hang","02/2/2020",2
+"1295",1295,"Case 35, 64F, NA","02/2/2020",2
+"1296",1296,"Case 36, 38F, Grand Hyatt Singapore","02/2/2020",2
+"1297",1297,"Case 37, 53M, NA","02/2/2020",2
+"1298",1298,"Case 38, 52F, Life Church","02/2/2020",1
+"1299",1299,"Case 39, 51M, Grand Hyatt Singapore","02/2/2020",2
+"1300",1300,"Case 40, 36M, Yong Thai Hang","02/2/2020",2
+"1301",1301,"Case 41, 71M, NA","02/2/2020",2
+"1302",1302,"Case 42, 39M, Seletar Aerospace Heights","02/2/2020",2
+"1303",1303,"Case 43, 54M, NA","02/2/2020",2
+"1304",1304,"Case 44, 37M, NA","02/2/2020",2
+"1305",1305,"Case 45, 2F, Wuhan","02/2/2020",1
+"1306",1306,"Case 46, 35M, NA","02/2/2020",0
+"1307",1307,"Case 47, 39M, Seletar Aerospace Heights","02/2/2020",1
+"1308",1308,"Case 48, 34M, Grace Assembly of God","02/2/2020",2
+"1309",1309,"Case 49, 46M, Grace Assembly of God","02/2/2020",1
+"1310",1310,"Case 50, 62M, NA","02/2/2020",0
+"1311",1311,"Case 51, 48M, Grace Assembly of God","02/2/2020",1
+"1312",1312,"Case 52, 37M, Seletar Aerospace Heights","02/2/2020",1
+"1313",1313,"Case 53, 54M, Grace Assembly of God","02/2/2020",1
+"1314",1314,"Case 54, 54F, Grace Assembly of God","02/2/2020",1
+"1315",1315,"Case 55, 30M, NA","02/2/2020",2
+"1316",1316,"Case 56, 30M, Seletar Aerospace Heights","02/2/2020",1
+"1317",1317,"Case 57, 26M, Grace Assembly of God","02/2/2020",1
+"1318",1318,"Case 58, 55M, Grace Assembly of God","02/2/2020",1
+"1319",1319,"Case 59, 61M, NA","02/2/2020",0
+"1320",1320,"Case 60, 51F, Grace Assembly of God","02/2/2020",1
+"1321",1321,"Case 61, 57F, Grace Assembly of God","02/2/2020",1
+"1322",1322,"Case 62, 44F, Grace Assembly of God","02/2/2020",1
+"1323",1323,"Case 63, 54F, Grace Assembly of God","02/2/2020",1
+"1324",1324,"Case 64, 50M, NA","02/2/2020",0
+"1325",1325,"Case 65, 61F, NA","02/2/2020",1
+"1326",1326,"Case 66, 28M, Grace Assembly of God","02/2/2020",2
+"1327",1327,"Case 67, 56F, Grace Assembly of God","02/2/2020",1
+"1328",1328,"Case 68, 79F, Grace Assembly of God","02/2/2020",2
+"1329",1329,"Case 69, 26M, Seletar Aerospace Heights","02/2/2020",1
+"1330",1330,"Case 70, 27F, Grace Assembly of God","02/2/2020",1
+"1331",1331,"Case 71, 25M, Grace Assembly of God","02/2/2020",2
+"1332",1332,"Case 72, 40M, NA","02/2/2020",0
+"1333",1333,"Case 73, 43M, Grace Assembly of God","02/2/2020",1
+"1334",1334,"Case 74, 29M, Grace Assembly of God","02/2/2020",1
+"1335",1335,"Case 75, 71F, NA","02/2/2020",1
+"1336",1336,"Case 76, 1M, Wuhan","02/2/2020",0
+"1337",1337,"Case 77, 35M, NA","02/2/2020",0
+"1338",1338,"Case 78, 57F, Grace Assembly of God","02/2/2020",1
+"1339",1339,"Case 79, 35F, NA","02/2/2020",0
+"1340",1340,"Case 80, 38F, Grace Assembly of God","02/2/2020",1
+"1341",1341,"Case 81, 50M, Grace Assembly of God","02/2/2020",1
+"1342",1342,"Case 82, 57F, NA","02/2/2020",0
+"1343",1343,"Case 83, 54M, Life Church","02/2/2020",1
+"1344",1344,"Case 84, 35F, Grace Assembly of God","02/2/2020",1
+"1345",1345,"Case 1, 66M, Wuhan","02/3/2020",3
+"1346",1346,"Case 2, 53F, Wuhan","02/3/2020",3
+"1347",1347,"Case 3, 37M, Wuhan","02/3/2020",3
+"1348",1348,"Case 4, 36M, Wuhan","02/3/2020",3
+"1349",1349,"Case 5, 56F, Wuhan","02/3/2020",3
+"1350",1350,"Case 6, 56M, Wuhan","02/3/2020",3
+"1351",1351,"Case 7, 35M, Wuhan","02/3/2020",3
+"1352",1352,"Case 8, 56F, Life Church, Wuhan","02/3/2020",3
+"1353",1353,"Case 9, 56M, Life Church, Wuhan","02/3/2020",3
+"1354",1354,"Case 10, 56M, Wuhan","02/3/2020",3
+"1355",1355,"Case 11, 31F, Wuhan","02/3/2020",3
+"1356",1356,"Case 12, 37F, Wuhan","02/3/2020",3
+"1357",1357,"Case 13, 73F, Wuhan","02/3/2020",3
+"1358",1358,"Case 14, 31M, Wuhan","02/3/2020",3
+"1359",1359,"Case 15, 47F, Wuhan","02/3/2020",3
+"1360",1360,"Case 16, 38M, Wuhan","02/3/2020",3
+"1361",1361,"Case 17, 47F, Wuhan","02/3/2020",3
+"1362",1362,"Case 18, 31F, Wuhan","02/3/2020",3
+"1363",1363,"Case 19, 28F, Yong Thai Hang","02/3/2020",3
+"1364",1364,"Case 20, 48F, Yong Thai Hang","02/3/2020",3
+"1365",1365,"Case 21, 44F, Yong Thai Hang","02/3/2020",3
+"1366",1366,"Case 22, 21M, Wuhan","02/3/2020",3
+"1367",1367,"Case 23, 17M, Wuhan","02/3/2020",3
+"1368",1368,"Case 24, 32F, Yong Thai Hang","02/3/2020",3
+"1369",1369,"Case 25, 40M, Yong Thai Hang","02/3/2020",3
+"1370",1370,"Case 26, 42F , Wuhan","02/3/2020",3
+"1371",1371,"Case 27, 45M, Yong Thai Hang","02/3/2020",2
+"1372",1372,"Case 28, 0/5M, Yong Thai Hang","02/3/2020",1
+"1373",1373,"Case 29, 41M, NA","02/3/2020",3
+"1374",1374,"Case 30, 27M, Grand Hyatt Singapore","02/3/2020",2
+"1375",1375,"Case 31, 53M, Life Church","02/3/2020",3
+"1376",1376,"Case 32, 42F, NA","02/3/2020",2
+"1377",1377,"Case 33, 39F, Life Church","02/3/2020",3
+"1378",1378,"Case 34, 40F, Yong Thai Hang","02/3/2020",2
+"1379",1379,"Case 35, 64F, NA","02/3/2020",2
+"1380",1380,"Case 36, 38F, Grand Hyatt Singapore","02/3/2020",2
+"1381",1381,"Case 37, 53M, NA","02/3/2020",2
+"1382",1382,"Case 38, 52F, Life Church","02/3/2020",2
+"1383",1383,"Case 39, 51M, Grand Hyatt Singapore","02/3/2020",2
+"1384",1384,"Case 40, 36M, Yong Thai Hang","02/3/2020",2
+"1385",1385,"Case 41, 71M, NA","02/3/2020",2
+"1386",1386,"Case 42, 39M, Seletar Aerospace Heights","02/3/2020",2
+"1387",1387,"Case 43, 54M, NA","02/3/2020",2
+"1388",1388,"Case 44, 37M, NA","02/3/2020",2
+"1389",1389,"Case 45, 2F, Wuhan","02/3/2020",1
+"1390",1390,"Case 46, 35M, NA","02/3/2020",0
+"1391",1391,"Case 47, 39M, Seletar Aerospace Heights","02/3/2020",1
+"1392",1392,"Case 48, 34M, Grace Assembly of God","02/3/2020",2
+"1393",1393,"Case 49, 46M, Grace Assembly of God","02/3/2020",2
+"1394",1394,"Case 50, 62M, NA","02/3/2020",0
+"1395",1395,"Case 51, 48M, Grace Assembly of God","02/3/2020",1
+"1396",1396,"Case 52, 37M, Seletar Aerospace Heights","02/3/2020",1
+"1397",1397,"Case 53, 54M, Grace Assembly of God","02/3/2020",1
+"1398",1398,"Case 54, 54F, Grace Assembly of God","02/3/2020",1
+"1399",1399,"Case 55, 30M, NA","02/3/2020",2
+"1400",1400,"Case 56, 30M, Seletar Aerospace Heights","02/3/2020",1
+"1401",1401,"Case 57, 26M, Grace Assembly of God","02/3/2020",1
+"1402",1402,"Case 58, 55M, Grace Assembly of God","02/3/2020",1
+"1403",1403,"Case 59, 61M, NA","02/3/2020",0
+"1404",1404,"Case 60, 51F, Grace Assembly of God","02/3/2020",1
+"1405",1405,"Case 61, 57F, Grace Assembly of God","02/3/2020",1
+"1406",1406,"Case 62, 44F, Grace Assembly of God","02/3/2020",1
+"1407",1407,"Case 63, 54F, Grace Assembly of God","02/3/2020",1
+"1408",1408,"Case 64, 50M, NA","02/3/2020",2
+"1409",1409,"Case 65, 61F, NA","02/3/2020",1
+"1410",1410,"Case 66, 28M, Grace Assembly of God","02/3/2020",2
+"1411",1411,"Case 67, 56F, Grace Assembly of God","02/3/2020",1
+"1412",1412,"Case 68, 79F, Grace Assembly of God","02/3/2020",2
+"1413",1413,"Case 69, 26M, Seletar Aerospace Heights","02/3/2020",1
+"1414",1414,"Case 70, 27F, Grace Assembly of God","02/3/2020",2
+"1415",1415,"Case 71, 25M, Grace Assembly of God","02/3/2020",2
+"1416",1416,"Case 72, 40M, NA","02/3/2020",0
+"1417",1417,"Case 73, 43M, Grace Assembly of God","02/3/2020",1
+"1418",1418,"Case 74, 29M, Grace Assembly of God","02/3/2020",1
+"1419",1419,"Case 75, 71F, NA","02/3/2020",1
+"1420",1420,"Case 76, 1M, Wuhan","02/3/2020",0
+"1421",1421,"Case 77, 35M, NA","02/3/2020",0
+"1422",1422,"Case 78, 57F, Grace Assembly of God","02/3/2020",1
+"1423",1423,"Case 79, 35F, NA","02/3/2020",0
+"1424",1424,"Case 80, 38F, Grace Assembly of God","02/3/2020",1
+"1425",1425,"Case 81, 50M, Grace Assembly of God","02/3/2020",1
+"1426",1426,"Case 82, 57F, NA","02/3/2020",0
+"1427",1427,"Case 83, 54M, Life Church","02/3/2020",1
+"1428",1428,"Case 84, 35F, Grace Assembly of God","02/3/2020",1
+"1429",1429,"Case 1, 66M, Wuhan","02/4/2020",3
+"1430",1430,"Case 2, 53F, Wuhan","02/4/2020",3
+"1431",1431,"Case 3, 37M, Wuhan","02/4/2020",3
+"1432",1432,"Case 4, 36M, Wuhan","02/4/2020",3
+"1433",1433,"Case 5, 56F, Wuhan","02/4/2020",3
+"1434",1434,"Case 6, 56M, Wuhan","02/4/2020",3
+"1435",1435,"Case 7, 35M, Wuhan","02/4/2020",4
+"1436",1436,"Case 8, 56F, Life Church, Wuhan","02/4/2020",3
+"1437",1437,"Case 9, 56M, Life Church, Wuhan","02/4/2020",3
+"1438",1438,"Case 10, 56M, Wuhan","02/4/2020",3
+"1439",1439,"Case 11, 31F, Wuhan","02/4/2020",3
+"1440",1440,"Case 12, 37F, Wuhan","02/4/2020",3
+"1441",1441,"Case 13, 73F, Wuhan","02/4/2020",3
+"1442",1442,"Case 14, 31M, Wuhan","02/4/2020",3
+"1443",1443,"Case 15, 47F, Wuhan","02/4/2020",3
+"1444",1444,"Case 16, 38M, Wuhan","02/4/2020",3
+"1445",1445,"Case 17, 47F, Wuhan","02/4/2020",3
+"1446",1446,"Case 18, 31F, Wuhan","02/4/2020",3
+"1447",1447,"Case 19, 28F, Yong Thai Hang","02/4/2020",3
+"1448",1448,"Case 20, 48F, Yong Thai Hang","02/4/2020",3
+"1449",1449,"Case 21, 44F, Yong Thai Hang","02/4/2020",3
+"1450",1450,"Case 22, 21M, Wuhan","02/4/2020",3
+"1451",1451,"Case 23, 17M, Wuhan","02/4/2020",3
+"1452",1452,"Case 24, 32F, Yong Thai Hang","02/4/2020",3
+"1453",1453,"Case 25, 40M, Yong Thai Hang","02/4/2020",3
+"1454",1454,"Case 26, 42F , Wuhan","02/4/2020",3
+"1455",1455,"Case 27, 45M, Yong Thai Hang","02/4/2020",3
+"1456",1456,"Case 28, 0/5M, Yong Thai Hang","02/4/2020",1
+"1457",1457,"Case 29, 41M, NA","02/4/2020",3
+"1458",1458,"Case 30, 27M, Grand Hyatt Singapore","02/4/2020",2
+"1459",1459,"Case 31, 53M, Life Church","02/4/2020",3
+"1460",1460,"Case 32, 42F, NA","02/4/2020",2
+"1461",1461,"Case 33, 39F, Life Church","02/4/2020",3
+"1462",1462,"Case 34, 40F, Yong Thai Hang","02/4/2020",2
+"1463",1463,"Case 35, 64F, NA","02/4/2020",2
+"1464",1464,"Case 36, 38F, Grand Hyatt Singapore","02/4/2020",3
+"1465",1465,"Case 37, 53M, NA","02/4/2020",2
+"1466",1466,"Case 38, 52F, Life Church","02/4/2020",2
+"1467",1467,"Case 39, 51M, Grand Hyatt Singapore","02/4/2020",2
+"1468",1468,"Case 40, 36M, Yong Thai Hang","02/4/2020",2
+"1469",1469,"Case 41, 71M, NA","02/4/2020",2
+"1470",1470,"Case 42, 39M, Seletar Aerospace Heights","02/4/2020",2
+"1471",1471,"Case 43, 54M, NA","02/4/2020",2
+"1472",1472,"Case 44, 37M, NA","02/4/2020",2
+"1473",1473,"Case 45, 2F, Wuhan","02/4/2020",1
+"1474",1474,"Case 46, 35M, NA","02/4/2020",0
+"1475",1475,"Case 47, 39M, Seletar Aerospace Heights","02/4/2020",1
+"1476",1476,"Case 48, 34M, Grace Assembly of God","02/4/2020",2
+"1477",1477,"Case 49, 46M, Grace Assembly of God","02/4/2020",2
+"1478",1478,"Case 50, 62M, NA","02/4/2020",0
+"1479",1479,"Case 51, 48M, Grace Assembly of God","02/4/2020",2
+"1480",1480,"Case 52, 37M, Seletar Aerospace Heights","02/4/2020",1
+"1481",1481,"Case 53, 54M, Grace Assembly of God","02/4/2020",1
+"1482",1482,"Case 54, 54F, Grace Assembly of God","02/4/2020",1
+"1483",1483,"Case 55, 30M, NA","02/4/2020",2
+"1484",1484,"Case 56, 30M, Seletar Aerospace Heights","02/4/2020",1
+"1485",1485,"Case 57, 26M, Grace Assembly of God","02/4/2020",1
+"1486",1486,"Case 58, 55M, Grace Assembly of God","02/4/2020",1
+"1487",1487,"Case 59, 61M, NA","02/4/2020",0
+"1488",1488,"Case 60, 51F, Grace Assembly of God","02/4/2020",1
+"1489",1489,"Case 61, 57F, Grace Assembly of God","02/4/2020",1
+"1490",1490,"Case 62, 44F, Grace Assembly of God","02/4/2020",1
+"1491",1491,"Case 63, 54F, Grace Assembly of God","02/4/2020",1
+"1492",1492,"Case 64, 50M, NA","02/4/2020",2
+"1493",1493,"Case 65, 61F, NA","02/4/2020",1
+"1494",1494,"Case 66, 28M, Grace Assembly of God","02/4/2020",2
+"1495",1495,"Case 67, 56F, Grace Assembly of God","02/4/2020",1
+"1496",1496,"Case 68, 79F, Grace Assembly of God","02/4/2020",2
+"1497",1497,"Case 69, 26M, Seletar Aerospace Heights","02/4/2020",1
+"1498",1498,"Case 70, 27F, Grace Assembly of God","02/4/2020",2
+"1499",1499,"Case 71, 25M, Grace Assembly of God","02/4/2020",2
+"1500",1500,"Case 72, 40M, NA","02/4/2020",0
+"1501",1501,"Case 73, 43M, Grace Assembly of God","02/4/2020",1
+"1502",1502,"Case 74, 29M, Grace Assembly of God","02/4/2020",1
+"1503",1503,"Case 75, 71F, NA","02/4/2020",1
+"1504",1504,"Case 76, 1M, Wuhan","02/4/2020",0
+"1505",1505,"Case 77, 35M, NA","02/4/2020",0
+"1506",1506,"Case 78, 57F, Grace Assembly of God","02/4/2020",1
+"1507",1507,"Case 79, 35F, NA","02/4/2020",0
+"1508",1508,"Case 80, 38F, Grace Assembly of God","02/4/2020",2
+"1509",1509,"Case 81, 50M, Grace Assembly of God","02/4/2020",1
+"1510",1510,"Case 82, 57F, NA","02/4/2020",0
+"1511",1511,"Case 83, 54M, Life Church","02/4/2020",1
+"1512",1512,"Case 84, 35F, Grace Assembly of God","02/4/2020",1
+"1513",1513,"Case 1, 66M, Wuhan","02/5/2020",3
+"1514",1514,"Case 2, 53F, Wuhan","02/5/2020",3
+"1515",1515,"Case 3, 37M, Wuhan","02/5/2020",3
+"1516",1516,"Case 4, 36M, Wuhan","02/5/2020",3
+"1517",1517,"Case 5, 56F, Wuhan","02/5/2020",3
+"1518",1518,"Case 6, 56M, Wuhan","02/5/2020",3
+"1519",1519,"Case 7, 35M, Wuhan","02/5/2020",4
+"1520",1520,"Case 8, 56F, Life Church, Wuhan","02/5/2020",3
+"1521",1521,"Case 9, 56M, Life Church, Wuhan","02/5/2020",3
+"1522",1522,"Case 10, 56M, Wuhan","02/5/2020",3
+"1523",1523,"Case 11, 31F, Wuhan","02/5/2020",3
+"1524",1524,"Case 12, 37F, Wuhan","02/5/2020",3
+"1525",1525,"Case 13, 73F, Wuhan","02/5/2020",3
+"1526",1526,"Case 14, 31M, Wuhan","02/5/2020",3
+"1527",1527,"Case 15, 47F, Wuhan","02/5/2020",3
+"1528",1528,"Case 16, 38M, Wuhan","02/5/2020",3
+"1529",1529,"Case 17, 47F, Wuhan","02/5/2020",3
+"1530",1530,"Case 18, 31F, Wuhan","02/5/2020",3
+"1531",1531,"Case 19, 28F, Yong Thai Hang","02/5/2020",3
+"1532",1532,"Case 20, 48F, Yong Thai Hang","02/5/2020",3
+"1533",1533,"Case 21, 44F, Yong Thai Hang","02/5/2020",3
+"1534",1534,"Case 22, 21M, Wuhan","02/5/2020",3
+"1535",1535,"Case 23, 17M, Wuhan","02/5/2020",3
+"1536",1536,"Case 24, 32F, Yong Thai Hang","02/5/2020",3
+"1537",1537,"Case 25, 40M, Yong Thai Hang","02/5/2020",3
+"1538",1538,"Case 26, 42F , Wuhan","02/5/2020",3
+"1539",1539,"Case 27, 45M, Yong Thai Hang","02/5/2020",3
+"1540",1540,"Case 28, 0/5M, Yong Thai Hang","02/5/2020",3
+"1541",1541,"Case 29, 41M, NA","02/5/2020",3
+"1542",1542,"Case 30, 27M, Grand Hyatt Singapore","02/5/2020",2
+"1543",1543,"Case 31, 53M, Life Church","02/5/2020",3
+"1544",1544,"Case 32, 42F, NA","02/5/2020",3
+"1545",1545,"Case 33, 39F, Life Church","02/5/2020",3
+"1546",1546,"Case 34, 40F, Yong Thai Hang","02/5/2020",2
+"1547",1547,"Case 35, 64F, NA","02/5/2020",2
+"1548",1548,"Case 36, 38F, Grand Hyatt Singapore","02/5/2020",3
+"1549",1549,"Case 37, 53M, NA","02/5/2020",2
+"1550",1550,"Case 38, 52F, Life Church","02/5/2020",2
+"1551",1551,"Case 39, 51M, Grand Hyatt Singapore","02/5/2020",3
+"1552",1552,"Case 40, 36M, Yong Thai Hang","02/5/2020",2
+"1553",1553,"Case 41, 71M, NA","02/5/2020",2
+"1554",1554,"Case 42, 39M, Seletar Aerospace Heights","02/5/2020",2
+"1555",1555,"Case 43, 54M, NA","02/5/2020",2
+"1556",1556,"Case 44, 37M, NA","02/5/2020",2
+"1557",1557,"Case 45, 2F, Wuhan","02/5/2020",1
+"1558",1558,"Case 46, 35M, NA","02/5/2020",2
+"1559",1559,"Case 47, 39M, Seletar Aerospace Heights","02/5/2020",1
+"1560",1560,"Case 48, 34M, Grace Assembly of God","02/5/2020",2
+"1561",1561,"Case 49, 46M, Grace Assembly of God","02/5/2020",2
+"1562",1562,"Case 50, 62M, NA","02/5/2020",0
+"1563",1563,"Case 51, 48M, Grace Assembly of God","02/5/2020",2
+"1564",1564,"Case 52, 37M, Seletar Aerospace Heights","02/5/2020",1
+"1565",1565,"Case 53, 54M, Grace Assembly of God","02/5/2020",1
+"1566",1566,"Case 54, 54F, Grace Assembly of God","02/5/2020",1
+"1567",1567,"Case 55, 30M, NA","02/5/2020",2
+"1568",1568,"Case 56, 30M, Seletar Aerospace Heights","02/5/2020",1
+"1569",1569,"Case 57, 26M, Grace Assembly of God","02/5/2020",1
+"1570",1570,"Case 58, 55M, Grace Assembly of God","02/5/2020",1
+"1571",1571,"Case 59, 61M, NA","02/5/2020",0
+"1572",1572,"Case 60, 51F, Grace Assembly of God","02/5/2020",1
+"1573",1573,"Case 61, 57F, Grace Assembly of God","02/5/2020",1
+"1574",1574,"Case 62, 44F, Grace Assembly of God","02/5/2020",1
+"1575",1575,"Case 63, 54F, Grace Assembly of God","02/5/2020",1
+"1576",1576,"Case 64, 50M, NA","02/5/2020",2
+"1577",1577,"Case 65, 61F, NA","02/5/2020",1
+"1578",1578,"Case 66, 28M, Grace Assembly of God","02/5/2020",2
+"1579",1579,"Case 67, 56F, Grace Assembly of God","02/5/2020",1
+"1580",1580,"Case 68, 79F, Grace Assembly of God","02/5/2020",2
+"1581",1581,"Case 69, 26M, Seletar Aerospace Heights","02/5/2020",1
+"1582",1582,"Case 70, 27F, Grace Assembly of God","02/5/2020",2
+"1583",1583,"Case 71, 25M, Grace Assembly of God","02/5/2020",2
+"1584",1584,"Case 72, 40M, NA","02/5/2020",0
+"1585",1585,"Case 73, 43M, Grace Assembly of God","02/5/2020",1
+"1586",1586,"Case 74, 29M, Grace Assembly of God","02/5/2020",1
+"1587",1587,"Case 75, 71F, NA","02/5/2020",1
+"1588",1588,"Case 76, 1M, Wuhan","02/5/2020",0
+"1589",1589,"Case 77, 35M, NA","02/5/2020",0
+"1590",1590,"Case 78, 57F, Grace Assembly of God","02/5/2020",1
+"1591",1591,"Case 79, 35F, NA","02/5/2020",0
+"1592",1592,"Case 80, 38F, Grace Assembly of God","02/5/2020",2
+"1593",1593,"Case 81, 50M, Grace Assembly of God","02/5/2020",1
+"1594",1594,"Case 82, 57F, NA","02/5/2020",0
+"1595",1595,"Case 83, 54M, Life Church","02/5/2020",1
+"1596",1596,"Case 84, 35F, Grace Assembly of God","02/5/2020",1
+"1597",1597,"Case 1, 66M, Wuhan","02/6/2020",3
+"1598",1598,"Case 2, 53F, Wuhan","02/6/2020",3
+"1599",1599,"Case 3, 37M, Wuhan","02/6/2020",3
+"1600",1600,"Case 4, 36M, Wuhan","02/6/2020",3
+"1601",1601,"Case 5, 56F, Wuhan","02/6/2020",3
+"1602",1602,"Case 6, 56M, Wuhan","02/6/2020",3
+"1603",1603,"Case 7, 35M, Wuhan","02/6/2020",4
+"1604",1604,"Case 8, 56F, Life Church, Wuhan","02/6/2020",3
+"1605",1605,"Case 9, 56M, Life Church, Wuhan","02/6/2020",3
+"1606",1606,"Case 10, 56M, Wuhan","02/6/2020",3
+"1607",1607,"Case 11, 31F, Wuhan","02/6/2020",3
+"1608",1608,"Case 12, 37F, Wuhan","02/6/2020",3
+"1609",1609,"Case 13, 73F, Wuhan","02/6/2020",3
+"1610",1610,"Case 14, 31M, Wuhan","02/6/2020",3
+"1611",1611,"Case 15, 47F, Wuhan","02/6/2020",3
+"1612",1612,"Case 16, 38M, Wuhan","02/6/2020",3
+"1613",1613,"Case 17, 47F, Wuhan","02/6/2020",3
+"1614",1614,"Case 18, 31F, Wuhan","02/6/2020",3
+"1615",1615,"Case 19, 28F, Yong Thai Hang","02/6/2020",3
+"1616",1616,"Case 20, 48F, Yong Thai Hang","02/6/2020",3
+"1617",1617,"Case 21, 44F, Yong Thai Hang","02/6/2020",3
+"1618",1618,"Case 22, 21M, Wuhan","02/6/2020",3
+"1619",1619,"Case 23, 17M, Wuhan","02/6/2020",3
+"1620",1620,"Case 24, 32F, Yong Thai Hang","02/6/2020",3
+"1621",1621,"Case 25, 40M, Yong Thai Hang","02/6/2020",3
+"1622",1622,"Case 26, 42F , Wuhan","02/6/2020",3
+"1623",1623,"Case 27, 45M, Yong Thai Hang","02/6/2020",3
+"1624",1624,"Case 28, 0/5M, Yong Thai Hang","02/6/2020",3
+"1625",1625,"Case 29, 41M, NA","02/6/2020",3
+"1626",1626,"Case 30, 27M, Grand Hyatt Singapore","02/6/2020",3
+"1627",1627,"Case 31, 53M, Life Church","02/6/2020",3
+"1628",1628,"Case 32, 42F, NA","02/6/2020",3
+"1629",1629,"Case 33, 39F, Life Church","02/6/2020",3
+"1630",1630,"Case 34, 40F, Yong Thai Hang","02/6/2020",3
+"1631",1631,"Case 35, 64F, NA","02/6/2020",3
+"1632",1632,"Case 36, 38F, Grand Hyatt Singapore","02/6/2020",3
+"1633",1633,"Case 37, 53M, NA","02/6/2020",3
+"1634",1634,"Case 38, 52F, Life Church","02/6/2020",2
+"1635",1635,"Case 39, 51M, Grand Hyatt Singapore","02/6/2020",3
+"1636",1636,"Case 40, 36M, Yong Thai Hang","02/6/2020",2
+"1637",1637,"Case 41, 71M, NA","02/6/2020",2
+"1638",1638,"Case 42, 39M, Seletar Aerospace Heights","02/6/2020",2
+"1639",1639,"Case 43, 54M, NA","02/6/2020",3
+"1640",1640,"Case 44, 37M, NA","02/6/2020",3
+"1641",1641,"Case 45, 2F, Wuhan","02/6/2020",1
+"1642",1642,"Case 46, 35M, NA","02/6/2020",2
+"1643",1643,"Case 47, 39M, Seletar Aerospace Heights","02/6/2020",2
+"1644",1644,"Case 48, 34M, Grace Assembly of God","02/6/2020",2
+"1645",1645,"Case 49, 46M, Grace Assembly of God","02/6/2020",2
+"1646",1646,"Case 50, 62M, NA","02/6/2020",0
+"1647",1647,"Case 51, 48M, Grace Assembly of God","02/6/2020",2
+"1648",1648,"Case 52, 37M, Seletar Aerospace Heights","02/6/2020",1
+"1649",1649,"Case 53, 54M, Grace Assembly of God","02/6/2020",1
+"1650",1650,"Case 54, 54F, Grace Assembly of God","02/6/2020",1
+"1651",1651,"Case 55, 30M, NA","02/6/2020",2
+"1652",1652,"Case 56, 30M, Seletar Aerospace Heights","02/6/2020",1
+"1653",1653,"Case 57, 26M, Grace Assembly of God","02/6/2020",1
+"1654",1654,"Case 58, 55M, Grace Assembly of God","02/6/2020",1
+"1655",1655,"Case 59, 61M, NA","02/6/2020",0
+"1656",1656,"Case 60, 51F, Grace Assembly of God","02/6/2020",1
+"1657",1657,"Case 61, 57F, Grace Assembly of God","02/6/2020",2
+"1658",1658,"Case 62, 44F, Grace Assembly of God","02/6/2020",1
+"1659",1659,"Case 63, 54F, Grace Assembly of God","02/6/2020",1
+"1660",1660,"Case 64, 50M, NA","02/6/2020",2
+"1661",1661,"Case 65, 61F, NA","02/6/2020",1
+"1662",1662,"Case 66, 28M, Grace Assembly of God","02/6/2020",2
+"1663",1663,"Case 67, 56F, Grace Assembly of God","02/6/2020",1
+"1664",1664,"Case 68, 79F, Grace Assembly of God","02/6/2020",2
+"1665",1665,"Case 69, 26M, Seletar Aerospace Heights","02/6/2020",1
+"1666",1666,"Case 70, 27F, Grace Assembly of God","02/6/2020",2
+"1667",1667,"Case 71, 25M, Grace Assembly of God","02/6/2020",2
+"1668",1668,"Case 72, 40M, NA","02/6/2020",0
+"1669",1669,"Case 73, 43M, Grace Assembly of God","02/6/2020",1
+"1670",1670,"Case 74, 29M, Grace Assembly of God","02/6/2020",1
+"1671",1671,"Case 75, 71F, NA","02/6/2020",1
+"1672",1672,"Case 76, 1M, Wuhan","02/6/2020",0
+"1673",1673,"Case 77, 35M, NA","02/6/2020",0
+"1674",1674,"Case 78, 57F, Grace Assembly of God","02/6/2020",1
+"1675",1675,"Case 79, 35F, NA","02/6/2020",0
+"1676",1676,"Case 80, 38F, Grace Assembly of God","02/6/2020",2
+"1677",1677,"Case 81, 50M, Grace Assembly of God","02/6/2020",1
+"1678",1678,"Case 82, 57F, NA","02/6/2020",0
+"1679",1679,"Case 83, 54M, Life Church","02/6/2020",1
+"1680",1680,"Case 84, 35F, Grace Assembly of God","02/6/2020",1
+"1681",1681,"Case 1, 66M, Wuhan","02/7/2020",3
+"1682",1682,"Case 2, 53F, Wuhan","02/7/2020",4
+"1683",1683,"Case 3, 37M, Wuhan","02/7/2020",3
+"1684",1684,"Case 4, 36M, Wuhan","02/7/2020",3
+"1685",1685,"Case 5, 56F, Wuhan","02/7/2020",3
+"1686",1686,"Case 6, 56M, Wuhan","02/7/2020",3
+"1687",1687,"Case 7, 35M, Wuhan","02/7/2020",4
+"1688",1688,"Case 8, 56F, Life Church, Wuhan","02/7/2020",3
+"1689",1689,"Case 9, 56M, Life Church, Wuhan","02/7/2020",3
+"1690",1690,"Case 10, 56M, Wuhan","02/7/2020",3
+"1691",1691,"Case 11, 31F, Wuhan","02/7/2020",3
+"1692",1692,"Case 12, 37F, Wuhan","02/7/2020",3
+"1693",1693,"Case 13, 73F, Wuhan","02/7/2020",3
+"1694",1694,"Case 14, 31M, Wuhan","02/7/2020",3
+"1695",1695,"Case 15, 47F, Wuhan","02/7/2020",3
+"1696",1696,"Case 16, 38M, Wuhan","02/7/2020",3
+"1697",1697,"Case 17, 47F, Wuhan","02/7/2020",3
+"1698",1698,"Case 18, 31F, Wuhan","02/7/2020",3
+"1699",1699,"Case 19, 28F, Yong Thai Hang","02/7/2020",3
+"1700",1700,"Case 20, 48F, Yong Thai Hang","02/7/2020",3
+"1701",1701,"Case 21, 44F, Yong Thai Hang","02/7/2020",3
+"1702",1702,"Case 22, 21M, Wuhan","02/7/2020",3
+"1703",1703,"Case 23, 17M, Wuhan","02/7/2020",3
+"1704",1704,"Case 24, 32F, Yong Thai Hang","02/7/2020",3
+"1705",1705,"Case 25, 40M, Yong Thai Hang","02/7/2020",3
+"1706",1706,"Case 26, 42F , Wuhan","02/7/2020",3
+"1707",1707,"Case 27, 45M, Yong Thai Hang","02/7/2020",3
+"1708",1708,"Case 28, 0/5M, Yong Thai Hang","02/7/2020",3
+"1709",1709,"Case 29, 41M, NA","02/7/2020",3
+"1710",1710,"Case 30, 27M, Grand Hyatt Singapore","02/7/2020",3
+"1711",1711,"Case 31, 53M, Life Church","02/7/2020",3
+"1712",1712,"Case 32, 42F, NA","02/7/2020",3
+"1713",1713,"Case 33, 39F, Life Church","02/7/2020",3
+"1714",1714,"Case 34, 40F, Yong Thai Hang","02/7/2020",3
+"1715",1715,"Case 35, 64F, NA","02/7/2020",3
+"1716",1716,"Case 36, 38F, Grand Hyatt Singapore","02/7/2020",3
+"1717",1717,"Case 37, 53M, NA","02/7/2020",3
+"1718",1718,"Case 38, 52F, Life Church","02/7/2020",3
+"1719",1719,"Case 39, 51M, Grand Hyatt Singapore","02/7/2020",3
+"1720",1720,"Case 40, 36M, Yong Thai Hang","02/7/2020",3
+"1721",1721,"Case 41, 71M, NA","02/7/2020",3
+"1722",1722,"Case 42, 39M, Seletar Aerospace Heights","02/7/2020",3
+"1723",1723,"Case 43, 54M, NA","02/7/2020",3
+"1724",1724,"Case 44, 37M, NA","02/7/2020",3
+"1725",1725,"Case 45, 2F, Wuhan","02/7/2020",3
+"1726",1726,"Case 46, 35M, NA","02/7/2020",2
+"1727",1727,"Case 47, 39M, Seletar Aerospace Heights","02/7/2020",2
+"1728",1728,"Case 48, 34M, Grace Assembly of God","02/7/2020",2
+"1729",1729,"Case 49, 46M, Grace Assembly of God","02/7/2020",2
+"1730",1730,"Case 50, 62M, NA","02/7/2020",2
+"1731",1731,"Case 51, 48M, Grace Assembly of God","02/7/2020",2
+"1732",1732,"Case 52, 37M, Seletar Aerospace Heights","02/7/2020",2
+"1733",1733,"Case 53, 54M, Grace Assembly of God","02/7/2020",1
+"1734",1734,"Case 54, 54F, Grace Assembly of God","02/7/2020",1
+"1735",1735,"Case 55, 30M, NA","02/7/2020",2
+"1736",1736,"Case 56, 30M, Seletar Aerospace Heights","02/7/2020",1
+"1737",1737,"Case 57, 26M, Grace Assembly of God","02/7/2020",1
+"1738",1738,"Case 58, 55M, Grace Assembly of God","02/7/2020",1
+"1739",1739,"Case 59, 61M, NA","02/7/2020",2
+"1740",1740,"Case 60, 51F, Grace Assembly of God","02/7/2020",1
+"1741",1741,"Case 61, 57F, Grace Assembly of God","02/7/2020",2
+"1742",1742,"Case 62, 44F, Grace Assembly of God","02/7/2020",1
+"1743",1743,"Case 63, 54F, Grace Assembly of God","02/7/2020",1
+"1744",1744,"Case 64, 50M, NA","02/7/2020",2
+"1745",1745,"Case 65, 61F, NA","02/7/2020",1
+"1746",1746,"Case 66, 28M, Grace Assembly of God","02/7/2020",2
+"1747",1747,"Case 67, 56F, Grace Assembly of God","02/7/2020",1
+"1748",1748,"Case 68, 79F, Grace Assembly of God","02/7/2020",2
+"1749",1749,"Case 69, 26M, Seletar Aerospace Heights","02/7/2020",1
+"1750",1750,"Case 70, 27F, Grace Assembly of God","02/7/2020",2
+"1751",1751,"Case 71, 25M, Grace Assembly of God","02/7/2020",2
+"1752",1752,"Case 72, 40M, NA","02/7/2020",1
+"1753",1753,"Case 73, 43M, Grace Assembly of God","02/7/2020",1
+"1754",1754,"Case 74, 29M, Grace Assembly of God","02/7/2020",1
+"1755",1755,"Case 75, 71F, NA","02/7/2020",3
+"1756",1756,"Case 76, 1M, Wuhan","02/7/2020",0
+"1757",1757,"Case 77, 35M, NA","02/7/2020",0
+"1758",1758,"Case 78, 57F, Grace Assembly of God","02/7/2020",1
+"1759",1759,"Case 79, 35F, NA","02/7/2020",1
+"1760",1760,"Case 80, 38F, Grace Assembly of God","02/7/2020",2
+"1761",1761,"Case 81, 50M, Grace Assembly of God","02/7/2020",1
+"1762",1762,"Case 82, 57F, NA","02/7/2020",0
+"1763",1763,"Case 83, 54M, Life Church","02/7/2020",1
+"1764",1764,"Case 84, 35F, Grace Assembly of God","02/7/2020",1
+"1765",1765,"Case 1, 66M, Wuhan","02/8/2020",3
+"1766",1766,"Case 2, 53F, Wuhan","02/8/2020",4
+"1767",1767,"Case 3, 37M, Wuhan","02/8/2020",3
+"1768",1768,"Case 4, 36M, Wuhan","02/8/2020",3
+"1769",1769,"Case 5, 56F, Wuhan","02/8/2020",3
+"1770",1770,"Case 6, 56M, Wuhan","02/8/2020",3
+"1771",1771,"Case 7, 35M, Wuhan","02/8/2020",4
+"1772",1772,"Case 8, 56F, Life Church, Wuhan","02/8/2020",3
+"1773",1773,"Case 9, 56M, Life Church, Wuhan","02/8/2020",3
+"1774",1774,"Case 10, 56M, Wuhan","02/8/2020",3
+"1775",1775,"Case 11, 31F, Wuhan","02/8/2020",3
+"1776",1776,"Case 12, 37F, Wuhan","02/8/2020",3
+"1777",1777,"Case 13, 73F, Wuhan","02/8/2020",3
+"1778",1778,"Case 14, 31M, Wuhan","02/8/2020",3
+"1779",1779,"Case 15, 47F, Wuhan","02/8/2020",3
+"1780",1780,"Case 16, 38M, Wuhan","02/8/2020",3
+"1781",1781,"Case 17, 47F, Wuhan","02/8/2020",3
+"1782",1782,"Case 18, 31F, Wuhan","02/8/2020",3
+"1783",1783,"Case 19, 28F, Yong Thai Hang","02/8/2020",3
+"1784",1784,"Case 20, 48F, Yong Thai Hang","02/8/2020",3
+"1785",1785,"Case 21, 44F, Yong Thai Hang","02/8/2020",3
+"1786",1786,"Case 22, 21M, Wuhan","02/8/2020",3
+"1787",1787,"Case 23, 17M, Wuhan","02/8/2020",3
+"1788",1788,"Case 24, 32F, Yong Thai Hang","02/8/2020",3
+"1789",1789,"Case 25, 40M, Yong Thai Hang","02/8/2020",3
+"1790",1790,"Case 26, 42F , Wuhan","02/8/2020",3
+"1791",1791,"Case 27, 45M, Yong Thai Hang","02/8/2020",3
+"1792",1792,"Case 28, 0/5M, Yong Thai Hang","02/8/2020",3
+"1793",1793,"Case 29, 41M, NA","02/8/2020",3
+"1794",1794,"Case 30, 27M, Grand Hyatt Singapore","02/8/2020",3
+"1795",1795,"Case 31, 53M, Life Church","02/8/2020",3
+"1796",1796,"Case 32, 42F, NA","02/8/2020",3
+"1797",1797,"Case 33, 39F, Life Church","02/8/2020",3
+"1798",1798,"Case 34, 40F, Yong Thai Hang","02/8/2020",3
+"1799",1799,"Case 35, 64F, NA","02/8/2020",3
+"1800",1800,"Case 36, 38F, Grand Hyatt Singapore","02/8/2020",3
+"1801",1801,"Case 37, 53M, NA","02/8/2020",3
+"1802",1802,"Case 38, 52F, Life Church","02/8/2020",3
+"1803",1803,"Case 39, 51M, Grand Hyatt Singapore","02/8/2020",3
+"1804",1804,"Case 40, 36M, Yong Thai Hang","02/8/2020",3
+"1805",1805,"Case 41, 71M, NA","02/8/2020",3
+"1806",1806,"Case 42, 39M, Seletar Aerospace Heights","02/8/2020",3
+"1807",1807,"Case 43, 54M, NA","02/8/2020",3
+"1808",1808,"Case 44, 37M, NA","02/8/2020",3
+"1809",1809,"Case 45, 2F, Wuhan","02/8/2020",3
+"1810",1810,"Case 46, 35M, NA","02/8/2020",2
+"1811",1811,"Case 47, 39M, Seletar Aerospace Heights","02/8/2020",2
+"1812",1812,"Case 48, 34M, Grace Assembly of God","02/8/2020",2
+"1813",1813,"Case 49, 46M, Grace Assembly of God","02/8/2020",2
+"1814",1814,"Case 50, 62M, NA","02/8/2020",2
+"1815",1815,"Case 51, 48M, Grace Assembly of God","02/8/2020",2
+"1816",1816,"Case 52, 37M, Seletar Aerospace Heights","02/8/2020",2
+"1817",1817,"Case 53, 54M, Grace Assembly of God","02/8/2020",1
+"1818",1818,"Case 54, 54F, Grace Assembly of God","02/8/2020",1
+"1819",1819,"Case 55, 30M, NA","02/8/2020",2
+"1820",1820,"Case 56, 30M, Seletar Aerospace Heights","02/8/2020",1
+"1821",1821,"Case 57, 26M, Grace Assembly of God","02/8/2020",1
+"1822",1822,"Case 58, 55M, Grace Assembly of God","02/8/2020",1
+"1823",1823,"Case 59, 61M, NA","02/8/2020",2
+"1824",1824,"Case 60, 51F, Grace Assembly of God","02/8/2020",2
+"1825",1825,"Case 61, 57F, Grace Assembly of God","02/8/2020",2
+"1826",1826,"Case 62, 44F, Grace Assembly of God","02/8/2020",1
+"1827",1827,"Case 63, 54F, Grace Assembly of God","02/8/2020",1
+"1828",1828,"Case 64, 50M, NA","02/8/2020",2
+"1829",1829,"Case 65, 61F, NA","02/8/2020",1
+"1830",1830,"Case 66, 28M, Grace Assembly of God","02/8/2020",2
+"1831",1831,"Case 67, 56F, Grace Assembly of God","02/8/2020",1
+"1832",1832,"Case 68, 79F, Grace Assembly of God","02/8/2020",2
+"1833",1833,"Case 69, 26M, Seletar Aerospace Heights","02/8/2020",1
+"1834",1834,"Case 70, 27F, Grace Assembly of God","02/8/2020",2
+"1835",1835,"Case 71, 25M, Grace Assembly of God","02/8/2020",2
+"1836",1836,"Case 72, 40M, NA","02/8/2020",1
+"1837",1837,"Case 73, 43M, Grace Assembly of God","02/8/2020",1
+"1838",1838,"Case 74, 29M, Grace Assembly of God","02/8/2020",1
+"1839",1839,"Case 75, 71F, NA","02/8/2020",3
+"1840",1840,"Case 76, 1M, Wuhan","02/8/2020",0
+"1841",1841,"Case 77, 35M, NA","02/8/2020",0
+"1842",1842,"Case 78, 57F, Grace Assembly of God","02/8/2020",1
+"1843",1843,"Case 79, 35F, NA","02/8/2020",1
+"1844",1844,"Case 80, 38F, Grace Assembly of God","02/8/2020",2
+"1845",1845,"Case 81, 50M, Grace Assembly of God","02/8/2020",1
+"1846",1846,"Case 82, 57F, NA","02/8/2020",0
+"1847",1847,"Case 83, 54M, Life Church","02/8/2020",1
+"1848",1848,"Case 84, 35F, Grace Assembly of God","02/8/2020",1
+"1849",1849,"Case 1, 66M, Wuhan","02/9/2020",3
+"1850",1850,"Case 2, 53F, Wuhan","02/9/2020",4
+"1851",1851,"Case 3, 37M, Wuhan","02/9/2020",3
+"1852",1852,"Case 4, 36M, Wuhan","02/9/2020",3
+"1853",1853,"Case 5, 56F, Wuhan","02/9/2020",3
+"1854",1854,"Case 6, 56M, Wuhan","02/9/2020",3
+"1855",1855,"Case 7, 35M, Wuhan","02/9/2020",4
+"1856",1856,"Case 8, 56F, Life Church, Wuhan","02/9/2020",3
+"1857",1857,"Case 9, 56M, Life Church, Wuhan","02/9/2020",3
+"1858",1858,"Case 10, 56M, Wuhan","02/9/2020",4
+"1859",1859,"Case 11, 31F, Wuhan","02/9/2020",3
+"1860",1860,"Case 12, 37F, Wuhan","02/9/2020",3
+"1861",1861,"Case 13, 73F, Wuhan","02/9/2020",4
+"1862",1862,"Case 14, 31M, Wuhan","02/9/2020",3
+"1863",1863,"Case 15, 47F, Wuhan","02/9/2020",3
+"1864",1864,"Case 16, 38M, Wuhan","02/9/2020",3
+"1865",1865,"Case 17, 47F, Wuhan","02/9/2020",3
+"1866",1866,"Case 18, 31F, Wuhan","02/9/2020",3
+"1867",1867,"Case 19, 28F, Yong Thai Hang","02/9/2020",3
+"1868",1868,"Case 20, 48F, Yong Thai Hang","02/9/2020",3
+"1869",1869,"Case 21, 44F, Yong Thai Hang","02/9/2020",3
+"1870",1870,"Case 22, 21M, Wuhan","02/9/2020",4
+"1871",1871,"Case 23, 17M, Wuhan","02/9/2020",3
+"1872",1872,"Case 24, 32F, Yong Thai Hang","02/9/2020",3
+"1873",1873,"Case 25, 40M, Yong Thai Hang","02/9/2020",3
+"1874",1874,"Case 26, 42F , Wuhan","02/9/2020",4
+"1875",1875,"Case 27, 45M, Yong Thai Hang","02/9/2020",3
+"1876",1876,"Case 28, 0/5M, Yong Thai Hang","02/9/2020",3
+"1877",1877,"Case 29, 41M, NA","02/9/2020",3
+"1878",1878,"Case 30, 27M, Grand Hyatt Singapore","02/9/2020",3
+"1879",1879,"Case 31, 53M, Life Church","02/9/2020",3
+"1880",1880,"Case 32, 42F, NA","02/9/2020",3
+"1881",1881,"Case 33, 39F, Life Church","02/9/2020",3
+"1882",1882,"Case 34, 40F, Yong Thai Hang","02/9/2020",3
+"1883",1883,"Case 35, 64F, NA","02/9/2020",3
+"1884",1884,"Case 36, 38F, Grand Hyatt Singapore","02/9/2020",3
+"1885",1885,"Case 37, 53M, NA","02/9/2020",3
+"1886",1886,"Case 38, 52F, Life Church","02/9/2020",3
+"1887",1887,"Case 39, 51M, Grand Hyatt Singapore","02/9/2020",3
+"1888",1888,"Case 40, 36M, Yong Thai Hang","02/9/2020",3
+"1889",1889,"Case 41, 71M, NA","02/9/2020",3
+"1890",1890,"Case 42, 39M, Seletar Aerospace Heights","02/9/2020",3
+"1891",1891,"Case 43, 54M, NA","02/9/2020",3
+"1892",1892,"Case 44, 37M, NA","02/9/2020",3
+"1893",1893,"Case 45, 2F, Wuhan","02/9/2020",3
+"1894",1894,"Case 46, 35M, NA","02/9/2020",3
+"1895",1895,"Case 47, 39M, Seletar Aerospace Heights","02/9/2020",2
+"1896",1896,"Case 48, 34M, Grace Assembly of God","02/9/2020",2
+"1897",1897,"Case 49, 46M, Grace Assembly of God","02/9/2020",2
+"1898",1898,"Case 50, 62M, NA","02/9/2020",2
+"1899",1899,"Case 51, 48M, Grace Assembly of God","02/9/2020",2
+"1900",1900,"Case 52, 37M, Seletar Aerospace Heights","02/9/2020",2
+"1901",1901,"Case 53, 54M, Grace Assembly of God","02/9/2020",1
+"1902",1902,"Case 54, 54F, Grace Assembly of God","02/9/2020",1
+"1903",1903,"Case 55, 30M, NA","02/9/2020",2
+"1904",1904,"Case 56, 30M, Seletar Aerospace Heights","02/9/2020",1
+"1905",1905,"Case 57, 26M, Grace Assembly of God","02/9/2020",1
+"1906",1906,"Case 58, 55M, Grace Assembly of God","02/9/2020",1
+"1907",1907,"Case 59, 61M, NA","02/9/2020",2
+"1908",1908,"Case 60, 51F, Grace Assembly of God","02/9/2020",2
+"1909",1909,"Case 61, 57F, Grace Assembly of God","02/9/2020",2
+"1910",1910,"Case 62, 44F, Grace Assembly of God","02/9/2020",2
+"1911",1911,"Case 63, 54F, Grace Assembly of God","02/9/2020",1
+"1912",1912,"Case 64, 50M, NA","02/9/2020",2
+"1913",1913,"Case 65, 61F, NA","02/9/2020",1
+"1914",1914,"Case 66, 28M, Grace Assembly of God","02/9/2020",2
+"1915",1915,"Case 67, 56F, Grace Assembly of God","02/9/2020",2
+"1916",1916,"Case 68, 79F, Grace Assembly of God","02/9/2020",2
+"1917",1917,"Case 69, 26M, Seletar Aerospace Heights","02/9/2020",1
+"1918",1918,"Case 70, 27F, Grace Assembly of God","02/9/2020",2
+"1919",1919,"Case 71, 25M, Grace Assembly of God","02/9/2020",2
+"1920",1920,"Case 72, 40M, NA","02/9/2020",1
+"1921",1921,"Case 73, 43M, Grace Assembly of God","02/9/2020",2
+"1922",1922,"Case 74, 29M, Grace Assembly of God","02/9/2020",1
+"1923",1923,"Case 75, 71F, NA","02/9/2020",3
+"1924",1924,"Case 76, 1M, Wuhan","02/9/2020",3
+"1925",1925,"Case 77, 35M, NA","02/9/2020",0
+"1926",1926,"Case 78, 57F, Grace Assembly of God","02/9/2020",2
+"1927",1927,"Case 79, 35F, NA","02/9/2020",1
+"1928",1928,"Case 80, 38F, Grace Assembly of God","02/9/2020",2
+"1929",1929,"Case 81, 50M, Grace Assembly of God","02/9/2020",1
+"1930",1930,"Case 82, 57F, NA","02/9/2020",2
+"1931",1931,"Case 83, 54M, Life Church","02/9/2020",1
+"1932",1932,"Case 84, 35F, Grace Assembly of God","02/9/2020",1
+"1933",1933,"Case 1, 66M, Wuhan","02/10/2020",3
+"1934",1934,"Case 2, 53F, Wuhan","02/10/2020",4
+"1935",1935,"Case 3, 37M, Wuhan","02/10/2020",3
+"1936",1936,"Case 4, 36M, Wuhan","02/10/2020",3
+"1937",1937,"Case 5, 56F, Wuhan","02/10/2020",3
+"1938",1938,"Case 6, 56M, Wuhan","02/10/2020",3
+"1939",1939,"Case 7, 35M, Wuhan","02/10/2020",4
+"1940",1940,"Case 8, 56F, Life Church, Wuhan","02/10/2020",3
+"1941",1941,"Case 9, 56M, Life Church, Wuhan","02/10/2020",3
+"1942",1942,"Case 10, 56M, Wuhan","02/10/2020",4
+"1943",1943,"Case 11, 31F, Wuhan","02/10/2020",4
+"1944",1944,"Case 12, 37F, Wuhan","02/10/2020",3
+"1945",1945,"Case 13, 73F, Wuhan","02/10/2020",4
+"1946",1946,"Case 14, 31M, Wuhan","02/10/2020",3
+"1947",1947,"Case 15, 47F, Wuhan","02/10/2020",3
+"1948",1948,"Case 16, 38M, Wuhan","02/10/2020",3
+"1949",1949,"Case 17, 47F, Wuhan","02/10/2020",3
+"1950",1950,"Case 18, 31F, Wuhan","02/10/2020",3
+"1951",1951,"Case 19, 28F, Yong Thai Hang","02/10/2020",3
+"1952",1952,"Case 20, 48F, Yong Thai Hang","02/10/2020",3
+"1953",1953,"Case 21, 44F, Yong Thai Hang","02/10/2020",3
+"1954",1954,"Case 22, 21M, Wuhan","02/10/2020",4
+"1955",1955,"Case 23, 17M, Wuhan","02/10/2020",3
+"1956",1956,"Case 24, 32F, Yong Thai Hang","02/10/2020",3
+"1957",1957,"Case 25, 40M, Yong Thai Hang","02/10/2020",3
+"1958",1958,"Case 26, 42F , Wuhan","02/10/2020",4
+"1959",1959,"Case 27, 45M, Yong Thai Hang","02/10/2020",3
+"1960",1960,"Case 28, 0/5M, Yong Thai Hang","02/10/2020",3
+"1961",1961,"Case 29, 41M, NA","02/10/2020",3
+"1962",1962,"Case 30, 27M, Grand Hyatt Singapore","02/10/2020",3
+"1963",1963,"Case 31, 53M, Life Church","02/10/2020",3
+"1964",1964,"Case 32, 42F, NA","02/10/2020",3
+"1965",1965,"Case 33, 39F, Life Church","02/10/2020",3
+"1966",1966,"Case 34, 40F, Yong Thai Hang","02/10/2020",3
+"1967",1967,"Case 35, 64F, NA","02/10/2020",3
+"1968",1968,"Case 36, 38F, Grand Hyatt Singapore","02/10/2020",3
+"1969",1969,"Case 37, 53M, NA","02/10/2020",3
+"1970",1970,"Case 38, 52F, Life Church","02/10/2020",3
+"1971",1971,"Case 39, 51M, Grand Hyatt Singapore","02/10/2020",3
+"1972",1972,"Case 40, 36M, Yong Thai Hang","02/10/2020",3
+"1973",1973,"Case 41, 71M, NA","02/10/2020",3
+"1974",1974,"Case 42, 39M, Seletar Aerospace Heights","02/10/2020",3
+"1975",1975,"Case 43, 54M, NA","02/10/2020",3
+"1976",1976,"Case 44, 37M, NA","02/10/2020",3
+"1977",1977,"Case 45, 2F, Wuhan","02/10/2020",3
+"1978",1978,"Case 46, 35M, NA","02/10/2020",3
+"1979",1979,"Case 47, 39M, Seletar Aerospace Heights","02/10/2020",3
+"1980",1980,"Case 48, 34M, Grace Assembly of God","02/10/2020",3
+"1981",1981,"Case 49, 46M, Grace Assembly of God","02/10/2020",3
+"1982",1982,"Case 50, 62M, NA","02/10/2020",2
+"1983",1983,"Case 51, 48M, Grace Assembly of God","02/10/2020",2
+"1984",1984,"Case 52, 37M, Seletar Aerospace Heights","02/10/2020",2
+"1985",1985,"Case 53, 54M, Grace Assembly of God","02/10/2020",2
+"1986",1986,"Case 54, 54F, Grace Assembly of God","02/10/2020",2
+"1987",1987,"Case 55, 30M, NA","02/10/2020",2
+"1988",1988,"Case 56, 30M, Seletar Aerospace Heights","02/10/2020",1
+"1989",1989,"Case 57, 26M, Grace Assembly of God","02/10/2020",1
+"1990",1990,"Case 58, 55M, Grace Assembly of God","02/10/2020",1
+"1991",1991,"Case 59, 61M, NA","02/10/2020",2
+"1992",1992,"Case 60, 51F, Grace Assembly of God","02/10/2020",2
+"1993",1993,"Case 61, 57F, Grace Assembly of God","02/10/2020",2
+"1994",1994,"Case 62, 44F, Grace Assembly of God","02/10/2020",2
+"1995",1995,"Case 63, 54F, Grace Assembly of God","02/10/2020",2
+"1996",1996,"Case 64, 50M, NA","02/10/2020",2
+"1997",1997,"Case 65, 61F, NA","02/10/2020",1
+"1998",1998,"Case 66, 28M, Grace Assembly of God","02/10/2020",2
+"1999",1999,"Case 67, 56F, Grace Assembly of God","02/10/2020",2
+"2000",2000,"Case 68, 79F, Grace Assembly of God","02/10/2020",2
+"2001",2001,"Case 69, 26M, Seletar Aerospace Heights","02/10/2020",1
+"2002",2002,"Case 70, 27F, Grace Assembly of God","02/10/2020",2
+"2003",2003,"Case 71, 25M, Grace Assembly of God","02/10/2020",2
+"2004",2004,"Case 72, 40M, NA","02/10/2020",2
+"2005",2005,"Case 73, 43M, Grace Assembly of God","02/10/2020",2
+"2006",2006,"Case 74, 29M, Grace Assembly of God","02/10/2020",1
+"2007",2007,"Case 75, 71F, NA","02/10/2020",3
+"2008",2008,"Case 76, 1M, Wuhan","02/10/2020",3
+"2009",2009,"Case 77, 35M, NA","02/10/2020",2
+"2010",2010,"Case 78, 57F, Grace Assembly of God","02/10/2020",2
+"2011",2011,"Case 79, 35F, NA","02/10/2020",1
+"2012",2012,"Case 80, 38F, Grace Assembly of God","02/10/2020",2
+"2013",2013,"Case 81, 50M, Grace Assembly of God","02/10/2020",1
+"2014",2014,"Case 82, 57F, NA","02/10/2020",2
+"2015",2015,"Case 83, 54M, Life Church","02/10/2020",1
+"2016",2016,"Case 84, 35F, Grace Assembly of God","02/10/2020",1
+"2017",2017,"Case 1, 66M, Wuhan","02/11/2020",3
+"2018",2018,"Case 2, 53F, Wuhan","02/11/2020",4
+"2019",2019,"Case 3, 37M, Wuhan","02/11/2020",3
+"2020",2020,"Case 4, 36M, Wuhan","02/11/2020",3
+"2021",2021,"Case 5, 56F, Wuhan","02/11/2020",3
+"2022",2022,"Case 6, 56M, Wuhan","02/11/2020",3
+"2023",2023,"Case 7, 35M, Wuhan","02/11/2020",4
+"2024",2024,"Case 8, 56F, Life Church, Wuhan","02/11/2020",3
+"2025",2025,"Case 9, 56M, Life Church, Wuhan","02/11/2020",3
+"2026",2026,"Case 10, 56M, Wuhan","02/11/2020",4
+"2027",2027,"Case 11, 31F, Wuhan","02/11/2020",4
+"2028",2028,"Case 12, 37F, Wuhan","02/11/2020",3
+"2029",2029,"Case 13, 73F, Wuhan","02/11/2020",4
+"2030",2030,"Case 14, 31M, Wuhan","02/11/2020",3
+"2031",2031,"Case 15, 47F, Wuhan","02/11/2020",3
+"2032",2032,"Case 16, 38M, Wuhan","02/11/2020",3
+"2033",2033,"Case 17, 47F, Wuhan","02/11/2020",4
+"2034",2034,"Case 18, 31F, Wuhan","02/11/2020",3
+"2035",2035,"Case 19, 28F, Yong Thai Hang","02/11/2020",3
+"2036",2036,"Case 20, 48F, Yong Thai Hang","02/11/2020",3
+"2037",2037,"Case 21, 44F, Yong Thai Hang","02/11/2020",3
+"2038",2038,"Case 22, 21M, Wuhan","02/11/2020",4
+"2039",2039,"Case 23, 17M, Wuhan","02/11/2020",3
+"2040",2040,"Case 24, 32F, Yong Thai Hang","02/11/2020",3
+"2041",2041,"Case 25, 40M, Yong Thai Hang","02/11/2020",3
+"2042",2042,"Case 26, 42F , Wuhan","02/11/2020",4
+"2043",2043,"Case 27, 45M, Yong Thai Hang","02/11/2020",3
+"2044",2044,"Case 28, 0/5M, Yong Thai Hang","02/11/2020",3
+"2045",2045,"Case 29, 41M, NA","02/11/2020",3
+"2046",2046,"Case 30, 27M, Grand Hyatt Singapore","02/11/2020",3
+"2047",2047,"Case 31, 53M, Life Church","02/11/2020",3
+"2048",2048,"Case 32, 42F, NA","02/11/2020",3
+"2049",2049,"Case 33, 39F, Life Church","02/11/2020",3
+"2050",2050,"Case 34, 40F, Yong Thai Hang","02/11/2020",3
+"2051",2051,"Case 35, 64F, NA","02/11/2020",3
+"2052",2052,"Case 36, 38F, Grand Hyatt Singapore","02/11/2020",4
+"2053",2053,"Case 37, 53M, NA","02/11/2020",3
+"2054",2054,"Case 38, 52F, Life Church","02/11/2020",3
+"2055",2055,"Case 39, 51M, Grand Hyatt Singapore","02/11/2020",3
+"2056",2056,"Case 40, 36M, Yong Thai Hang","02/11/2020",3
+"2057",2057,"Case 41, 71M, NA","02/11/2020",3
+"2058",2058,"Case 42, 39M, Seletar Aerospace Heights","02/11/2020",3
+"2059",2059,"Case 43, 54M, NA","02/11/2020",3
+"2060",2060,"Case 44, 37M, NA","02/11/2020",3
+"2061",2061,"Case 45, 2F, Wuhan","02/11/2020",3
+"2062",2062,"Case 46, 35M, NA","02/11/2020",3
+"2063",2063,"Case 47, 39M, Seletar Aerospace Heights","02/11/2020",3
+"2064",2064,"Case 48, 34M, Grace Assembly of God","02/11/2020",3
+"2065",2065,"Case 49, 46M, Grace Assembly of God","02/11/2020",3
+"2066",2066,"Case 50, 62M, NA","02/11/2020",3
+"2067",2067,"Case 51, 48M, Grace Assembly of God","02/11/2020",3
+"2068",2068,"Case 52, 37M, Seletar Aerospace Heights","02/11/2020",3
+"2069",2069,"Case 53, 54M, Grace Assembly of God","02/11/2020",2
+"2070",2070,"Case 54, 54F, Grace Assembly of God","02/11/2020",2
+"2071",2071,"Case 55, 30M, NA","02/11/2020",2
+"2072",2072,"Case 56, 30M, Seletar Aerospace Heights","02/11/2020",1
+"2073",2073,"Case 57, 26M, Grace Assembly of God","02/11/2020",3
+"2074",2074,"Case 58, 55M, Grace Assembly of God","02/11/2020",2
+"2075",2075,"Case 59, 61M, NA","02/11/2020",2
+"2076",2076,"Case 60, 51F, Grace Assembly of God","02/11/2020",2
+"2077",2077,"Case 61, 57F, Grace Assembly of God","02/11/2020",2
+"2078",2078,"Case 62, 44F, Grace Assembly of God","02/11/2020",2
+"2079",2079,"Case 63, 54F, Grace Assembly of God","02/11/2020",2
+"2080",2080,"Case 64, 50M, NA","02/11/2020",2
+"2081",2081,"Case 65, 61F, NA","02/11/2020",1
+"2082",2082,"Case 66, 28M, Grace Assembly of God","02/11/2020",2
+"2083",2083,"Case 67, 56F, Grace Assembly of God","02/11/2020",2
+"2084",2084,"Case 68, 79F, Grace Assembly of God","02/11/2020",2
+"2085",2085,"Case 69, 26M, Seletar Aerospace Heights","02/11/2020",3
+"2086",2086,"Case 70, 27F, Grace Assembly of God","02/11/2020",2
+"2087",2087,"Case 71, 25M, Grace Assembly of God","02/11/2020",2
+"2088",2088,"Case 72, 40M, NA","02/11/2020",2
+"2089",2089,"Case 73, 43M, Grace Assembly of God","02/11/2020",2
+"2090",2090,"Case 74, 29M, Grace Assembly of God","02/11/2020",1
+"2091",2091,"Case 75, 71F, NA","02/11/2020",3
+"2092",2092,"Case 76, 1M, Wuhan","02/11/2020",3
+"2093",2093,"Case 77, 35M, NA","02/11/2020",2
+"2094",2094,"Case 78, 57F, Grace Assembly of God","02/11/2020",2
+"2095",2095,"Case 79, 35F, NA","02/11/2020",1
+"2096",2096,"Case 80, 38F, Grace Assembly of God","02/11/2020",2
+"2097",2097,"Case 81, 50M, Grace Assembly of God","02/11/2020",1
+"2098",2098,"Case 82, 57F, NA","02/11/2020",2
+"2099",2099,"Case 83, 54M, Life Church","02/11/2020",1
+"2100",2100,"Case 84, 35F, Grace Assembly of God","02/11/2020",1
+"2101",2101,"Case 1, 66M, Wuhan","02/12/2020",3
+"2102",2102,"Case 2, 53F, Wuhan","02/12/2020",4
+"2103",2103,"Case 3, 37M, Wuhan","02/12/2020",3
+"2104",2104,"Case 4, 36M, Wuhan","02/12/2020",4
+"2105",2105,"Case 5, 56F, Wuhan","02/12/2020",3
+"2106",2106,"Case 6, 56M, Wuhan","02/12/2020",3
+"2107",2107,"Case 7, 35M, Wuhan","02/12/2020",4
+"2108",2108,"Case 8, 56F, Life Church, Wuhan","02/12/2020",3
+"2109",2109,"Case 9, 56M, Life Church, Wuhan","02/12/2020",3
+"2110",2110,"Case 10, 56M, Wuhan","02/12/2020",4
+"2111",2111,"Case 11, 31F, Wuhan","02/12/2020",4
+"2112",2112,"Case 12, 37F, Wuhan","02/12/2020",4
+"2113",2113,"Case 13, 73F, Wuhan","02/12/2020",4
+"2114",2114,"Case 14, 31M, Wuhan","02/12/2020",3
+"2115",2115,"Case 15, 47F, Wuhan","02/12/2020",3
+"2116",2116,"Case 16, 38M, Wuhan","02/12/2020",3
+"2117",2117,"Case 17, 47F, Wuhan","02/12/2020",4
+"2118",2118,"Case 18, 31F, Wuhan","02/12/2020",3
+"2119",2119,"Case 19, 28F, Yong Thai Hang","02/12/2020",3
+"2120",2120,"Case 20, 48F, Yong Thai Hang","02/12/2020",3
+"2121",2121,"Case 21, 44F, Yong Thai Hang","02/12/2020",3
+"2122",2122,"Case 22, 21M, Wuhan","02/12/2020",4
+"2123",2123,"Case 23, 17M, Wuhan","02/12/2020",3
+"2124",2124,"Case 24, 32F, Yong Thai Hang","02/12/2020",3
+"2125",2125,"Case 25, 40M, Yong Thai Hang","02/12/2020",4
+"2126",2126,"Case 26, 42F , Wuhan","02/12/2020",4
+"2127",2127,"Case 27, 45M, Yong Thai Hang","02/12/2020",3
+"2128",2128,"Case 28, 0/5M, Yong Thai Hang","02/12/2020",3
+"2129",2129,"Case 29, 41M, NA","02/12/2020",4
+"2130",2130,"Case 30, 27M, Grand Hyatt Singapore","02/12/2020",3
+"2131",2131,"Case 31, 53M, Life Church","02/12/2020",3
+"2132",2132,"Case 32, 42F, NA","02/12/2020",3
+"2133",2133,"Case 33, 39F, Life Church","02/12/2020",3
+"2134",2134,"Case 34, 40F, Yong Thai Hang","02/12/2020",4
+"2135",2135,"Case 35, 64F, NA","02/12/2020",3
+"2136",2136,"Case 36, 38F, Grand Hyatt Singapore","02/12/2020",4
+"2137",2137,"Case 37, 53M, NA","02/12/2020",3
+"2138",2138,"Case 38, 52F, Life Church","02/12/2020",3
+"2139",2139,"Case 39, 51M, Grand Hyatt Singapore","02/12/2020",3
+"2140",2140,"Case 40, 36M, Yong Thai Hang","02/12/2020",4
+"2141",2141,"Case 41, 71M, NA","02/12/2020",3
+"2142",2142,"Case 42, 39M, Seletar Aerospace Heights","02/12/2020",3
+"2143",2143,"Case 43, 54M, NA","02/12/2020",3
+"2144",2144,"Case 44, 37M, NA","02/12/2020",3
+"2145",2145,"Case 45, 2F, Wuhan","02/12/2020",3
+"2146",2146,"Case 46, 35M, NA","02/12/2020",3
+"2147",2147,"Case 47, 39M, Seletar Aerospace Heights","02/12/2020",3
+"2148",2148,"Case 48, 34M, Grace Assembly of God","02/12/2020",3
+"2149",2149,"Case 49, 46M, Grace Assembly of God","02/12/2020",3
+"2150",2150,"Case 50, 62M, NA","02/12/2020",3
+"2151",2151,"Case 51, 48M, Grace Assembly of God","02/12/2020",3
+"2152",2152,"Case 52, 37M, Seletar Aerospace Heights","02/12/2020",3
+"2153",2153,"Case 53, 54M, Grace Assembly of God","02/12/2020",3
+"2154",2154,"Case 54, 54F, Grace Assembly of God","02/12/2020",3
+"2155",2155,"Case 55, 30M, NA","02/12/2020",3
+"2156",2156,"Case 56, 30M, Seletar Aerospace Heights","02/12/2020",3
+"2157",2157,"Case 57, 26M, Grace Assembly of God","02/12/2020",3
+"2158",2158,"Case 58, 55M, Grace Assembly of God","02/12/2020",3
+"2159",2159,"Case 59, 61M, NA","02/12/2020",3
+"2160",2160,"Case 60, 51F, Grace Assembly of God","02/12/2020",3
+"2161",2161,"Case 61, 57F, Grace Assembly of God","02/12/2020",3
+"2162",2162,"Case 62, 44F, Grace Assembly of God","02/12/2020",3
+"2163",2163,"Case 63, 54F, Grace Assembly of God","02/12/2020",2
+"2164",2164,"Case 64, 50M, NA","02/12/2020",2
+"2165",2165,"Case 65, 61F, NA","02/12/2020",3
+"2166",2166,"Case 66, 28M, Grace Assembly of God","02/12/2020",3
+"2167",2167,"Case 67, 56F, Grace Assembly of God","02/12/2020",2
+"2168",2168,"Case 68, 79F, Grace Assembly of God","02/12/2020",2
+"2169",2169,"Case 69, 26M, Seletar Aerospace Heights","02/12/2020",3
+"2170",2170,"Case 70, 27F, Grace Assembly of God","02/12/2020",2
+"2171",2171,"Case 71, 25M, Grace Assembly of God","02/12/2020",2
+"2172",2172,"Case 72, 40M, NA","02/12/2020",2
+"2173",2173,"Case 73, 43M, Grace Assembly of God","02/12/2020",2
+"2174",2174,"Case 74, 29M, Grace Assembly of God","02/12/2020",2
+"2175",2175,"Case 75, 71F, NA","02/12/2020",3
+"2176",2176,"Case 76, 1M, Wuhan","02/12/2020",3
+"2177",2177,"Case 77, 35M, NA","02/12/2020",3
+"2178",2178,"Case 78, 57F, Grace Assembly of God","02/12/2020",2
+"2179",2179,"Case 79, 35F, NA","02/12/2020",2
+"2180",2180,"Case 80, 38F, Grace Assembly of God","02/12/2020",2
+"2181",2181,"Case 81, 50M, Grace Assembly of God","02/12/2020",1
+"2182",2182,"Case 82, 57F, NA","02/12/2020",2
+"2183",2183,"Case 83, 54M, Life Church","02/12/2020",1
+"2184",2184,"Case 84, 35F, Grace Assembly of God","02/12/2020",1
+"2185",2185,"Case 1, 66M, Wuhan","02/13/2020",3
+"2186",2186,"Case 2, 53F, Wuhan","02/13/2020",4
+"2187",2187,"Case 3, 37M, Wuhan","02/13/2020",3
+"2188",2188,"Case 4, 36M, Wuhan","02/13/2020",4
+"2189",2189,"Case 5, 56F, Wuhan","02/13/2020",3
+"2190",2190,"Case 6, 56M, Wuhan","02/13/2020",3
+"2191",2191,"Case 7, 35M, Wuhan","02/13/2020",4
+"2192",2192,"Case 8, 56F, Life Church, Wuhan","02/13/2020",3
+"2193",2193,"Case 9, 56M, Life Church, Wuhan","02/13/2020",3
+"2194",2194,"Case 10, 56M, Wuhan","02/13/2020",4
+"2195",2195,"Case 11, 31F, Wuhan","02/13/2020",4
+"2196",2196,"Case 12, 37F, Wuhan","02/13/2020",4
+"2197",2197,"Case 13, 73F, Wuhan","02/13/2020",4
+"2198",2198,"Case 14, 31M, Wuhan","02/13/2020",3
+"2199",2199,"Case 15, 47F, Wuhan","02/13/2020",3
+"2200",2200,"Case 16, 38M, Wuhan","02/13/2020",3
+"2201",2201,"Case 17, 47F, Wuhan","02/13/2020",4
+"2202",2202,"Case 18, 31F, Wuhan","02/13/2020",3
+"2203",2203,"Case 19, 28F, Yong Thai Hang","02/13/2020",3
+"2204",2204,"Case 20, 48F, Yong Thai Hang","02/13/2020",3
+"2205",2205,"Case 21, 44F, Yong Thai Hang","02/13/2020",3
+"2206",2206,"Case 22, 21M, Wuhan","02/13/2020",4
+"2207",2207,"Case 23, 17M, Wuhan","02/13/2020",3
+"2208",2208,"Case 24, 32F, Yong Thai Hang","02/13/2020",3
+"2209",2209,"Case 25, 40M, Yong Thai Hang","02/13/2020",4
+"2210",2210,"Case 26, 42F , Wuhan","02/13/2020",4
+"2211",2211,"Case 27, 45M, Yong Thai Hang","02/13/2020",3
+"2212",2212,"Case 28, 0/5M, Yong Thai Hang","02/13/2020",3
+"2213",2213,"Case 29, 41M, NA","02/13/2020",4
+"2214",2214,"Case 30, 27M, Grand Hyatt Singapore","02/13/2020",3
+"2215",2215,"Case 31, 53M, Life Church","02/13/2020",3
+"2216",2216,"Case 32, 42F, NA","02/13/2020",3
+"2217",2217,"Case 33, 39F, Life Church","02/13/2020",3
+"2218",2218,"Case 34, 40F, Yong Thai Hang","02/13/2020",4
+"2219",2219,"Case 35, 64F, NA","02/13/2020",3
+"2220",2220,"Case 36, 38F, Grand Hyatt Singapore","02/13/2020",4
+"2221",2221,"Case 37, 53M, NA","02/13/2020",3
+"2222",2222,"Case 38, 52F, Life Church","02/13/2020",3
+"2223",2223,"Case 39, 51M, Grand Hyatt Singapore","02/13/2020",3
+"2224",2224,"Case 40, 36M, Yong Thai Hang","02/13/2020",4
+"2225",2225,"Case 41, 71M, NA","02/13/2020",3
+"2226",2226,"Case 42, 39M, Seletar Aerospace Heights","02/13/2020",3
+"2227",2227,"Case 43, 54M, NA","02/13/2020",3
+"2228",2228,"Case 44, 37M, NA","02/13/2020",3
+"2229",2229,"Case 45, 2F, Wuhan","02/13/2020",3
+"2230",2230,"Case 46, 35M, NA","02/13/2020",3
+"2231",2231,"Case 47, 39M, Seletar Aerospace Heights","02/13/2020",3
+"2232",2232,"Case 48, 34M, Grace Assembly of God","02/13/2020",3
+"2233",2233,"Case 49, 46M, Grace Assembly of God","02/13/2020",3
+"2234",2234,"Case 50, 62M, NA","02/13/2020",3
+"2235",2235,"Case 51, 48M, Grace Assembly of God","02/13/2020",3
+"2236",2236,"Case 52, 37M, Seletar Aerospace Heights","02/13/2020",3
+"2237",2237,"Case 53, 54M, Grace Assembly of God","02/13/2020",3
+"2238",2238,"Case 54, 54F, Grace Assembly of God","02/13/2020",3
+"2239",2239,"Case 55, 30M, NA","02/13/2020",3
+"2240",2240,"Case 56, 30M, Seletar Aerospace Heights","02/13/2020",3
+"2241",2241,"Case 57, 26M, Grace Assembly of God","02/13/2020",3
+"2242",2242,"Case 58, 55M, Grace Assembly of God","02/13/2020",3
+"2243",2243,"Case 59, 61M, NA","02/13/2020",3
+"2244",2244,"Case 60, 51F, Grace Assembly of God","02/13/2020",3
+"2245",2245,"Case 61, 57F, Grace Assembly of God","02/13/2020",3
+"2246",2246,"Case 62, 44F, Grace Assembly of God","02/13/2020",3
+"2247",2247,"Case 63, 54F, Grace Assembly of God","02/13/2020",3
+"2248",2248,"Case 64, 50M, NA","02/13/2020",3
+"2249",2249,"Case 65, 61F, NA","02/13/2020",3
+"2250",2250,"Case 66, 28M, Grace Assembly of God","02/13/2020",3
+"2251",2251,"Case 67, 56F, Grace Assembly of God","02/13/2020",2
+"2252",2252,"Case 68, 79F, Grace Assembly of God","02/13/2020",2
+"2253",2253,"Case 69, 26M, Seletar Aerospace Heights","02/13/2020",3
+"2254",2254,"Case 70, 27F, Grace Assembly of God","02/13/2020",2
+"2255",2255,"Case 71, 25M, Grace Assembly of God","02/13/2020",2
+"2256",2256,"Case 72, 40M, NA","02/13/2020",2
+"2257",2257,"Case 73, 43M, Grace Assembly of God","02/13/2020",2
+"2258",2258,"Case 74, 29M, Grace Assembly of God","02/13/2020",2
+"2259",2259,"Case 75, 71F, NA","02/13/2020",3
+"2260",2260,"Case 76, 1M, Wuhan","02/13/2020",3
+"2261",2261,"Case 77, 35M, NA","02/13/2020",3
+"2262",2262,"Case 78, 57F, Grace Assembly of God","02/13/2020",2
+"2263",2263,"Case 79, 35F, NA","02/13/2020",2
+"2264",2264,"Case 80, 38F, Grace Assembly of God","02/13/2020",2
+"2265",2265,"Case 81, 50M, Grace Assembly of God","02/13/2020",1
+"2266",2266,"Case 82, 57F, NA","02/13/2020",2
+"2267",2267,"Case 83, 54M, Life Church","02/13/2020",1
+"2268",2268,"Case 84, 35F, Grace Assembly of God","02/13/2020",1
+"2269",2269,"Case 1, 66M, Wuhan","02/14/2020",3
+"2270",2270,"Case 2, 53F, Wuhan","02/14/2020",4
+"2271",2271,"Case 3, 37M, Wuhan","02/14/2020",3
+"2272",2272,"Case 4, 36M, Wuhan","02/14/2020",4
+"2273",2273,"Case 5, 56F, Wuhan","02/14/2020",3
+"2274",2274,"Case 6, 56M, Wuhan","02/14/2020",3
+"2275",2275,"Case 7, 35M, Wuhan","02/14/2020",4
+"2276",2276,"Case 8, 56F, Life Church, Wuhan","02/14/2020",3
+"2277",2277,"Case 9, 56M, Life Church, Wuhan","02/14/2020",3
+"2278",2278,"Case 10, 56M, Wuhan","02/14/2020",4
+"2279",2279,"Case 11, 31F, Wuhan","02/14/2020",4
+"2280",2280,"Case 12, 37F, Wuhan","02/14/2020",4
+"2281",2281,"Case 13, 73F, Wuhan","02/14/2020",4
+"2282",2282,"Case 14, 31M, Wuhan","02/14/2020",3
+"2283",2283,"Case 15, 47F, Wuhan","02/14/2020",3
+"2284",2284,"Case 16, 38M, Wuhan","02/14/2020",3
+"2285",2285,"Case 17, 47F, Wuhan","02/14/2020",4
+"2286",2286,"Case 18, 31F, Wuhan","02/14/2020",3
+"2287",2287,"Case 19, 28F, Yong Thai Hang","02/14/2020",3
+"2288",2288,"Case 20, 48F, Yong Thai Hang","02/14/2020",3
+"2289",2289,"Case 21, 44F, Yong Thai Hang","02/14/2020",3
+"2290",2290,"Case 22, 21M, Wuhan","02/14/2020",4
+"2291",2291,"Case 23, 17M, Wuhan","02/14/2020",3
+"2292",2292,"Case 24, 32F, Yong Thai Hang","02/14/2020",3
+"2293",2293,"Case 25, 40M, Yong Thai Hang","02/14/2020",4
+"2294",2294,"Case 26, 42F , Wuhan","02/14/2020",4
+"2295",2295,"Case 27, 45M, Yong Thai Hang","02/14/2020",3
+"2296",2296,"Case 28, 0/5M, Yong Thai Hang","02/14/2020",3
+"2297",2297,"Case 29, 41M, NA","02/14/2020",4
+"2298",2298,"Case 30, 27M, Grand Hyatt Singapore","02/14/2020",4
+"2299",2299,"Case 31, 53M, Life Church","02/14/2020",3
+"2300",2300,"Case 32, 42F, NA","02/14/2020",3
+"2301",2301,"Case 33, 39F, Life Church","02/14/2020",3
+"2302",2302,"Case 34, 40F, Yong Thai Hang","02/14/2020",4
+"2303",2303,"Case 35, 64F, NA","02/14/2020",3
+"2304",2304,"Case 36, 38F, Grand Hyatt Singapore","02/14/2020",4
+"2305",2305,"Case 37, 53M, NA","02/14/2020",3
+"2306",2306,"Case 38, 52F, Life Church","02/14/2020",3
+"2307",2307,"Case 39, 51M, Grand Hyatt Singapore","02/14/2020",3
+"2308",2308,"Case 40, 36M, Yong Thai Hang","02/14/2020",4
+"2309",2309,"Case 41, 71M, NA","02/14/2020",3
+"2310",2310,"Case 42, 39M, Seletar Aerospace Heights","02/14/2020",3
+"2311",2311,"Case 43, 54M, NA","02/14/2020",3
+"2312",2312,"Case 44, 37M, NA","02/14/2020",3
+"2313",2313,"Case 45, 2F, Wuhan","02/14/2020",4
+"2314",2314,"Case 46, 35M, NA","02/14/2020",3
+"2315",2315,"Case 47, 39M, Seletar Aerospace Heights","02/14/2020",3
+"2316",2316,"Case 48, 34M, Grace Assembly of God","02/14/2020",3
+"2317",2317,"Case 49, 46M, Grace Assembly of God","02/14/2020",3
+"2318",2318,"Case 50, 62M, NA","02/14/2020",3
+"2319",2319,"Case 51, 48M, Grace Assembly of God","02/14/2020",3
+"2320",2320,"Case 52, 37M, Seletar Aerospace Heights","02/14/2020",3
+"2321",2321,"Case 53, 54M, Grace Assembly of God","02/14/2020",3
+"2322",2322,"Case 54, 54F, Grace Assembly of God","02/14/2020",3
+"2323",2323,"Case 55, 30M, NA","02/14/2020",3
+"2324",2324,"Case 56, 30M, Seletar Aerospace Heights","02/14/2020",3
+"2325",2325,"Case 57, 26M, Grace Assembly of God","02/14/2020",3
+"2326",2326,"Case 58, 55M, Grace Assembly of God","02/14/2020",3
+"2327",2327,"Case 59, 61M, NA","02/14/2020",3
+"2328",2328,"Case 60, 51F, Grace Assembly of God","02/14/2020",3
+"2329",2329,"Case 61, 57F, Grace Assembly of God","02/14/2020",3
+"2330",2330,"Case 62, 44F, Grace Assembly of God","02/14/2020",3
+"2331",2331,"Case 63, 54F, Grace Assembly of God","02/14/2020",3
+"2332",2332,"Case 64, 50M, NA","02/14/2020",3
+"2333",2333,"Case 65, 61F, NA","02/14/2020",3
+"2334",2334,"Case 66, 28M, Grace Assembly of God","02/14/2020",3
+"2335",2335,"Case 67, 56F, Grace Assembly of God","02/14/2020",3
+"2336",2336,"Case 68, 79F, Grace Assembly of God","02/14/2020",3
+"2337",2337,"Case 69, 26M, Seletar Aerospace Heights","02/14/2020",3
+"2338",2338,"Case 70, 27F, Grace Assembly of God","02/14/2020",3
+"2339",2339,"Case 71, 25M, Grace Assembly of God","02/14/2020",3
+"2340",2340,"Case 72, 40M, NA","02/14/2020",3
+"2341",2341,"Case 73, 43M, Grace Assembly of God","02/14/2020",3
+"2342",2342,"Case 74, 29M, Grace Assembly of God","02/14/2020",2
+"2343",2343,"Case 75, 71F, NA","02/14/2020",3
+"2344",2344,"Case 76, 1M, Wuhan","02/14/2020",3
+"2345",2345,"Case 77, 35M, NA","02/14/2020",3
+"2346",2346,"Case 78, 57F, Grace Assembly of God","02/14/2020",2
+"2347",2347,"Case 79, 35F, NA","02/14/2020",2
+"2348",2348,"Case 80, 38F, Grace Assembly of God","02/14/2020",2
+"2349",2349,"Case 81, 50M, Grace Assembly of God","02/14/2020",1
+"2350",2350,"Case 82, 57F, NA","02/14/2020",2
+"2351",2351,"Case 83, 54M, Life Church","02/14/2020",1
+"2352",2352,"Case 84, 35F, Grace Assembly of God","02/14/2020",1
+"2353",2353,"Case 1, 66M, Wuhan","02/15/2020",3
+"2354",2354,"Case 2, 53F, Wuhan","02/15/2020",4
+"2355",2355,"Case 3, 37M, Wuhan","02/15/2020",3
+"2356",2356,"Case 4, 36M, Wuhan","02/15/2020",4
+"2357",2357,"Case 5, 56F, Wuhan","02/15/2020",3
+"2358",2358,"Case 6, 56M, Wuhan","02/15/2020",3
+"2359",2359,"Case 7, 35M, Wuhan","02/15/2020",4
+"2360",2360,"Case 8, 56F, Life Church, Wuhan","02/15/2020",3
+"2361",2361,"Case 9, 56M, Life Church, Wuhan","02/15/2020",3
+"2362",2362,"Case 10, 56M, Wuhan","02/15/2020",4
+"2363",2363,"Case 11, 31F, Wuhan","02/15/2020",4
+"2364",2364,"Case 12, 37F, Wuhan","02/15/2020",4
+"2365",2365,"Case 13, 73F, Wuhan","02/15/2020",4
+"2366",2366,"Case 14, 31M, Wuhan","02/15/2020",3
+"2367",2367,"Case 15, 47F, Wuhan","02/15/2020",3
+"2368",2368,"Case 16, 38M, Wuhan","02/15/2020",3
+"2369",2369,"Case 17, 47F, Wuhan","02/15/2020",4
+"2370",2370,"Case 18, 31F, Wuhan","02/15/2020",3
+"2371",2371,"Case 19, 28F, Yong Thai Hang","02/15/2020",3
+"2372",2372,"Case 20, 48F, Yong Thai Hang","02/15/2020",3
+"2373",2373,"Case 21, 44F, Yong Thai Hang","02/15/2020",3
+"2374",2374,"Case 22, 21M, Wuhan","02/15/2020",4
+"2375",2375,"Case 23, 17M, Wuhan","02/15/2020",3
+"2376",2376,"Case 24, 32F, Yong Thai Hang","02/15/2020",4
+"2377",2377,"Case 25, 40M, Yong Thai Hang","02/15/2020",4
+"2378",2378,"Case 26, 42F , Wuhan","02/15/2020",4
+"2379",2379,"Case 27, 45M, Yong Thai Hang","02/15/2020",3
+"2380",2380,"Case 28, 0/5M, Yong Thai Hang","02/15/2020",3
+"2381",2381,"Case 29, 41M, NA","02/15/2020",4
+"2382",2382,"Case 30, 27M, Grand Hyatt Singapore","02/15/2020",4
+"2383",2383,"Case 31, 53M, Life Church","02/15/2020",3
+"2384",2384,"Case 32, 42F, NA","02/15/2020",3
+"2385",2385,"Case 33, 39F, Life Church","02/15/2020",3
+"2386",2386,"Case 34, 40F, Yong Thai Hang","02/15/2020",4
+"2387",2387,"Case 35, 64F, NA","02/15/2020",3
+"2388",2388,"Case 36, 38F, Grand Hyatt Singapore","02/15/2020",4
+"2389",2389,"Case 37, 53M, NA","02/15/2020",3
+"2390",2390,"Case 38, 52F, Life Church","02/15/2020",3
+"2391",2391,"Case 39, 51M, Grand Hyatt Singapore","02/15/2020",3
+"2392",2392,"Case 40, 36M, Yong Thai Hang","02/15/2020",4
+"2393",2393,"Case 41, 71M, NA","02/15/2020",3
+"2394",2394,"Case 42, 39M, Seletar Aerospace Heights","02/15/2020",3
+"2395",2395,"Case 43, 54M, NA","02/15/2020",3
+"2396",2396,"Case 44, 37M, NA","02/15/2020",3
+"2397",2397,"Case 45, 2F, Wuhan","02/15/2020",4
+"2398",2398,"Case 46, 35M, NA","02/15/2020",3
+"2399",2399,"Case 47, 39M, Seletar Aerospace Heights","02/15/2020",3
+"2400",2400,"Case 48, 34M, Grace Assembly of God","02/15/2020",3
+"2401",2401,"Case 49, 46M, Grace Assembly of God","02/15/2020",3
+"2402",2402,"Case 50, 62M, NA","02/15/2020",3
+"2403",2403,"Case 51, 48M, Grace Assembly of God","02/15/2020",3
+"2404",2404,"Case 52, 37M, Seletar Aerospace Heights","02/15/2020",3
+"2405",2405,"Case 53, 54M, Grace Assembly of God","02/15/2020",3
+"2406",2406,"Case 54, 54F, Grace Assembly of God","02/15/2020",3
+"2407",2407,"Case 55, 30M, NA","02/15/2020",3
+"2408",2408,"Case 56, 30M, Seletar Aerospace Heights","02/15/2020",3
+"2409",2409,"Case 57, 26M, Grace Assembly of God","02/15/2020",3
+"2410",2410,"Case 58, 55M, Grace Assembly of God","02/15/2020",3
+"2411",2411,"Case 59, 61M, NA","02/15/2020",3
+"2412",2412,"Case 60, 51F, Grace Assembly of God","02/15/2020",3
+"2413",2413,"Case 61, 57F, Grace Assembly of God","02/15/2020",3
+"2414",2414,"Case 62, 44F, Grace Assembly of God","02/15/2020",3
+"2415",2415,"Case 63, 54F, Grace Assembly of God","02/15/2020",3
+"2416",2416,"Case 64, 50M, NA","02/15/2020",3
+"2417",2417,"Case 65, 61F, NA","02/15/2020",3
+"2418",2418,"Case 66, 28M, Grace Assembly of God","02/15/2020",3
+"2419",2419,"Case 67, 56F, Grace Assembly of God","02/15/2020",3
+"2420",2420,"Case 68, 79F, Grace Assembly of God","02/15/2020",3
+"2421",2421,"Case 69, 26M, Seletar Aerospace Heights","02/15/2020",3
+"2422",2422,"Case 70, 27F, Grace Assembly of God","02/15/2020",3
+"2423",2423,"Case 71, 25M, Grace Assembly of God","02/15/2020",3
+"2424",2424,"Case 72, 40M, NA","02/15/2020",3
+"2425",2425,"Case 73, 43M, Grace Assembly of God","02/15/2020",3
+"2426",2426,"Case 74, 29M, Grace Assembly of God","02/15/2020",3
+"2427",2427,"Case 75, 71F, NA","02/15/2020",3
+"2428",2428,"Case 76, 1M, Wuhan","02/15/2020",3
+"2429",2429,"Case 77, 35M, NA","02/15/2020",3
+"2430",2430,"Case 78, 57F, Grace Assembly of God","02/15/2020",2
+"2431",2431,"Case 79, 35F, NA","02/15/2020",2
+"2432",2432,"Case 80, 38F, Grace Assembly of God","02/15/2020",2
+"2433",2433,"Case 81, 50M, Grace Assembly of God","02/15/2020",1
+"2434",2434,"Case 82, 57F, NA","02/15/2020",3
+"2435",2435,"Case 83, 54M, Life Church","02/15/2020",1
+"2436",2436,"Case 84, 35F, Grace Assembly of God","02/15/2020",1
+"2437",2437,"Case 1, 66M, Wuhan","02/16/2020",3
+"2438",2438,"Case 2, 53F, Wuhan","02/16/2020",4
+"2439",2439,"Case 3, 37M, Wuhan","02/16/2020",3
+"2440",2440,"Case 4, 36M, Wuhan","02/16/2020",4
+"2441",2441,"Case 5, 56F, Wuhan","02/16/2020",3
+"2442",2442,"Case 6, 56M, Wuhan","02/16/2020",3
+"2443",2443,"Case 7, 35M, Wuhan","02/16/2020",4
+"2444",2444,"Case 8, 56F, Life Church, Wuhan","02/16/2020",3
+"2445",2445,"Case 9, 56M, Life Church, Wuhan","02/16/2020",3
+"2446",2446,"Case 10, 56M, Wuhan","02/16/2020",4
+"2447",2447,"Case 11, 31F, Wuhan","02/16/2020",4
+"2448",2448,"Case 12, 37F, Wuhan","02/16/2020",4
+"2449",2449,"Case 13, 73F, Wuhan","02/16/2020",4
+"2450",2450,"Case 14, 31M, Wuhan","02/16/2020",3
+"2451",2451,"Case 15, 47F, Wuhan","02/16/2020",3
+"2452",2452,"Case 16, 38M, Wuhan","02/16/2020",3
+"2453",2453,"Case 17, 47F, Wuhan","02/16/2020",4
+"2454",2454,"Case 18, 31F, Wuhan","02/16/2020",3
+"2455",2455,"Case 19, 28F, Yong Thai Hang","02/16/2020",3
+"2456",2456,"Case 20, 48F, Yong Thai Hang","02/16/2020",3
+"2457",2457,"Case 21, 44F, Yong Thai Hang","02/16/2020",3
+"2458",2458,"Case 22, 21M, Wuhan","02/16/2020",4
+"2459",2459,"Case 23, 17M, Wuhan","02/16/2020",3
+"2460",2460,"Case 24, 32F, Yong Thai Hang","02/16/2020",4
+"2461",2461,"Case 25, 40M, Yong Thai Hang","02/16/2020",4
+"2462",2462,"Case 26, 42F , Wuhan","02/16/2020",4
+"2463",2463,"Case 27, 45M, Yong Thai Hang","02/16/2020",3
+"2464",2464,"Case 28, 0/5M, Yong Thai Hang","02/16/2020",3
+"2465",2465,"Case 29, 41M, NA","02/16/2020",4
+"2466",2466,"Case 30, 27M, Grand Hyatt Singapore","02/16/2020",4
+"2467",2467,"Case 31, 53M, Life Church","02/16/2020",3
+"2468",2468,"Case 32, 42F, NA","02/16/2020",3
+"2469",2469,"Case 33, 39F, Life Church","02/16/2020",3
+"2470",2470,"Case 34, 40F, Yong Thai Hang","02/16/2020",4
+"2471",2471,"Case 35, 64F, NA","02/16/2020",3
+"2472",2472,"Case 36, 38F, Grand Hyatt Singapore","02/16/2020",4
+"2473",2473,"Case 37, 53M, NA","02/16/2020",3
+"2474",2474,"Case 38, 52F, Life Church","02/16/2020",3
+"2475",2475,"Case 39, 51M, Grand Hyatt Singapore","02/16/2020",4
+"2476",2476,"Case 40, 36M, Yong Thai Hang","02/16/2020",4
+"2477",2477,"Case 41, 71M, NA","02/16/2020",3
+"2478",2478,"Case 42, 39M, Seletar Aerospace Heights","02/16/2020",3
+"2479",2479,"Case 43, 54M, NA","02/16/2020",3
+"2480",2480,"Case 44, 37M, NA","02/16/2020",3
+"2481",2481,"Case 45, 2F, Wuhan","02/16/2020",4
+"2482",2482,"Case 46, 35M, NA","02/16/2020",3
+"2483",2483,"Case 47, 39M, Seletar Aerospace Heights","02/16/2020",3
+"2484",2484,"Case 48, 34M, Grace Assembly of God","02/16/2020",3
+"2485",2485,"Case 49, 46M, Grace Assembly of God","02/16/2020",3
+"2486",2486,"Case 50, 62M, NA","02/16/2020",3
+"2487",2487,"Case 51, 48M, Grace Assembly of God","02/16/2020",3
+"2488",2488,"Case 52, 37M, Seletar Aerospace Heights","02/16/2020",3
+"2489",2489,"Case 53, 54M, Grace Assembly of God","02/16/2020",3
+"2490",2490,"Case 54, 54F, Grace Assembly of God","02/16/2020",3
+"2491",2491,"Case 55, 30M, NA","02/16/2020",3
+"2492",2492,"Case 56, 30M, Seletar Aerospace Heights","02/16/2020",3
+"2493",2493,"Case 57, 26M, Grace Assembly of God","02/16/2020",3
+"2494",2494,"Case 58, 55M, Grace Assembly of God","02/16/2020",3
+"2495",2495,"Case 59, 61M, NA","02/16/2020",3
+"2496",2496,"Case 60, 51F, Grace Assembly of God","02/16/2020",3
+"2497",2497,"Case 61, 57F, Grace Assembly of God","02/16/2020",3
+"2498",2498,"Case 62, 44F, Grace Assembly of God","02/16/2020",3
+"2499",2499,"Case 63, 54F, Grace Assembly of God","02/16/2020",3
+"2500",2500,"Case 64, 50M, NA","02/16/2020",3
+"2501",2501,"Case 65, 61F, NA","02/16/2020",3
+"2502",2502,"Case 66, 28M, Grace Assembly of God","02/16/2020",3
+"2503",2503,"Case 67, 56F, Grace Assembly of God","02/16/2020",3
+"2504",2504,"Case 68, 79F, Grace Assembly of God","02/16/2020",3
+"2505",2505,"Case 69, 26M, Seletar Aerospace Heights","02/16/2020",3
+"2506",2506,"Case 70, 27F, Grace Assembly of God","02/16/2020",3
+"2507",2507,"Case 71, 25M, Grace Assembly of God","02/16/2020",3
+"2508",2508,"Case 72, 40M, NA","02/16/2020",3
+"2509",2509,"Case 73, 43M, Grace Assembly of God","02/16/2020",3
+"2510",2510,"Case 74, 29M, Grace Assembly of God","02/16/2020",3
+"2511",2511,"Case 75, 71F, NA","02/16/2020",3
+"2512",2512,"Case 76, 1M, Wuhan","02/16/2020",3
+"2513",2513,"Case 77, 35M, NA","02/16/2020",3
+"2514",2514,"Case 78, 57F, Grace Assembly of God","02/16/2020",2
+"2515",2515,"Case 79, 35F, NA","02/16/2020",2
+"2516",2516,"Case 80, 38F, Grace Assembly of God","02/16/2020",2
+"2517",2517,"Case 81, 50M, Grace Assembly of God","02/16/2020",2
+"2518",2518,"Case 82, 57F, NA","02/16/2020",3
+"2519",2519,"Case 83, 54M, Life Church","02/16/2020",1
+"2520",2520,"Case 84, 35F, Grace Assembly of God","02/16/2020",1
+"2521",2521,"Case 1, 66M, Wuhan","02/17/2020",3
+"2522",2522,"Case 2, 53F, Wuhan","02/17/2020",4
+"2523",2523,"Case 3, 37M, Wuhan","02/17/2020",3
+"2524",2524,"Case 4, 36M, Wuhan","02/17/2020",4
+"2525",2525,"Case 5, 56F, Wuhan","02/17/2020",3
+"2526",2526,"Case 6, 56M, Wuhan","02/17/2020",3
+"2527",2527,"Case 7, 35M, Wuhan","02/17/2020",4
+"2528",2528,"Case 8, 56F, Life Church, Wuhan","02/17/2020",3
+"2529",2529,"Case 9, 56M, Life Church, Wuhan","02/17/2020",3
+"2530",2530,"Case 10, 56M, Wuhan","02/17/2020",4
+"2531",2531,"Case 11, 31F, Wuhan","02/17/2020",4
+"2532",2532,"Case 12, 37F, Wuhan","02/17/2020",4
+"2533",2533,"Case 13, 73F, Wuhan","02/17/2020",4
+"2534",2534,"Case 14, 31M, Wuhan","02/17/2020",4
+"2535",2535,"Case 15, 47F, Wuhan","02/17/2020",4
+"2536",2536,"Case 16, 38M, Wuhan","02/17/2020",3
+"2537",2537,"Case 17, 47F, Wuhan","02/17/2020",4
+"2538",2538,"Case 18, 31F, Wuhan","02/17/2020",3
+"2539",2539,"Case 19, 28F, Yong Thai Hang","02/17/2020",3
+"2540",2540,"Case 20, 48F, Yong Thai Hang","02/17/2020",3
+"2541",2541,"Case 21, 44F, Yong Thai Hang","02/17/2020",3
+"2542",2542,"Case 22, 21M, Wuhan","02/17/2020",4
+"2543",2543,"Case 23, 17M, Wuhan","02/17/2020",3
+"2544",2544,"Case 24, 32F, Yong Thai Hang","02/17/2020",4
+"2545",2545,"Case 25, 40M, Yong Thai Hang","02/17/2020",4
+"2546",2546,"Case 26, 42F , Wuhan","02/17/2020",4
+"2547",2547,"Case 27, 45M, Yong Thai Hang","02/17/2020",3
+"2548",2548,"Case 28, 0/5M, Yong Thai Hang","02/17/2020",3
+"2549",2549,"Case 29, 41M, NA","02/17/2020",4
+"2550",2550,"Case 30, 27M, Grand Hyatt Singapore","02/17/2020",4
+"2551",2551,"Case 31, 53M, Life Church","02/17/2020",4
+"2552",2552,"Case 32, 42F, NA","02/17/2020",3
+"2553",2553,"Case 33, 39F, Life Church","02/17/2020",3
+"2554",2554,"Case 34, 40F, Yong Thai Hang","02/17/2020",4
+"2555",2555,"Case 35, 64F, NA","02/17/2020",3
+"2556",2556,"Case 36, 38F, Grand Hyatt Singapore","02/17/2020",4
+"2557",2557,"Case 37, 53M, NA","02/17/2020",3
+"2558",2558,"Case 38, 52F, Life Church","02/17/2020",3
+"2559",2559,"Case 39, 51M, Grand Hyatt Singapore","02/17/2020",4
+"2560",2560,"Case 40, 36M, Yong Thai Hang","02/17/2020",4
+"2561",2561,"Case 41, 71M, NA","02/17/2020",3
+"2562",2562,"Case 42, 39M, Seletar Aerospace Heights","02/17/2020",3
+"2563",2563,"Case 43, 54M, NA","02/17/2020",3
+"2564",2564,"Case 44, 37M, NA","02/17/2020",3
+"2565",2565,"Case 45, 2F, Wuhan","02/17/2020",4
+"2566",2566,"Case 46, 35M, NA","02/17/2020",3
+"2567",2567,"Case 47, 39M, Seletar Aerospace Heights","02/17/2020",3
+"2568",2568,"Case 48, 34M, Grace Assembly of God","02/17/2020",4
+"2569",2569,"Case 49, 46M, Grace Assembly of God","02/17/2020",3
+"2570",2570,"Case 50, 62M, NA","02/17/2020",3
+"2571",2571,"Case 51, 48M, Grace Assembly of God","02/17/2020",3
+"2572",2572,"Case 52, 37M, Seletar Aerospace Heights","02/17/2020",3
+"2573",2573,"Case 53, 54M, Grace Assembly of God","02/17/2020",3
+"2574",2574,"Case 54, 54F, Grace Assembly of God","02/17/2020",3
+"2575",2575,"Case 55, 30M, NA","02/17/2020",3
+"2576",2576,"Case 56, 30M, Seletar Aerospace Heights","02/17/2020",3
+"2577",2577,"Case 57, 26M, Grace Assembly of God","02/17/2020",3
+"2578",2578,"Case 58, 55M, Grace Assembly of God","02/17/2020",3
+"2579",2579,"Case 59, 61M, NA","02/17/2020",3
+"2580",2580,"Case 60, 51F, Grace Assembly of God","02/17/2020",3
+"2581",2581,"Case 61, 57F, Grace Assembly of God","02/17/2020",3
+"2582",2582,"Case 62, 44F, Grace Assembly of God","02/17/2020",3
+"2583",2583,"Case 63, 54F, Grace Assembly of God","02/17/2020",3
+"2584",2584,"Case 64, 50M, NA","02/17/2020",3
+"2585",2585,"Case 65, 61F, NA","02/17/2020",4
+"2586",2586,"Case 66, 28M, Grace Assembly of God","02/17/2020",3
+"2587",2587,"Case 67, 56F, Grace Assembly of God","02/17/2020",3
+"2588",2588,"Case 68, 79F, Grace Assembly of God","02/17/2020",3
+"2589",2589,"Case 69, 26M, Seletar Aerospace Heights","02/17/2020",3
+"2590",2590,"Case 70, 27F, Grace Assembly of God","02/17/2020",3
+"2591",2591,"Case 71, 25M, Grace Assembly of God","02/17/2020",3
+"2592",2592,"Case 72, 40M, NA","02/17/2020",3
+"2593",2593,"Case 73, 43M, Grace Assembly of God","02/17/2020",3
+"2594",2594,"Case 74, 29M, Grace Assembly of God","02/17/2020",3
+"2595",2595,"Case 75, 71F, NA","02/17/2020",3
+"2596",2596,"Case 76, 1M, Wuhan","02/17/2020",3
+"2597",2597,"Case 77, 35M, NA","02/17/2020",3
+"2598",2598,"Case 78, 57F, Grace Assembly of God","02/17/2020",3
+"2599",2599,"Case 79, 35F, NA","02/17/2020",3
+"2600",2600,"Case 80, 38F, Grace Assembly of God","02/17/2020",3
+"2601",2601,"Case 81, 50M, Grace Assembly of God","02/17/2020",3
+"2602",2602,"Case 82, 57F, NA","02/17/2020",3
+"2603",2603,"Case 83, 54M, Life Church","02/17/2020",1
+"2604",2604,"Case 84, 35F, Grace Assembly of God","02/17/2020",1
+"2605",2605,"Case 1, 66M, Wuhan","02/18/2020",3
+"2606",2606,"Case 2, 53F, Wuhan","02/18/2020",4
+"2607",2607,"Case 3, 37M, Wuhan","02/18/2020",3
+"2608",2608,"Case 4, 36M, Wuhan","02/18/2020",4
+"2609",2609,"Case 5, 56F, Wuhan","02/18/2020",4
+"2610",2610,"Case 6, 56M, Wuhan","02/18/2020",3
+"2611",2611,"Case 7, 35M, Wuhan","02/18/2020",4
+"2612",2612,"Case 8, 56F, Life Church, Wuhan","02/18/2020",3
+"2613",2613,"Case 9, 56M, Life Church, Wuhan","02/18/2020",4
+"2614",2614,"Case 10, 56M, Wuhan","02/18/2020",4
+"2615",2615,"Case 11, 31F, Wuhan","02/18/2020",4
+"2616",2616,"Case 12, 37F, Wuhan","02/18/2020",4
+"2617",2617,"Case 13, 73F, Wuhan","02/18/2020",4
+"2618",2618,"Case 14, 31M, Wuhan","02/18/2020",4
+"2619",2619,"Case 15, 47F, Wuhan","02/18/2020",4
+"2620",2620,"Case 16, 38M, Wuhan","02/18/2020",3
+"2621",2621,"Case 17, 47F, Wuhan","02/18/2020",4
+"2622",2622,"Case 18, 31F, Wuhan","02/18/2020",3
+"2623",2623,"Case 19, 28F, Yong Thai Hang","02/18/2020",3
+"2624",2624,"Case 20, 48F, Yong Thai Hang","02/18/2020",3
+"2625",2625,"Case 21, 44F, Yong Thai Hang","02/18/2020",4
+"2626",2626,"Case 22, 21M, Wuhan","02/18/2020",4
+"2627",2627,"Case 23, 17M, Wuhan","02/18/2020",3
+"2628",2628,"Case 24, 32F, Yong Thai Hang","02/18/2020",4
+"2629",2629,"Case 25, 40M, Yong Thai Hang","02/18/2020",4
+"2630",2630,"Case 26, 42F , Wuhan","02/18/2020",4
+"2631",2631,"Case 27, 45M, Yong Thai Hang","02/18/2020",3
+"2632",2632,"Case 28, 0/5M, Yong Thai Hang","02/18/2020",3
+"2633",2633,"Case 29, 41M, NA","02/18/2020",4
+"2634",2634,"Case 30, 27M, Grand Hyatt Singapore","02/18/2020",4
+"2635",2635,"Case 31, 53M, Life Church","02/18/2020",4
+"2636",2636,"Case 32, 42F, NA","02/18/2020",3
+"2637",2637,"Case 33, 39F, Life Church","02/18/2020",3
+"2638",2638,"Case 34, 40F, Yong Thai Hang","02/18/2020",4
+"2639",2639,"Case 35, 64F, NA","02/18/2020",3
+"2640",2640,"Case 36, 38F, Grand Hyatt Singapore","02/18/2020",4
+"2641",2641,"Case 37, 53M, NA","02/18/2020",3
+"2642",2642,"Case 38, 52F, Life Church","02/18/2020",4
+"2643",2643,"Case 39, 51M, Grand Hyatt Singapore","02/18/2020",4
+"2644",2644,"Case 40, 36M, Yong Thai Hang","02/18/2020",4
+"2645",2645,"Case 41, 71M, NA","02/18/2020",3
+"2646",2646,"Case 42, 39M, Seletar Aerospace Heights","02/18/2020",3
+"2647",2647,"Case 43, 54M, NA","02/18/2020",3
+"2648",2648,"Case 44, 37M, NA","02/18/2020",3
+"2649",2649,"Case 45, 2F, Wuhan","02/18/2020",4
+"2650",2650,"Case 46, 35M, NA","02/18/2020",3
+"2651",2651,"Case 47, 39M, Seletar Aerospace Heights","02/18/2020",3
+"2652",2652,"Case 48, 34M, Grace Assembly of God","02/18/2020",4
+"2653",2653,"Case 49, 46M, Grace Assembly of God","02/18/2020",3
+"2654",2654,"Case 50, 62M, NA","02/18/2020",3
+"2655",2655,"Case 51, 48M, Grace Assembly of God","02/18/2020",3
+"2656",2656,"Case 52, 37M, Seletar Aerospace Heights","02/18/2020",3
+"2657",2657,"Case 53, 54M, Grace Assembly of God","02/18/2020",3
+"2658",2658,"Case 54, 54F, Grace Assembly of God","02/18/2020",3
+"2659",2659,"Case 55, 30M, NA","02/18/2020",3
+"2660",2660,"Case 56, 30M, Seletar Aerospace Heights","02/18/2020",3
+"2661",2661,"Case 57, 26M, Grace Assembly of God","02/18/2020",3
+"2662",2662,"Case 58, 55M, Grace Assembly of God","02/18/2020",3
+"2663",2663,"Case 59, 61M, NA","02/18/2020",3
+"2664",2664,"Case 60, 51F, Grace Assembly of God","02/18/2020",3
+"2665",2665,"Case 61, 57F, Grace Assembly of God","02/18/2020",3
+"2666",2666,"Case 62, 44F, Grace Assembly of God","02/18/2020",3
+"2667",2667,"Case 63, 54F, Grace Assembly of God","02/18/2020",3
+"2668",2668,"Case 64, 50M, NA","02/18/2020",3
+"2669",2669,"Case 65, 61F, NA","02/18/2020",4
+"2670",2670,"Case 66, 28M, Grace Assembly of God","02/18/2020",3
+"2671",2671,"Case 67, 56F, Grace Assembly of God","02/18/2020",3
+"2672",2672,"Case 68, 79F, Grace Assembly of God","02/18/2020",3
+"2673",2673,"Case 69, 26M, Seletar Aerospace Heights","02/18/2020",3
+"2674",2674,"Case 70, 27F, Grace Assembly of God","02/18/2020",3
+"2675",2675,"Case 71, 25M, Grace Assembly of God","02/18/2020",3
+"2676",2676,"Case 72, 40M, NA","02/18/2020",3
+"2677",2677,"Case 73, 43M, Grace Assembly of God","02/18/2020",3
+"2678",2678,"Case 74, 29M, Grace Assembly of God","02/18/2020",3
+"2679",2679,"Case 75, 71F, NA","02/18/2020",3
+"2680",2680,"Case 76, 1M, Wuhan","02/18/2020",4
+"2681",2681,"Case 77, 35M, NA","02/18/2020",3
+"2682",2682,"Case 78, 57F, Grace Assembly of God","02/18/2020",3
+"2683",2683,"Case 79, 35F, NA","02/18/2020",3
+"2684",2684,"Case 80, 38F, Grace Assembly of God","02/18/2020",3
+"2685",2685,"Case 81, 50M, Grace Assembly of God","02/18/2020",3
+"2686",2686,"Case 82, 57F, NA","02/18/2020",3
+"2687",2687,"Case 83, 54M, Life Church","02/18/2020",3
+"2688",2688,"Case 84, 35F, Grace Assembly of God","02/18/2020",3
+"2689",2689,"Case 1, 66M, Wuhan","02/19/2020",4
+"2690",2690,"Case 2, 53F, Wuhan","02/19/2020",4
+"2691",2691,"Case 3, 37M, Wuhan","02/19/2020",3
+"2692",2692,"Case 4, 36M, Wuhan","02/19/2020",4
+"2693",2693,"Case 5, 56F, Wuhan","02/19/2020",4
+"2694",2694,"Case 6, 56M, Wuhan","02/19/2020",3
+"2695",2695,"Case 7, 35M, Wuhan","02/19/2020",4
+"2696",2696,"Case 8, 56F, Life Church, Wuhan","02/19/2020",3
+"2697",2697,"Case 9, 56M, Life Church, Wuhan","02/19/2020",4
+"2698",2698,"Case 10, 56M, Wuhan","02/19/2020",4
+"2699",2699,"Case 11, 31F, Wuhan","02/19/2020",4
+"2700",2700,"Case 12, 37F, Wuhan","02/19/2020",4
+"2701",2701,"Case 13, 73F, Wuhan","02/19/2020",4
+"2702",2702,"Case 14, 31M, Wuhan","02/19/2020",4
+"2703",2703,"Case 15, 47F, Wuhan","02/19/2020",4
+"2704",2704,"Case 16, 38M, Wuhan","02/19/2020",3
+"2705",2705,"Case 17, 47F, Wuhan","02/19/2020",4
+"2706",2706,"Case 18, 31F, Wuhan","02/19/2020",3
+"2707",2707,"Case 19, 28F, Yong Thai Hang","02/19/2020",3
+"2708",2708,"Case 20, 48F, Yong Thai Hang","02/19/2020",3
+"2709",2709,"Case 21, 44F, Yong Thai Hang","02/19/2020",4
+"2710",2710,"Case 22, 21M, Wuhan","02/19/2020",4
+"2711",2711,"Case 23, 17M, Wuhan","02/19/2020",3
+"2712",2712,"Case 24, 32F, Yong Thai Hang","02/19/2020",4
+"2713",2713,"Case 25, 40M, Yong Thai Hang","02/19/2020",4
+"2714",2714,"Case 26, 42F , Wuhan","02/19/2020",4
+"2715",2715,"Case 27, 45M, Yong Thai Hang","02/19/2020",3
+"2716",2716,"Case 28, 0/5M, Yong Thai Hang","02/19/2020",3
+"2717",2717,"Case 29, 41M, NA","02/19/2020",4
+"2718",2718,"Case 30, 27M, Grand Hyatt Singapore","02/19/2020",4
+"2719",2719,"Case 31, 53M, Life Church","02/19/2020",4
+"2720",2720,"Case 32, 42F, NA","02/19/2020",4
+"2721",2721,"Case 33, 39F, Life Church","02/19/2020",4
+"2722",2722,"Case 34, 40F, Yong Thai Hang","02/19/2020",4
+"2723",2723,"Case 35, 64F, NA","02/19/2020",3
+"2724",2724,"Case 36, 38F, Grand Hyatt Singapore","02/19/2020",4
+"2725",2725,"Case 37, 53M, NA","02/19/2020",3
+"2726",2726,"Case 38, 52F, Life Church","02/19/2020",4
+"2727",2727,"Case 39, 51M, Grand Hyatt Singapore","02/19/2020",4
+"2728",2728,"Case 40, 36M, Yong Thai Hang","02/19/2020",4
+"2729",2729,"Case 41, 71M, NA","02/19/2020",3
+"2730",2730,"Case 42, 39M, Seletar Aerospace Heights","02/19/2020",3
+"2731",2731,"Case 43, 54M, NA","02/19/2020",3
+"2732",2732,"Case 44, 37M, NA","02/19/2020",4
+"2733",2733,"Case 45, 2F, Wuhan","02/19/2020",4
+"2734",2734,"Case 46, 35M, NA","02/19/2020",3
+"2735",2735,"Case 47, 39M, Seletar Aerospace Heights","02/19/2020",3
+"2736",2736,"Case 48, 34M, Grace Assembly of God","02/19/2020",4
+"2737",2737,"Case 49, 46M, Grace Assembly of God","02/19/2020",3
+"2738",2738,"Case 50, 62M, NA","02/19/2020",3
+"2739",2739,"Case 51, 48M, Grace Assembly of God","02/19/2020",3
+"2740",2740,"Case 52, 37M, Seletar Aerospace Heights","02/19/2020",3
+"2741",2741,"Case 53, 54M, Grace Assembly of God","02/19/2020",3
+"2742",2742,"Case 54, 54F, Grace Assembly of God","02/19/2020",3
+"2743",2743,"Case 55, 30M, NA","02/19/2020",4
+"2744",2744,"Case 56, 30M, Seletar Aerospace Heights","02/19/2020",3
+"2745",2745,"Case 57, 26M, Grace Assembly of God","02/19/2020",3
+"2746",2746,"Case 58, 55M, Grace Assembly of God","02/19/2020",3
+"2747",2747,"Case 59, 61M, NA","02/19/2020",3
+"2748",2748,"Case 60, 51F, Grace Assembly of God","02/19/2020",3
+"2749",2749,"Case 61, 57F, Grace Assembly of God","02/19/2020",3
+"2750",2750,"Case 62, 44F, Grace Assembly of God","02/19/2020",3
+"2751",2751,"Case 63, 54F, Grace Assembly of God","02/19/2020",3
+"2752",2752,"Case 64, 50M, NA","02/19/2020",3
+"2753",2753,"Case 65, 61F, NA","02/19/2020",4
+"2754",2754,"Case 66, 28M, Grace Assembly of God","02/19/2020",3
+"2755",2755,"Case 67, 56F, Grace Assembly of God","02/19/2020",3
+"2756",2756,"Case 68, 79F, Grace Assembly of God","02/19/2020",3
+"2757",2757,"Case 69, 26M, Seletar Aerospace Heights","02/19/2020",3
+"2758",2758,"Case 70, 27F, Grace Assembly of God","02/19/2020",3
+"2759",2759,"Case 71, 25M, Grace Assembly of God","02/19/2020",3
+"2760",2760,"Case 72, 40M, NA","02/19/2020",3
+"2761",2761,"Case 73, 43M, Grace Assembly of God","02/19/2020",3
+"2762",2762,"Case 74, 29M, Grace Assembly of God","02/19/2020",3
+"2763",2763,"Case 75, 71F, NA","02/19/2020",3
+"2764",2764,"Case 76, 1M, Wuhan","02/19/2020",4
+"2765",2765,"Case 77, 35M, NA","02/19/2020",3
+"2766",2766,"Case 78, 57F, Grace Assembly of God","02/19/2020",3
+"2767",2767,"Case 79, 35F, NA","02/19/2020",3
+"2768",2768,"Case 80, 38F, Grace Assembly of God","02/19/2020",3
+"2769",2769,"Case 81, 50M, Grace Assembly of God","02/19/2020",3
+"2770",2770,"Case 82, 57F, NA","02/19/2020",3
+"2771",2771,"Case 83, 54M, Life Church","02/19/2020",3
+"2772",2772,"Case 84, 35F, Grace Assembly of God","02/19/2020",3
