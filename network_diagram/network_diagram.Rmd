@@ -1,0 +1,71 @@
+---
+title: "Network data cleaning and plotting"
+author: "Emma Garlock"
+date: "2/18/2020"
+output: html_document
+---
+Load all the libraries we will need 
+```{r}
+library(ggplot2)
+library(tidyverse)
+library(ggnetwork)
+library(OneR)
+library(igraph)
+library(here)
+```
+load up all the links we have (just the first two column of the dataframe expanded)
+```{r}
+links_exp=read.csv(here("Clustering/network_diagram/links_ncov_expanded.csv"))
+links_long=gather(links_exp,rel,link,relations1:relations7)%>%select("caseid","link")
+write.csv(links_long,here("Clustering/network_diagram/links_long.csv"))
+```
+make it clear that those links are the edges we will be using. Also omit any of the cases that don't have  links to others in the dataset 
+```{r}
+edges=na.omit(links_long)
+names(edges)=c("from","to")
+```
+
+Load the node info. This basically just supplies the metadata about each of the nodes in the edges df. 
+```{r}
+nodes=read.csv(here("Clustering/network_diagram/singapore_ncov_2019.csv"))
+nodes_sing=nodes[nodes$country=="Singapore",]
+```
+This chunk does not always have to be run, only if you need to generate a new set of coordinates for the network diagram. If you skip to the chunk below there is a step where you can load n, a df that already has the coordinates you will need 
+```{r}
+cov_net=graph_from_data_frame(edges_narm,vertices = nodes_sing,directed = TRUE)
+n=ggnetwork(cov_net)
+write.csv(n,"good_coords.csv")
+```
+
+Load the dataset that has the coordinates mapped out, also convert the age coumn to an intger so that we can bin it for nice plotting.
+```{r}
+n=read.csv("Clustering/network_diagram/good_coords.csv")
+n$age=as.character(n$age)
+n$age=as.integer(n$age)
+n$age_bin=bin(n$age,nbins=5)
+```
+Make the plot! 
+We can subset by 
+* age (binned)
+* cluster 
+* hospital 
+* outcomes 
+* travel_history_location 
+```{r}
+cov_net=ggplot(n, aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_edges(aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_nodes(aes(x = x, y = y))+
+  geom_nodelabel(aes(label=name,fill=travel_history_location),label.size=0.25)+
+  guides(fill=NULL)+
+  theme_bw()+
+  theme(panel.grid = element_blank(),
+        axis.title = element_blank(),
+        axis.line = element_blank(),
+        axis.text=element_blank(),
+        axis.ticks = element_blank(),
+        panel.border = element_blank())
+ 
+cov_net
+
+```
+
