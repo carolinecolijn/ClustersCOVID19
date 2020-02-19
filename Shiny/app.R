@@ -1,8 +1,18 @@
 
 
 library(shiny)
+library(rsconnect)
+library(tidyverse)
 library(ggplot2)
+library(plotly)
+library(ggnetwork)
+library(OneR)
+library(igraph)
+library(here)
 library(viridis)
+library(paletteer)
+
+# rsconnect::deployApp('path/to/your/app')
 
 # Define UI for app that draws a histogram ----
 ui <- navbarPage(
@@ -16,7 +26,7 @@ ui <- navbarPage(
                                    "hospital"),
                        selected = "age"),),
   tabPanel("Heatmap",
-           plotOutput(outputId = "heatmap", width = "100%", height = "800"),
+           plotlyOutput(outputId = "heatmap", width = "100%", height = "800"),
   )
 
   
@@ -31,32 +41,7 @@ ui <- navbarPage(
   #             choices = c("age", "cluster",
   #                         "hospital"),
   #             selected = "age")
-  # 
-  # # Sidebar layout with input and output definitions ----
-  # sidebarLayout(
-  # #   
-  #   # Sidebar panel for inputs ----
-  #   sidebarPanel(
-  #     # We can subset by 
-  #     # * age (binned)
-  #     # * cluster 
-  #     # * hospital 
-  #     # * outcomes 
-  #     # * travel_history_location 
-  #     selectInput(inputId = "subset", 
-  #                 label = "Choose an attribute to colour the group by:",
-  #                 choices = c("age", "cluster",
-  #                             "hospital"),
-  #                 selected = "age"),
-  # #     
-  # #     # Input: Slider for the number of bins ----
-  # #     sliderInput(inputId = "bins",
-  # #                 label = "Number of bins:",
-  # #                 min = 1,
-  # #                 max = 50,
-  # #                 value = 30)
-  # #     
-  #   ),
+  #     
   #   
   #   # Main panel for displaying outputs ----
   #   mainPanel(
@@ -67,6 +52,7 @@ ui <- navbarPage(
   #   )
   # )
 )
+
 
 # Define server logic required to draw a plot ----
 server <- function(input, output) {
@@ -79,7 +65,7 @@ server <- function(input, output) {
   # 2. Its output type is a plot
   output$networkPlot <- renderPlot({
     
-    varNet = read.csv("data/good_coords.csv")
+    varNet = read.csv("nCovNet.csv")
     
     # bins <- seq(min(x), max(x), length.out = input$bins + 1)
     varNet$age = as.character(varNet$age)
@@ -111,11 +97,18 @@ server <- function(input, output) {
   })
 
   
-  output$heatmap <- renderPlot({
+  output$heatmap <- renderPlotly({
     
-    varHeatmap = read.csv("data/heatmap_plot.csv")
-    
-    heatmap <- ggplot(varHeatmap, aes(x = date, y = case, fill = status)) +
+    varHeatmap = read.csv("heatmap_plot.csv")
+
+    heatmap <- ggplot(
+      varHeatmap, 
+      aes(x = date, y = case, fill = status_word,
+          text = paste("Case: ", case,
+                       "<br>Date: ", date,
+                       "<br>Status: ", status,
+                       "<br>Cluster: ", cluster,
+                       "<br>Citizenship: ", citizenship))) +
       geom_tile() +
       xlab(label = "Date") +
       ylab(label = "Cases") +
@@ -125,10 +118,10 @@ server <- function(input, output) {
       theme(axis.text.x = element_text(angle =60, hjust = 0.6, size = 8),
             axis.ticks.x = element_blank(), #remove x axis ticks
             axis.ticks.y = element_blank()) + #remove y axis ticks
-      scale_fill_viridis() +
+      scale_fill_viridis_d(direction = -1) +
       theme(panel.background = element_rect(fill = "white"))
     
-    heatmap
+    ggplotly(heatmap, tooltip = 'text')
   })
 }
 

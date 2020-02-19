@@ -5,13 +5,13 @@ library(plotly)
 data1 <- read.csv("heatmap/heatmap_long_v3.csv")
 data1$date <- factor(data1$date,levels=unique(data1$date))
 data1$case <- factor(data1$case,levels=unique(data1$case))
-write.csv(data1, "data/heatmap_plot.csv")
-
 
 data1$status_word=ifelse(data1$status==0,"Unexposed",
                          ifelse(data1$status==1,"Exposed",
                                 ifelse(data1$status==2,"Symptomatic",
                                        ifelse(data1$status==3,"Hospitalized","Discharged"))))
+
+write.csv(data1, "data/heatmap_plot.csv")
 
 p1 <- ggplot(data1, aes(x = date, y = case, fill = status_word,
                         text = paste("Case: ", case,
