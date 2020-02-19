@@ -2,6 +2,7 @@
 
 library(shiny)
 library(ggplot2)
+library(viridis)
 
 # Define UI for app that draws a histogram ----
 ui <- fluidPage(
@@ -73,11 +74,12 @@ server <- function(input, output) {
     
     subset <- if(input$subset=="age") "age_bin" else input$subset
     
-    cov_net=ggplot(n)+
-      geom_edges(aes(x = x, y = y, xend = xend, yend = yend),arrow = NULL)+
+    cov_net=ggplot(n,aes(x = x, y = y, xend = xend, yend = yend))+
+      geom_edges(aes(),subset(n,Related.cases!=""),linetype="solid")+
       geom_nodes(aes(x = x, y = y,color=n[[subset]]),size=14)+
-      geom_text(aes(x = x, y = y,label=name),check_overlap = TRUE)+
+      geom_text(aes(x = x, y = y,label=subset),check_overlap = TRUE)+
       guides(colour = guide_legend(title=subset, title.position="top",title.hjust = 0.5,override.aes = list(size=6)))+
+      scale_color_viridis_d(na.value="grey50")+
       theme_bw()+
       theme(panel.grid = element_blank(),
             axis.title = element_blank(),
@@ -88,7 +90,7 @@ server <- function(input, output) {
             legend.position = "bottom",
             legend.direction = "horizontal",
             legend.text=element_text(size=12)
-            )
+      )
     
     cov_net
 
