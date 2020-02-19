@@ -19,9 +19,6 @@ library(here)
 load up all the links we have (just the first two column of the dataframe expanded)
 ```{r}
 ncov=read.csv(here("./data/singapore_ncov_2019.csv"))
-
-ncov$country=ifelse(ncov$country=="Signapore","Singapore",ncov$country)
-
 ncov_sing=ncov[ncov$country=="Singapore",]
 names(ncov_sing)[1] <- 'CaseID'
 ```
@@ -32,8 +29,8 @@ links_condense=gather(links_two,key="linktype",value="relations",Related.cases:C
 ```
 
 ```{r}
-links_exp=separate(links_condense, 'relations', paste("relations", 1:7, sep=""), sep=",", extra="drop")
-links_long=gather(links_exp,rel,link,relations1:relations7)%>%select("CaseID","link","linktype")
+links_exp=separate(links_condense, 'relations', paste("relations", 1:21, sep=""), sep=",", extra="drop")
+links_long=gather(links_exp,rel,link,relations1:relations21)%>%select("CaseID","link","linktype")
 write.csv(links_long,("links_long.csv"))
 ```
 make it clear that those links are the edges we will be using. Also omit any of the cases that don't have  links to others in the dataset 
@@ -45,24 +42,24 @@ edges$from=as.integer(edges$from)
 edges$to=as.character(edges$to)
 edges$to=as.integer(edges$to)
 edges_reduced=edges[!(is.na(edges$to) | edges$to==""| edges$to==" "), ]
-edges_redued2=edges_reduced[,c(1:2)]
+
+edges_cluster=edges_reduced[edges_reduced$linktype=="Cluster.links",]
 ```
 
 Load the node info. This basically just supplies the metadata about each of the nodes in the edges df. 
 ```{r}
 nodes_sing=ncov_sing
-
 ```
 This chunk does not always have to be run, only if you need to generate a new set of coordinates for the network diagram. If you skip to the chunk below there is a step where you can load n, a df that already has the coordinates you will need 
 ```{r}
-cov_net=graph_from_data_frame(edges_redued2,vertices = nodes_sing,directed=TRUE)
+cov_net=graph_from_data_frame(edges_reduced,vertices = nodes_sing,directed=TRUE)
 n=ggnetwork(cov_net)
-#write.csv(n,"good_coords.csv")
+
 ```
 
 Load the dataset that has the coordinates mapped out, also convert the age coumn to an intger so that we can bin it for nice plotting.
 ```{r}
-n=read.csv("good_coords.csv")
+
 n$age=as.character(n$age)
 n$age=as.integer(n$age)
 n$age_bin=bin(n$age,nbins=5)
@@ -77,7 +74,8 @@ We can subset by
 ```{r}
 
 cov_net=ggplot(n)+
-  geom_edges(aes(x = x, y = y, xend = xend, yend = yend),arrow = NULL)+
+  geom_edges(aes(x = x, y = y, xend = xend, yend = yend),
+             subset(n,Related.cases!=""))+
   geom_nodes(aes(x = x, y = y,color=cluster),size=8)+
   geom_text(aes(x = x, y = y,label=name),check_overlap = TRUE)+
   guides(colour = guide_legend(title.position="top",title.hjust = 0.5,override.aes = list(size=3)))+
