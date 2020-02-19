@@ -52,18 +52,20 @@ We can subset by
 * outcomes 
 * travel_history_location 
 ```{r}
-cov_net=ggplot(n, aes(x = x, y = y, xend = xend, yend = yend))+
+cov_net=ggplot(n)+
   geom_edges(aes(x = x, y = y, xend = xend, yend = yend))+
-  geom_nodes(aes(x = x, y = y))+
-  geom_nodelabel(aes(label=name,fill=travel_history_location),label.size=0.25)+
-  guides(fill=NULL)+
+  geom_nodes(aes(x = x, y = y,color=hospital),size=8)+
+  geom_text(aes(x = x, y = y,label=name),check_overlap = TRUE)+
+  guides(colour = guide_legend(title.position="top",override.aes = list(size=3)))+
   theme_bw()+
   theme(panel.grid = element_blank(),
         axis.title = element_blank(),
         axis.line = element_blank(),
         axis.text=element_blank(),
         axis.ticks = element_blank(),
-        panel.border = element_blank())
+        panel.border = element_blank(),
+        legend.position = "bottom",
+        legend.direction = "horizontal")
  
 cov_net
 
