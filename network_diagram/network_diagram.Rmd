@@ -23,7 +23,7 @@ ncov=read.csv(here("./data/singapore_ncov_2019.csv"))
 ncov$country=ifelse(ncov$country=="Signapore","Singapore",ncov$country)
 
 ncov_sing=ncov[ncov$country=="Singapore",]
-
+names(ncov_sing)[1] <- 'CaseID'
 ```
 
 ```{r}
