@@ -5,7 +5,8 @@ date: "2/18/2020"
 output: html_document
 ---
 
-#Set the working directory to be EpiCoronaHack_Cluster/Clustering/network_diagram
+**Set the working directory to be EpiCoronaHack_Cluster/Clustering/network_diagram**
+
 Load all the libraries we will need 
 ```{r}
 library(ggplot2)
@@ -14,6 +15,7 @@ library(ggnetwork)
 library(OneR)
 library(igraph)
 library(here)
+library(viridis)
 ```
 
 load up all the links we have (just the first two column of the dataframe expanded)
@@ -59,26 +61,27 @@ This chunk does not always have to be run, only if you need to generate a new se
 
 Load the dataset that has the coordinates mapped out, also convert the age coumn to an intger so that we can bin it for nice plotting.
 ```{r}
-n=read.csv("good.coords.csv")
+n=read.csv("good_coords.csv")
 n$age=as.character(n$age)
 n$age=as.integer(n$age)
 n$age_bin=bin(n$age,nbins=5)
 ```
 Make the plot! 
 We can subset by 
-* age (binned)
-* cluster 
-* hospital 
-* outcomes 
-* travel_history_location 
+
+ * age (binned)
+ * cluster 
+ * hospital 
+ * outcomes 
+ * travel_history_location 
 ```{r}
 
-cov_net=ggplot(n)+
-  geom_edges(aes(x = x, y = y, xend = xend, yend = yend),
-             subset(n,Related.cases!=""))+
+cov_net=ggplot(n,aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_edges(aes(),subset(n,Related.cases!=""),linetype="solid")+
   geom_nodes(aes(x = x, y = y,color=cluster),size=8)+
   geom_text(aes(x = x, y = y,label=name),check_overlap = TRUE)+
   guides(colour = guide_legend(title.position="top",title.hjust = 0.5,override.aes = list(size=3)))+
+  scale_color_viridis_d(na.value="grey50")+
   theme_bw()+
   theme(panel.grid = element_blank(),
         axis.title = element_blank(),
@@ -88,6 +91,7 @@ cov_net=ggplot(n)+
         panel.border = element_blank(),
         legend.position = "bottom",
         legend.direction = "horizontal")
+
  
 cov_net
 
