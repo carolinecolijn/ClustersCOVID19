@@ -1,0 +1,191 @@
+---
+title: "singapore_model"
+author: "Michelle Coombe"
+date: "19/02/2020"
+output: html_document:
+  keep_md: TRUE
+---
+
+## Modeling initial Singapore data
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(deSolve)
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+```
+
+## Introduction
+
+This is an implementation and exploration of the susceptible-exposed-infectious (SEI) model in Wu et al, Lancet, https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)30260-9/fulltext to Singapore outbreak of the 2019 novel corona virus. Code based on Caroline Colijn's recreation of Wu et al's analysis. 
+
+## Data
+```{r}
+singapore <- read_csv("data/singapore_ncov_2019.csv")
+head(singapore)
+tail(singapore) #lots of rows with only NAs at the end; will need to figure out how many and remove them
+glimpse(singapore)
+colSums(is.na(singapore)) #There are 949 NAs in CaseID, and every case should have an ID, so use this to remove extra columns at end of imported object
+singapore <- singapore[!is.na(singapore$CaseID), ] #As of Feb 19, 2020 there should be 84 cases
+```
+
+## Data cleaning
+Need to change dates to date format and determine what is the earliest possible date of start of infection in Singapore
+```{r}
+singapore$date_onset_symptoms <- dmy(singapore$date_onset_symptoms)
+singapore$presumed_infected_date <- dmy(singapore$presumed_infected_date)
+singapore$date_confirmation <- dmy(singapore$date_confirmation)
+
+min(singapore$date_onset_symptoms, na.rm = T)  # "2020-01-20"; but there are NAs - can impute from presumed infected date and/or date of confirmation
+min(singapore$presumed_infected_date, na.rm = T)  # "2020-01-18"; but there are NAs
+min(singapore$date_confirmation, na.rm = T) # "2020-01-23"; no NAs 
+```
+
+Add a new column to provide the numeric day since the outbreak started in Singapore, where the start date is based on the first presumed date of infection
+```{r}
+singapore <- mutate(singapore, days_since_outbreak = as.numeric(presumed_infected_date - min(presumed_infected_date, na.rm = T)))
+```
+
+Group data per day since outbreak to give the number of cases per day
+*NOTE* this automatically removes missing data if no date of presumed infected date 
+*TODO* consider imputing data using confirmation date MINUS mean incubation period; should be pretty straight forward using mutate and an if_else statement (i.e. if value is not na, use that, otherwise impute as per formula)
+```{r}
+sp_daily = data.frame(day=0:max(singapore$days_since_outbreak, na.rm = T),  xd = vapply(0:max(singapore$days_since_outbreak, na.rm = T), 
+  function(x) sum(singapore$days_since_outbreak == x, na.rm = TRUE),
+ FUN.VALUE = 1)) 
+```
+
+## ODE specification
+Parameters for Singapore:
+
+Start date = date of first presumed infected date = Jan 18, 2020
+End date = Feb 19, 2020
+zt = 0 because no source of zoonotic infections (only human to human)
+S = Population Singapore = 5,638,700 people
+E = 0
+I = 2; don't hard code?? for now, based on Singapore data there are 2 cases presumed to be infected on Dec
+N = 5,638,700 people (found from online source, from 2018)
+DL = mean latent period = 6 (from CC's implementation of Wu's model)
+DI = mean infectious period = 8.4 - 6 (from CC's implementation of Wu's model)
+Lsi == Lsi = outbound air passengers (departures) from Singapore (to all countries) = 2,525,462 / 31 days = 81466.52 = 81467 per day
+Lis == Lis = inbound air passengers (arrivals) to Singapore (from all countries) = 2,714,369 / 31 days = 87560.29 = 87560 per day
+Air departures/arrivals are from https://data.gov.sg/dataset?q=Changi+Airport from Jan 2018
+Lwc = NA in Singapore as no finer resolution than country
+Lcw = NA in Sinapore as no finer resolution than country
+
+If want to include time-varying factors, include
+fw = Force of new introductions from Wuhan (up until Jan 23rd when travel ban took effect); ignore for now and just start with the two introductions 
+ban = what happens if Singapore starts a travel ban?
+
+
+```{r}
+sp_model <- function(t,state,pars) {
+  with(c(as.list(state),pars), {     # make it so we can use variable and par names
+# No source of zoonotic infections
+# No modeling of within Singapore travel as data is at the country level and infections should be spreading from the two initial cases and/or additional imported cases
+#    LcwT = LcwT*travelban(t) # 1 or 0 # we should add the travelban, control measures 
+#    LwcT = LwcT*travelban(t) # 1 or 0 # as anotther time-dep function
+    dSdt = -(S/N)*((R0/DI)*I) + Lis - (1/N)*(Lsi)*S
+    dEdt = (S/N)*((R0/DI)*I) -E/DL - (1/N)*(Lsi)*E
+    dIdt = E/DL - I/DI - (1/N)*(Lsi)*I
+    list(c(dSdt, dEdt, dIdt))
+  })
+}
+```
+
+Now specify the starting state, the time range, the parameters and the input functions. Wu et al modelled new introductions of cases each day, but we are assuming for the moment that Singapore cases all came from the original 2 cases. 
+
+```{r}
+state = c(S = 5638700, E = 2, I = 0)
+times = seq(0,50, by=0.1) 
+
+pars=list(N = 5638700, 
+          DL = 6, 
+          R0 = 2.6, 
+          DI = 8.4 - 6, 
+          Lsi = 81467, 
+          Lis = 87560)
+```
+
+Run the model
+```{r}
+out <-  as.data.frame(ode(y= state, times=times, func=sp_model, parms=pars))
+
+out$realtime <- out$time + min(singapore$presumed_infected_date, na.rm = T)
+
+ggplot(data = out, aes(x = realtime,y = E)) +
+      geom_line() 
+```
+Basically, this is exponential growth...
+
+## How does the prediction of exponential growth compare with the data from Singapore?
+To do this we need to set up the necessary functions for a likelihood model, and define the (negative log) likelihood.
+
+```{r}
+sp_loglike = function(out, pars, sp_daily) {
+  # get lambda_d from 'out' which is the model output 
+  ld <- vapply(sp_daily$day, function(x) getlambd(out, pars, x), FUN.VALUE = 1)
+  return( sum((-ld) + sp_daily$xd*(log(ld)) - log(factorial(sp_daily$xd))))
+  } 
+
+# this function computes lambda_d in Wu et al, for the days specified in our wufinal (or ccwufinal - offset for our alternative starting time)
+modelpreds = function(out, pars, sp_daily) {
+ ld <- vapply(sp_daily$day, function(x) getlambd(out, pars, x), FUN.VALUE = 1)
+ return(data.frame(day = sp_daily$day, prediction = ld, data = sp_daily$xd))
+}
+
+getlambd <- function(out, pars, day) {
+  try(if(var(diff(out$time)) >0.005) {  stop("approx integral assumes equal time steps")} )
+ try(if( max(out$time) < day) {stop("model simulation is not long enough for the data") })
+   if (day == min(out$time)) {ii =  which(out$time >= day & out$time < day + 1)
+   } else {   ii = which(out$time > day-1 & out$time <= day) }
+
+  dx <- out$time[ii[2]]-out$time[ii[1]]
+ft <- with(pars , {(Lsi/N)*(out$E[ii] + out$I[ii])})
+return(0.5 * (dx) * (ft[1] + 2*sum(ft[2:(length(ft) - 1)]) + ft[length(ft)]))
+}
+
+# returns NEG of log likelihood
+negloglike = function(R0, pars, sp_daily, state, times) {
+  pars$R0 <-  R0
+  out <- as.data.frame(ode(y= state, times=times,  func=sp_model(), parms=pars))
+  return(-sp_loglike(out,pars,sp_daily)) 
+  # NOTE optim will minimize by default, min ( -loglike) = max (log like)
+}
+```
+
+*TODO* can remove this next section I think...
+Make a plot showing the data and the model predictions. By eye, a high $R_0$ of 3.5 looks quite good - perhaps a bit too high. We can maximize the likelihood to estimate the $R_0$ value.
+```{r}
+mypars <- list(N=19000000, 
+               DL = 6,
+               R0=3.5, 
+               DI = 8.4 - 6, 
+               Lwi=3633, 
+               Liw=3546,
+               Lwc=502013, 
+               Lcw=487310, 
+               LwcCH=717226, 
+               LcwCH=810500,
+               startTime=as.Date("2019-11-29"),
+               endTime=as.Date("2020-01-27"))
+
+out = as.data.frame(ode(y= state, times=times,  func=ccwumodel, parms=cpars,
+                       chuinput=mychuinput))
+
+mp = modelpreds(out,cpars,ccwufinal) %>% gather(Source, casecounts, prediction:data)
+
+ggplot(data=mp, aes(x=day,y=casecounts,color=Source))+geom_point() #
+```
+
+We can use optim to estimate $R_0$ here. Wu et al used a Bayesian approach. We will get errors because optim expects more than one parameter to optimize over -- try it! Set up the function as a function of two parameters rather than one, and optimize them simultaneously. 
+
+```{r}
+myfit <- optim(2.5, 
+               function(R0) negloglike(R0, pars, sp_daily, state, times))
+
+myfit_Brent <- optim(2.5, 
+                     function(R0) negloglike(R0, pars, sp_daily, state, times),
+                     method = "Brent")
+```
