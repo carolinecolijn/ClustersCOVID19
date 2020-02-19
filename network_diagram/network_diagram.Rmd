@@ -52,14 +52,14 @@ nodes_sing=ncov_sing
 ```
 This chunk does not always have to be run, only if you need to generate a new set of coordinates for the network diagram. If you skip to the chunk below there is a step where you can load n, a df that already has the coordinates you will need 
 ```{r}
-cov_net=graph_from_data_frame(edges_reduced,vertices = nodes_sing,directed=TRUE)
-n=ggnetwork(cov_net)
-
+#cov_net=graph_from_data_frame(edges_reduced,vertices = nodes_sing,directed=TRUE)
+#n=ggnetwork(cov_net)
+#write.csv(n,"good_coords.csv")
 ```
 
 Load the dataset that has the coordinates mapped out, also convert the age coumn to an intger so that we can bin it for nice plotting.
 ```{r}
-
+n=read.csv("good.coords.csv")
 n$age=as.character(n$age)
 n$age=as.integer(n$age)
 n$age_bin=bin(n$age,nbins=5)
