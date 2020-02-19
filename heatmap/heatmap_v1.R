@@ -2,7 +2,7 @@ library(ggplot2)
 library(viridis)
 library(plotly)
 
-data1 <- read.csv("heatmap/heatmap_long_v2.csv")
+data1 <- read.csv("heatmap/heatmap_long_v3.csv")
 data1$date <- factor(data1$date,levels=unique(data1$date))
 data1$case <- factor(data1$case,levels=unique(data1$case))
 
