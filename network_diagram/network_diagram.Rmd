@@ -21,7 +21,7 @@ library(paletteer)
 
 load up all the links we have (just the first two column of the dataframe expanded)
 ```{r}
-ncov=read.csv(here("./data/singapore_ncov_2019.csv"))
+ncov=read.csv("../data/singapore_ncov_2019.csv")
 # ncov=read.csv("../../Data/nCov_Singapore_2019.csv")
 ncov_sing=ncov[ncov$country=="Singapore",]
 names(ncov_sing)[1] <- 'CaseID'
@@ -69,6 +69,7 @@ n=read.csv("../data/good_coords.csv")
 n$age=as.character(n$age)
 n$age=as.integer(n$age)
 n$age_bin=bin(n$age,nbins=5)
+write.csv(n,"../data/nCovNet.csv")
 ```
 Make the plot! 
 We can subset by 

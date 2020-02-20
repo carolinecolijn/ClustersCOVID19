@@ -6,51 +6,55 @@ library(tidyverse)
 library(ggplot2)
 library(plotly)
 library(ggnetwork)
-library(OneR)
-library(igraph)
-library(here)
+# library(OneR)
+# library(igraph)
+# library(here)
 library(viridis)
-library(paletteer)
 
-# rsconnect::deployApp('path/to/your/app')
 
 # Define UI for app that draws a histogram ----
-ui <- navbarPage(
-  # App title ----
-  title="nCov 2019 Clustering (Singapore)",
-  tabPanel("Network Diagram", 
-           plotOutput(outputId = "networkPlot", width = "100%", height = "800"),
-           selectInput(inputId = "subset", 
-                       label = "Choose an attribute to colour the group by:",
-                       choices = c("age", "cluster",
-                                   "hospital"),
-                       selected = "age"),),
-  tabPanel("Heatmap",
-           plotlyOutput(outputId = "heatmap", width = "100%", height = "800"),
+ui <- shinyUI(
+  navbarPage(
+    # App title ----
+    title = "nCov 2019 Clustering (Singapore)",
+    tabPanel("Network Diagram", 
+             plotlyOutput(outputId = "networkPlot", width = "100%", height = "800"),
+             selectInput(inputId = "subset", 
+                         label = "Choose an attribute to colour the group by:",
+                         choices = c("age", "cluster",
+                                     "hospital"),
+                         selected = "age"),
+    ),
+    tabPanel("Heatmap",
+             plotlyOutput(outputId = "heatmap", width = "100%", height = "750"),
+    ),
+    footer = HTML("<a href=\"https://github.com/yxblee/EpiCoronaHack_Cluster/blob/master/Data/nCov_Singapore_2019.csv\" style=\"font-size:24px\">Singapore COVID-19 Dataset (Updated as of February 19, 2020)</a>")
+    
   )
-
-  
-  # fluidPage(
-  # 
-  # titlePanel("Singapore nCov 2019 -- Network Diagram"),
-  # 
-  # 
-  # plotOutput(outputId = "networkPlot", width = "100%", height = "800"),
-  # selectInput(inputId = "subset", 
-  #             label = "Choose an attribute to colour the group by:",
-  #             choices = c("age", "cluster",
-  #                         "hospital"),
-  #             selected = "age")
-  #     
-  #   
-  #   # Main panel for displaying outputs ----
-  #   mainPanel(
-  #     
-  #     # Output: Plot ----
-  #     plotOutput(outputId = "plot",  width = "100%")
-  #     
-  #   )
-  # )
+    
+    
+    # fluidPage(
+    # 
+    # titlePanel("Singapore nCov 2019 -- Network Diagram"),
+    # 
+    # 
+    # plotOutput(outputId = "networkPlot", width = "100%", height = "800"),
+    # selectInput(inputId = "subset", 
+    #             label = "Choose an attribute to colour the group by:",
+    #             choices = c("age", "cluster",
+    #                         "hospital"),
+    #             selected = "age")
+    #     
+    #   
+    #   # Main panel for displaying outputs ----
+    #   mainPanel(
+    #     
+    #     # Output: Plot ----
+    #     plotOutput(outputId = "plot",  width = "100%")
+    #     
+    #   )
+    # )
+    
 )
 
 
@@ -63,14 +67,16 @@ server <- function(input, output) {
   # 1. It is "reactive" and therefore should be automatically
   #    re-executed when inputs (input$bins) change
   # 2. Its output type is a plot
-  output$networkPlot <- renderPlot({
+  output$networkPlot <- renderPlotly({
     
     varNet = read.csv("nCovNet.csv")
     
     # bins <- seq(min(x), max(x), length.out = input$bins + 1)
-    varNet$age = as.character(varNet$age)
-    varNet$age = as.integer(varNet$age)
-    varNet$age_bin = bin(varNet$age,nbins=5)
+    # varNet$age = as.character(varNet$age)
+    # varNet$age = as.integer(varNet$age)
+    # varNet$age_bin = bin(varNet$age,nbins=5)
+    
+    varNet = read.csv("nCovNet.csv")
     
     subset <- if(input$subset=="age") "age_bin" else input$subset
     
@@ -100,10 +106,13 @@ server <- function(input, output) {
   output$heatmap <- renderPlotly({
     
     varHeatmap = read.csv("heatmap_plot.csv")
-
+    
+    varHeatmap$date <- factor(varHeatmap$date,levels=unique(varHeatmap$date))
+    varHeatmap$case <- factor(varHeatmap$case,levels=unique(varHeatmap$case))
+    
     heatmap <- ggplot(
       varHeatmap, 
-      aes(x = date, y = case, fill = status_word,
+      aes(x = date, y = case, fill = status,
           text = paste("Case: ", case,
                        "<br>Date: ", date,
                        "<br>Status: ", status,
@@ -118,7 +127,7 @@ server <- function(input, output) {
       theme(axis.text.x = element_text(angle =60, hjust = 0.6, size = 8),
             axis.ticks.x = element_blank(), #remove x axis ticks
             axis.ticks.y = element_blank()) + #remove y axis ticks
-      scale_fill_viridis_d(direction = -1) +
+      scale_fill_viridis_c(direction = 1) +
       theme(panel.background = element_rect(fill = "white"))
     
     ggplotly(heatmap, tooltip = 'text')
