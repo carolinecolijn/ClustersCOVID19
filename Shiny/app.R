@@ -6,9 +6,6 @@ library(tidyverse)
 library(ggplot2)
 library(plotly)
 library(ggnetwork)
-# library(OneR)
-# library(igraph)
-# library(here)
 library(viridis)
 
 
@@ -18,7 +15,7 @@ ui <- shinyUI(
     # App title ----
     title = "nCov 2019 Clustering (Singapore)",
     tabPanel("Network Diagram", 
-             plotlyOutput(outputId = "networkPlot", width = "100%", height = "800"),
+             plotOutput(outputId = "networkPlot", width = "100%", height = "800"),
              selectInput(inputId = "subset", 
                          label = "Choose an attribute to colour the group by:",
                          choices = c("age", "cluster",
@@ -26,7 +23,7 @@ ui <- shinyUI(
                          selected = "age"),
     ),
     tabPanel("Heatmap",
-             plotlyOutput(outputId = "heatmap", width = "100%", height = "750"),
+             plotlyOutput(outputId = "heatmap", width = "100%", height = "1000"),
     ),
     footer = HTML("<a href=\"https://github.com/yxblee/EpiCoronaHack_Cluster/blob/master/Data/nCov_Singapore_2019.csv\" style=\"font-size:24px\">Singapore COVID-19 Dataset (Updated as of February 19, 2020)</a>")
     
@@ -67,7 +64,8 @@ server <- function(input, output) {
   # 1. It is "reactive" and therefore should be automatically
   #    re-executed when inputs (input$bins) change
   # 2. Its output type is a plot
-  output$networkPlot <- renderPlotly({
+  
+  output$networkPlot <- renderPlot({
     
     varNet = read.csv("nCovNet.csv")
     
@@ -82,8 +80,8 @@ server <- function(input, output) {
     
     cov_net=ggplot(varNet,aes(x = x, y = y, xend = xend, yend = yend))+
       geom_edges(aes(),subset(varNet,Related.cases!=""),linetype="solid")+
-      geom_nodes(aes(x = x, y = y,color=varNet[[subset]]),size=14)+
-      geom_text(aes(x = x, y = y,label=name),check_overlap = TRUE)+
+      geom_nodes(aes(color=varNet[[subset]]),size=14)+
+      geom_text(aes(label=name),check_overlap = TRUE)+
       guides(colour = guide_legend(title=subset, title.position="top",title.hjust = 0.5,override.aes = list(size=6)))+
       scale_color_viridis_d(na.value="grey50")+
       theme_bw()+

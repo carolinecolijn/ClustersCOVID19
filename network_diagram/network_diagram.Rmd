@@ -66,7 +66,7 @@ This chunk does not always have to be run, only if you need to generate a new se
 cov_net=graph_from_data_frame(edges_dist,vertices = nodes_sing,directed = FALSE)
 n=ggnetwork(cov_net)
 write.csv(n,"../data/good_coords.csv")
-saveRDS(n, "../data/cov_net.rds")
+# saveRDS(n, "../data/cov_net.rds")
 ```
 
 Load the dataset that has the coordinates mapped out, also convert the age coumn to an intger so that we can bin it for nice plotting.
