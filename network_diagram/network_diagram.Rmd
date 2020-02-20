@@ -48,7 +48,13 @@ edges$to=as.character(edges$to)
 edges$to=as.integer(edges$to)
 edges_reduced=edges[!(is.na(edges$to) | edges$to==""| edges$to==" "), ]
 
-edges_cluster=edges_reduced[edges_reduced$linktype=="Cluster.links",]
+```
+use this chunk to get rid of duplicate links...somehow
+```{r}
+edges_reduced[1:2] <- t(apply(edges_reduced[1:2], 1, sort))
+edges_dist=select(edges_reduced,from,to)
+edges_dist=distinct(edges_dist)
+
 ```
 
 Load the node info. This basically just supplies the metadata about each of the nodes in the edges df. 
@@ -57,7 +63,7 @@ nodes_sing=ncov_sing
 ```
 This chunk does not always have to be run, only if you need to generate a new set of coordinates for the network diagram. If you skip to the chunk below there is a step where you can load n, a df that already has the coordinates you will need 
 ```{r}
-cov_net=graph_from_data_frame(edges_reduced,vertices = nodes_sing,directed=TRUE)
+cov_net=graph_from_data_frame(edges_dist,vertices = nodes_sing,directed = FALSE)
 n=ggnetwork(cov_net)
 write.csv(n,"../data/good_coords.csv")
 saveRDS(n, "../data/cov_net.rds")
@@ -83,8 +89,8 @@ We can subset by
 
 cov_net=ggplot(n,aes(x = x, y = y, xend = xend, yend = yend))+
   geom_edges(aes(),subset(n,Related.cases!=""),linetype="solid")+
-  geom_nodes(aes(x = x, y = y,color=cluster),size=8)+
-  geom_text(aes(x = x, y = y,label=name),check_overlap = TRUE)+
+  geom_nodes(aes(color=cluster),size=8)+
+  geom_text(aes(label=name),check_overlap = TRUE)+
   guides(colour = guide_legend(title.position="top",title.hjust = 0.5,override.aes = list(size=3)))+
   scale_colour_viridis_d(na.value="lightgrey")+
   theme_bw()+
