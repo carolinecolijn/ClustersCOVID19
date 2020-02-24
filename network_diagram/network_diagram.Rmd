@@ -1,7 +1,8 @@
 ---
-title: "Network data cleaning and plotting"
-author: "Emma Garlock"
-date: "2/18/2020"
+title: "Network Data Preprocessing & Plotting"
+author: "Emma Garlock; Y. Brian Lee"
+date: "18/02/2020"
+updated: "23/02/2020"
 output: html_document
 ---
 
@@ -9,6 +10,7 @@ output: html_document
 
 Load all the libraries we will need 
 ```{r}
+# getwd()
 library(ggplot2)
 library(tidyverse)
 library(ggnetwork)
@@ -21,61 +23,60 @@ library(paletteer)
 
 load up all the links we have (just the first two column of the dataframe expanded)
 ```{r}
-ncov=read.csv("../data/singapore_ncov_2019.csv")
-# ncov=read.csv("../../Data/nCov_Singapore_2019.csv")
-ncov_sing=ncov[ncov$country=="Singapore",]
+ncov = read.csv("../data/COVID-19_Singapore.csv")
+# ncov=read.csv("../../Data/COVID-19_Singapore.csv")
+ncov_sing = ncov[ncov$country == "Singapore", ]
 names(ncov_sing)[1] <- 'CaseID'
 ```
 
 
 ```{r}
-links_two=ncov_sing[,c(1:3)]
-links_condense=gather(links_two,key="linktype",value="relations",Related.cases:Cluster.links)
+links_two = ncov_sing[, c(1:3)]
+links_condense = gather(links_two, key="linktype", value="relations", Related.cases:Cluster.links)
 ```
 
 ```{r}
-links_exp=separate(links_condense, 'relations', paste("relations", 1:21, sep=""), sep=",", extra="drop")
-links_long=gather(links_exp,rel,link,relations1:relations21)%>%select("CaseID","link","linktype")
-write.csv(links_long,("../data/links_long.csv"))
+links_exp = separate(links_condense, 'relations', paste("relations", 1:21, sep=""), sep=",", extra="drop")
+edges = gather(links_exp, rel, link, relations1:relations21) %>% select("CaseID", "link", "linktype")
+# write.csv(edges,("../data/links_long.csv"))
 ```
 make it clear that those links are the edges we will be using. Also omit any of the cases that don't have  links to others in the dataset 
 ```{r}
-edges=links_long
-names(edges)=c("from","to","linktype")
-edges$from=as.character(edges$from)
-edges$from=as.integer(edges$from)
-edges$to=as.character(edges$to)
-edges$to=as.integer(edges$to)
-edges_reduced=edges[!(is.na(edges$to) | edges$to==""| edges$to==" "), ]
+names(edges) = c("from", "to", "linktype")
+edges$from = as.character(edges$from)
+edges$from = as.integer(edges$from)
+edges$to = as.character(edges$to)
+edges$to = as.integer(edges$to)
+edges_reduced = edges[!(is.na(edges$to) | edges$to == "" | edges$to == " "), ]
 
 ```
 use this chunk to get rid of duplicate links...somehow
 ```{r}
 edges_reduced[1:2] <- t(apply(edges_reduced[1:2], 1, sort))
-edges_dist=select(edges_reduced,from,to)
-edges_dist=distinct(edges_dist)
+edges_dist = select(edges_reduced, from, to)
+edges_dist = distinct(edges_dist)
 
 ```
 
 Load the node info. This basically just supplies the metadata about each of the nodes in the edges df. 
 ```{r}
-nodes_sing=ncov_sing
+nodes_sing = ncov_sing
 ```
 This chunk does not always have to be run, only if you need to generate a new set of coordinates for the network diagram. If you skip to the chunk below there is a step where you can load n, a df that already has the coordinates you will need 
 ```{r}
-cov_net=graph_from_data_frame(edges_dist,vertices = nodes_sing,directed = FALSE)
-n=ggnetwork(cov_net)
-write.csv(n,"../data/good_coords.csv")
+cov_net = graph_from_data_frame(edges_dist, vertices = nodes_sing, directed = FALSE)
+n = ggnetwork(cov_net)
+# write.csv(n, "../data/cov_net.csv")
 # saveRDS(n, "../data/cov_net.rds")
 ```
 
 Load the dataset that has the coordinates mapped out, also convert the age coumn to an intger so that we can bin it for nice plotting.
 ```{r}
-n=read.csv("../data/good_coords.csv")
-n$age=as.character(n$age)
-n$age=as.integer(n$age)
-n$age_bin=bin(n$age,nbins=5)
-write.csv(n,"../data/nCovNet.csv")
+# n = read.csv("../data/cov_net.csv")
+n$age = as.character(n$age)
+n$age = as.integer(n$age)
+n$age_bin = bin(n$age, nbins = 5)
+write.csv(n, "../data/COVID-19_Singapore_Network_plot.csv")
 ```
 Make the plot! 
 We can subset by 
@@ -87,13 +88,15 @@ We can subset by
  * travel_history_location 
 ```{r}
 
-cov_net=ggplot(n,aes(x = x, y = y, xend = xend, yend = yend))+
-  geom_edges(aes(),subset(n,Related.cases!=""),linetype="solid")+
-  geom_nodes(aes(color=cluster),size=8)+
-  geom_text(aes(label=name),check_overlap = TRUE)+
-  guides(colour = guide_legend(title.position="top",title.hjust = 0.5,override.aes = list(size=3)))+
-  scale_colour_viridis_d(na.value="lightgrey")+
-  theme_bw()+
+cov_net = ggplot(n, aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_edges(aes(), subset(n, Related.cases != ""), linetype="solid") +
+  geom_nodes(aes(color=cluster),size=8) +
+  geom_text(aes(label=name), check_overlap = TRUE) +
+  ggtitle("COVID-19 Singapore Cluster Network") +
+  guides(colour = guide_legend(title.position="top", title.hjust = 0.5, override.aes = list(size=3))) +
+  scale_colour_viridis_d(na.value="lightgrey") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) + #centre main title
   theme(panel.grid = element_blank(),
         axis.title = element_blank(),
         axis.line = element_blank(),
