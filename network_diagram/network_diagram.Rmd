@@ -1,6 +1,6 @@
 ---
-title: "Network Data Preprocessing & Plotting"
-author: "Emma Garlock; Y. Brian Lee"
+title: "Cluster Network Data Preprocessing & Plotting"
+author: "Emma Garlock; Yen-Hsiang (Brian) Lee"
 date: "18/02/2020"
 updated: "23/02/2020"
 output: html_document
