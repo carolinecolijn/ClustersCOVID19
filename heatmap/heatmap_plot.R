@@ -1,3 +1,11 @@
+# ---
+# title: "Progression Heatmap Data Preprocessing & Plotting"
+# author: "Venus Lau; Yen-Hsiang (Brian) Lee"
+# date: "19/02/2020"
+# updated: "23/02/2020"
+# ---
+
+
 # getwd()
 
 ##########
@@ -40,7 +48,7 @@ p1 <- ggplot(
   data, 
   # aes(x = date, y = case, fill = status_word,
   aes(x = date, y = case, fill = status,
-      text = paste("Case: ", case,
+      text = paste("Case: ", case_detailed,
                    "<br>Date: ", date,
                    "<br>Status: ", status_word,
                    "<br>Cluster: ", cluster,

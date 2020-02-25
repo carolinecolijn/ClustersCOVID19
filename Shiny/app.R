@@ -28,8 +28,8 @@ ui <- shinyUI(
     ),
     
     # Footer link ---
-    footer = HTML("<a href=\"https://github.com/yxblee/EpiCoronaHack_Cluster/blob/master/Data/COVID-19_Singapore.csv\" style=\"font-size:24px\">
-                  Singapore COVID-19 Dataset (Updated as of February 19, 2020)</a>")
+    footer = HTML("<a href=\"https://github.com/yxblee/EpiCoronaHack_Cluster/blob/master/Data/Singapore/COVID-19_Singapore.csv\" style=\"font-size:24px\">
+                  Singapore COVID-19 Dataset (Updated as of February 23, 2020)</a>")
     
   )
     
@@ -115,7 +115,7 @@ server <- function(input, output) {
       varHeatmap, 
       # aes(x = date, y = case, fill = status_word,
       aes(x = date, y = case, fill = status,
-          text = paste("Case: ", case,
+          text = paste("Case: ", case_detailed,
                        "<br>Date: ", date,
                        "<br>Status: ", status_word,
                        "<br>Cluster: ", cluster,
