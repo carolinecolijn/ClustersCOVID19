@@ -6,9 +6,10 @@
 ###~~ 1. Load packages and data ~~###
 library(tidyverse)
 library(lubridate)
-library(EpiEstim) #not sure if we will need this quite yet or not...
+#library(EpiEstim) #not sure if we will need this quite yet or not...
 
-sp.cov <- read_csv("Clustering/data/COVID-19_Singapore.csv")
+#sp.cov <- read_csv("Clustering/data/COVID-19_Singapore.csv") #Hackathon dataset
+sp.cov <- read_csv("Clustering/data/COVID-19_Singapore - singapore_ncov_2019_fix.csv")
 
 # Ensure proper import and quick explore
 glimpse(sp.cov)
@@ -25,6 +26,8 @@ sp.cov <- rename(sp.cov, related_cases = starts_with("Related"),
 
 # Change date columns into date objects
 sp.cov <- mutate(sp.cov, presumed_infected_date = dmy(presumed_infected_date),
+                         last_poss_exposure = dmy(last_poss_exposure),
+                         symp_presumed_infector = dmy(symp_presumed_infector),
                          date_onset_symptoms = dmy(date_onset_symptoms),
                          date_quarantine = dmy(date_quarantine),
                          date_hospital = dmy(date_hospital),
@@ -33,6 +36,8 @@ sp.cov <- mutate(sp.cov, presumed_infected_date = dmy(presumed_infected_date),
 
 # make sure dates parsed properly
 range(sp.cov$presumed_infected_date, na.rm = T)
+range(sp.cov$last_poss_exposure, na.rm = T)
+range(sp.cov$symp_presumed_infector, na.rm = T)
 range(sp.cov$date_onset_symptoms, na.rm = T)
 range(sp.cov$date_quarantine, na.rm = T)
 range(sp.cov$date_hospital, na.rm = T)
@@ -50,13 +55,17 @@ table(sp.cov$presumed_reason)
 # Turn 'presumed_reason' into lower case and get trim any whitespace so don't have issues with case sensitivity, etc
 sp.cov$presumed_reason <- str_to_lower(sp.cov$presumed_reason)
 sp.cov$presumed_reason <- str_trim(sp.cov$presumed_reason)
+table(sp.cov$presumed_reason)
+sum(is.na(sp.cov$presumed_reason_group))
 
 # Make a new column where we group the 'presumed_reason' under a label (known relationship, gathering, wuhan travel) for each of the above three groups
-sp.cov <- mutate(sp.cov, presumed_reason_group = case_when(!is.na(str_match(presumed_reason, "symptom onset")) ~ "known relationship",
+sp.cov <- mutate(sp.cov, presumed_reason_group = case_when(!is.na(str_match(presumed_reason, "symptom onset|via")) ~ "known relationship",
                                                            !is.na(str_match(presumed_reason, "grace|grand|life|seletar|yong")) ~ "gathering",
                                                            !is.na(str_match(presumed_reason, "wuhan|airport")) ~ "wuhan travel", #'airport' case (CaseID 17) does not have 'wuhan' in reason but does have it under 'Case' column that they are from Wuhan
                                                            is.na(presumed_reason) ~ NA_character_,
                                                            TRUE ~ "other")) #should not be any other, so is just a double check this has run correctly, especially as dataset grows
+table(sp.cov$presumed_reason_group)
+sum(is.na(sp.cov$presumed_reason_group))
 
 # Split the "presumed_infected_date" into multiple columns, based on the grouping from the 'presumed_reason_group' 
   #so that how the date of presumed infection is derived consistently
@@ -81,7 +90,88 @@ sum(is.na(sp.cov$date_sympt_presumed_infector))
   #Maybe wait until look at case-pairs so I'm not making erroneous assumptions
 
 
-###~~~ 3. Need to reshape data so that make links between caseID and each possible infector
+###~~~ 3. Need to reshape data so that make links between caseID and each possible infector - USING ONLY 'KNOWN RELATIONSHIP' RELATED CASES ~~~###
+# Select only individuals who are suspected to have acquired COVID-19 directly through a known close relationship with another case
+related <- filter(sp.cov, presumed_reason_group == "known relationship")
+
+# Make sure we have info on all the primary cases in here too
+related$relationship_notes
+related$related_cases
+related$presumed_reason
+related$CaseID
+
+# Nope, missing all of the potential primary cases who are presumed infectors; based on 'presumed_reason' column
+  #The primary cases that are missing are are CaseIDs 13, 26, 50, 55, 83, 91, 59, 41, [72 - have] , 82
+primaries <- c(13, 26, 50, 55, 83, 91, 59, 41, 82)
+m.related <- filter(sp.cov, CaseID %in% primaries)
+
+related <-  bind_rows(related, m.related)
+
+# Need to have a couple of columns that list the possible infectors; will need to do a hard code work-around for the time being
+
+related <- mutate(related, poss_infectors = related_cases)
+related$CaseID
+related$presumed_reason
+
+related[1, "poss_infectors"] <- c("13, 26")
+related[2, "poss_infectors"] <- c("50, 55")
+related[3, "poss_infectors"] <- c("83, 91")
+related[4, "poss_infectors"] <- c("59")
+related[5, "poss_infectors"] <- c("41")
+related[6, "poss_infectors"] <- c("72") #Note that 59 is NOT listed as related to Case 79; CaseID 79 is a family member of 72; while CaseID 72 is a contact of CaseID 59
+related[7, "poss_infectors"] <- c("82")
+related[8:nrow(related), "poss_infectors"] <- NA
+
+# Split into separate columns
+related <- separate(related,
+                    col = poss_infectors,
+                    into = paste("contactID", 1:2, sep = "_"),
+                    fill = "right")
+
+# Turn into numeric values
+related <- mutate(related, 
+                    contactID_1 = as.numeric(contactID_1),
+                    contactID_2 = as.numeric(contactID_2))
+
+
+# Select down to critical columns for serial interval analysis
+singapore <- select(related, c(CaseID, date_onset_symptoms, contactID_1, contactID_2, symp_presumed_infector,
+                               presumed_infected_date, presumed_reason, relationship_notes, additional_information))
+View(singapore) 
+  #To see which cases are linked and to ensure the symp_presumed_infector is actually the date of the earliest onset 
+    #of symptoms from listed possible infectors (initially as text under presumed_reason column)
+
+# Fix discrepancies
+## NOTE: can remove this section once have updated master google file ##
+  #CaseID 66 changed to 2020-01-23 for date of onset of symptoms, based on earliest date from either of case 83 or 91; 
+    #currently listed as 2020-01-25 which is mid-way bewteen dates of onset for both presumed infectors
+  singapore$symp_presumed_infector[singapore$CaseID == 66] <- ymd("2020-01-23")
+  
+  #CaseID 79 changed to 2020-02-10, based on the earliest date of onset of symptoms from case 72; this was originally listed as date of onset of symptoms from case 52 (2020-02-07), 
+    #but based on info provided, contact is between 72 (family member) and not directly to case 52
+  singapore$symp_presumed_infector[singapore$CaseID == 79] <- ymd("2020-02-10")
+  
+  #CaseIDs 83 and 91 both have dates (2020-01-19) currently listed under date of onset of symptoms, but no caseID for presumed infector (any column)
+    #I suspect this relates to the life church gathering, so symp_presumed_infector should be changed to NA
+  
+  # Case 83 and 89 attended Life Church and were likely infected by Case 8 and 9, hence the date of Jan 19
+    #Not listed here - need to look under cases 8 and 9 to find that info, so I am probably missing other cases too!!
+  
+  #TODO: go through sheet manually to determine all the direct links
+  
+  
+rm(primaries, m.related)
+
+
+###~~~ 4. Save dataset for easier access for R0 and serial interval analyses ~~~###
+write_csv(singapore, path = "Clustering/data/singapores_pairs_Feb25.csv")
+
+
+
+######################## BELOW: Still a work in progress ######################################################################
+###~~~ 3. Need to reshape data so that make links between caseID and each possible infector - USING ALL RELATED CASES ~~###
+  #Although on further inspection, this includes cases related through multiple ways (ie some gatherings, some direct known contacts, but also misses some gatherings)
+    #So probably need to inspect/clean this further (ie add all case IDs listed under 'related_cases' and 'cluster_links' columns)
 # Subset data so that it contains only those with related cases
 pairs <- filter(sp.cov, !is.na(related_cases))
 glimpse(pairs)
@@ -127,7 +217,9 @@ missing <- sp.cov %>%
 pairs2 <- bind_rows(pairs2, missing)
 
 # Add column for date of symptoms of each contact ID in the row for each Case
-  
+  #TODO: still not running quite correctly; seems to get stuck when missing rows where the CaseID for the potential infector is not in the dataset
+    #See if adding missing data above helps or not...
+
 caseids <- unique(pairs2$CaseID)
 contacts.list <- list()
 case.list <- list()
@@ -162,12 +254,7 @@ for(i in seq(caseids)){
 rm(p, q, contactids, caseids)
 
 ######################## BELOW: To remove eventually???????? ######################################################################
-# Select down to the most useful columns for this analysis to make it easier to read
-pairs <- select(pairs, c(CaseID, contactID, date_sympt_presumed_infector, Case, 
-                         relationship_notes, presumed_reason_group, date_onset_symptoms,
-                         date_confirmation, age, sex, country, additional_information))
-
-
+### 4. Quick Exploration
 # Summarize info for each CaseID 
 caseID.summary <- pairs %>% 
                  group_by(CaseID) %>% 
