@@ -1,7 +1,10 @@
 # EpiCoronaHack Team Cluster
 
+See our [**Shiny R app & project page here**](https://yxblee.shinyapps.io/nCovClustering/ "nCov 2019 Singapore Clustering Project Page") for demo.
+
 ## Members 
-* [Brian Lee](https://github.com/yxblee)
+
+* [Y. Brian Lee](https://github.com/yxblee)
 * Delin Chen
 * [Emma Garlock](https://github.com/esgarlock)
 * [Lauren Tindale](https://github.com/ltindale)
@@ -15,8 +18,8 @@
 84 confirmed cases as of February 19, 2019. The data was scraped from press releases from the Ministry of Health Singapore [website](https://www.moh.gov.sg/covid-19). 
 
 ### Curation of Singapore Cases
-Centralize all details of the Singapore cases into an analysis-friendly text file. 
-These includes
+Centralize all details of the Singapore cases into an analysis-friendly text file. [Relative link to copy of dataset](../Data/nCov_Singapore_2019.csv). \
+These include:
 - Relevant dates: presumed infection, symptom onset, hospitalization, case confirmation, hospital discharge
 - Travel history
 - Citizenship

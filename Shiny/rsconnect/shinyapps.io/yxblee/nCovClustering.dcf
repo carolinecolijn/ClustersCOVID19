@@ -5,8 +5,8 @@ account: yxblee
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1836578
-bundleId: 2813477
+bundleId: 2826513
 url: https://yxblee.shinyapps.io/nCovClustering/
-when: 1582154419.66972
+when: 1582592789.82543
 asMultiple: FALSE
 asStatic: FALSE
