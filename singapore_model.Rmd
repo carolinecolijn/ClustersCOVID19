@@ -88,8 +88,11 @@ sp_model <- function(t, state, pars) {
 #    LcwT = LcwT*travelban(t) # 1 or 0 # we should add the travelban, control measures 
 #    LwcT = LwcT*travelban(t) # 1 or 0 # as anotther time-dep function
     dSdt = -(S/N)*((R0/DI)*I) + Lis - (1/N)*(Lsi)*S
+#    dSdt = -(S/N)*((R0/DI)*I) + Lis - (1/N)*(Lsi*0.98)*S  #Ex of potential hard code way to continue to introduce new infections throughout the outbreak; recall Lsi will have to add up to 1 across all compartments; so here only 98% of incoming travelers are still sucesptible the other 2% are in E and I categories
     dEdt = (S/N)*((R0/DI)*I) -E/DL - (1/N)*(Lsi)*E
+#    dEdt = (S/N)*((R0/DI)*I) -E/DL - (1/N)*(Lsi)*E  #Ex of intro new infections during outbreak
     dIdt = E/DL - I/DI - (1/N)*(Lsi)*I
+#    dIdt = E/DL - I/DI - (1/N)*(Lsi*0.01)*I  #Ex of intro new infections during outbreak, at a rate of 1% of incoming travellers are infected (I think?)
     list(c(dSdt, dEdt, dIdt))
   })
 }
