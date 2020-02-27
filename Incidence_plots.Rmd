@@ -1,0 +1,35 @@
+---
+title: "Incidence plots"
+author: "Michelle Coombe"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load packages and data
+```{r}
+library(tidyverse)
+library(lubridate)
+library(incidence)
+
+s.data <- read_csv("data/COVID-19_Singapore - singapore_ncov_2019_fix.csv")
+t.data <- read_csv("Tianjin135casesFeb22.csv")
+
+#Need to replace one date which is labelled as "none" with NA
+t.data$symptom_onset[which(t.data$symptom_onset == "none")] <- NA
+```
+There are two possible choices of dates we can use to demonstrate the incidence curve of the epidemic: the date of symptom onset or the date of COVID-19 confirmation. The date of symptom onset is biologically more consistent (there is nothing about the nature of the virus that would mean each case would be confirmed on the same day post-infection); however, there is missing data for 10 cases (in both Tianjin and Singapore datasets). Therefore, I will make the curves using the date of symptom onset, but will also run the same analysis using the date of confirmation as a sensitivity analysis to make sure it does not impact the results.
+
+```{r}
+head(s.data$date_onset_symptoms)
+sum(is.na(s.data$date_onset_symptoms)) #10
+s.sympt <- dmy(s.data$date_onset_symptoms)
+s.sympt <- s.sympt[which(!is.na(s.sympt))]
+
+head(t.data$symptom_onset)
+sum(is.na(t.data$symptom_onset)) #10
+t.sympt <- dmy(t.data$symptom_onset)
+t.sympt <- t.sympt[which(!is.na(t.sympt))]
+```
