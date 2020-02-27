@@ -110,7 +110,7 @@ cov_net = ggplot(n, aes(x = x, y = y, xend = xend, yend = yend)) +
 cov_net
 
 ```
-
+#####THIS CODE IS A MESS RIGHT NOW-working to fix this right now but I wanted to push it########
 
 Tianjin Data
 ```{r}
@@ -128,7 +128,12 @@ Using the edges from the Tianjin.Rmd cluster
 edges[1:2] <- t(apply(edges[1:2], 1, sort))
 edges_dist = select(edges, from, to)
 edges_dist = distinct(edges_dist)
-edges_cleaned=read.csv(here("Clustering/tianjin_edges_clean.csv"))
+
+edges_full=read.csv(here("Clustering/tianjin_edges_clean.csv"))
+edges_cleaned=edges_full[,c(2,4)]
+names(edges_cleaned)=c("name","cluster")
+
+
 
 ```
 
@@ -137,13 +142,18 @@ edges_cleaned=read.csv(here("Clustering/tianjin_edges_clean.csv"))
 tj_net=graph_from_data_frame(edges_dist,vertices = tdata,directed = FALSE)
 ntj=ggnetwork(tj_net)
 
+ntj_clean=merge(ntj,edges_cleaned,by="name")
+ntj_clean$case_num=str_remove_all(ntj_clean$name,"[TJ]")
+
 
 ```
 ```{r}
-tj_cov_net = ggplot(ntj, aes(x = x, y = y, xend = xend, yend = yend))+
-  geom_edges(aes(), linetype="solid") +
-  geom_nodes() +
-  geom_text(aes(label=name), check_overlap = TRUE)+
+tj_cov_net = ggplot(ntj_clean, aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_edges(aes(), linetype="solid",colour="black") +
+  geom_nodes(aes(color=cluster),size=8) +
+  geom_text(aes(label=case_num), check_overlap = TRUE)+
+  scale_color_viridis_d()+
+  ggtitle("Clusters of COVID-19 cases in Tianjin, China")+
   theme_blank()
 
 tj_cov_net
@@ -156,3 +166,43 @@ edges_dist = select(edges, from, to)
 edges_dist = distinct(edges_dist)
 ```
 
+```{r}
+edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"coworker ","coworker")
+edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"confirmed patient","unknown")
+edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"not specified","unknown")
+
+cluster_list=(unique(edges_cleaned$cluster))
+
+
+
+```
+```{r}
+for (c in cluster_list){
+  assign(paste0("list",c),edges_cleaned[edges_cleaned$cluster==c,1])
+}
+
+
+```
+```{r}
+edges_full$cluster_list=ifelse(edges_full$infection_source_named=="Wuhan",list(as.character(listWuhan)),
+                            ifelse(edges_full$infection_source_named=="Wuhan; train import",list(as.character(`listWuhan; train import`)),
+                            ifelse(edges_full$infection_source_named=="unkown",list(as.character(listunknown)),
+                            ifelse(edges_full$infection_source_named=="travel",list(as.character(`listtravel `)),
+                            ifelse(edges_full$infection_source_named=="train",list(as.character(listtrain)),
+                            ifelse(edges_full$infection_source_named=="mall",list(as.character(listmall)),
+                            ifelse(edges_full$infection_source_named=="Hubei",list(as.character(listHubei)), 
+                            ifelse(edges_full$infection_source_named=="coworker",list(as.character(listcoworker)),
+                            ifelse(edges_full$infection_source_named==" close contact ",list(as.character(`list close contact `)),NA
+                                   )))))))))
+edges_full$contact_list=paste(edges_full$edge1,edges_full$edge2,edges_full$edge3,edges_full$edge4,sep=",")
+
+edges_reduced=edges_full[,c(2,10,11)]
+edges_reduced$edge_list=as.character(edges_reduced$edge_list)
+edges_reduced$edge_list=gsub("^c\\(|\\)$", "", edges_reduced$edge_list)
+edges_reduced$edge_list=gsub('"', "", edges_reduced$edge_list)
+
+edges_long=gather(edges_reduced,type,links,edge_list,contact_list)
+edges_long=separate(edges_long$links, paste("relations", 1:41, sep=""),sep=",",extra="drop")
+```
+
+                         
