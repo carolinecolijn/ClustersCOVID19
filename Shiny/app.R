@@ -29,7 +29,7 @@ ui <- shinyUI(
     
     # Footer link ---
     footer = HTML("<a href=\"https://github.com/yxblee/EpiCoronaHack_Cluster/blob/master/Data/Singapore/COVID-19_Singapore.csv\" style=\"font-size:24px\">
-                  Singapore COVID-19 Dataset (Updated as of February 23, 2020)</a>")
+                  Singapore COVID-19 Dataset (Updated as of February 26, 2020)</a>")
     
   )
     
