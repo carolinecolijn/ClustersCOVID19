@@ -112,4 +112,47 @@ cov_net
 ```
 
 
+Tianjin Data
+```{r}
+tj=read.csv(here("Clustering/Tianjin135casesFeb22.csv"))
+edges_unclean=tj[,c(1,7)]
+edges_unclean$close_conn=str_extract_all(edges_unclean$Infection_source, regex("TJ\\d+"))
+edges_unclean$close_conn=ifelse(edges_unclean$close_conn=="character(0)",as.character(edges_unclean$Infection_source),edges_unclean$close_conn)
+edges_unclean$close_conn=gsub("^c\\(|\\)$", "", edges_unclean$close_conn)
+
+
+write.csv(edges_unclean,here("Clustering/tianjin_edges.csv"))
+```
+Using the edges from the Tianjin.Rmd cluster 
+```{r}
+edges[1:2] <- t(apply(edges[1:2], 1, sort))
+edges_dist = select(edges, from, to)
+edges_dist = distinct(edges_dist)
+edges_cleaned=read.csv(here("Clustering/tianjin_edges_clean.csv"))
+
+```
+
+```{r}
+
+tj_net=graph_from_data_frame(edges_dist,vertices = tdata,directed = FALSE)
+ntj=ggnetwork(tj_net)
+
+
+```
+```{r}
+tj_cov_net = ggplot(ntj, aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_edges(aes(), linetype="solid") +
+  geom_nodes() +
+  geom_text(aes(label=name), check_overlap = TRUE)+
+  theme_blank()
+
+tj_cov_net
+
+```
+
+```{r}
+edges[1:2] <- t(apply(edges[1:2], 1, sort))
+edges_dist = select(edges, from, to)
+edges_dist = distinct(edges_dist)
+```
 

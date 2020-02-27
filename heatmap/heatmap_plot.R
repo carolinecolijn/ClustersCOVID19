@@ -96,7 +96,7 @@ p_static=ggplot(
 
 p_static
 
-ggsave("Clustering/heatmap/heatmap_static.png",plot=p_static, device="png",width = 10,height = 8,units="in")
+ggsave("Clustering/heatmap/heatmap_static.png",plot=p_static, device="png",width = 12,height = 8,units="in")
 
 
  
