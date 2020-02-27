@@ -1,0 +1,55 @@
+---
+title: "Singapore figures"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(viridis)
+library(dplyr)
+library(plotly)
+library(scales)
+
+
+data <- read.csv("../data/COVID-19_Singapore.csv", na.strings=c("","NA"))
+
+data$date_hospital <- as.Date(data$date_hospital, "%d/%m/%Y")
+data$date_discharge <- as.Date(data$date_discharge, "%d/%m/%Y")
+
+data$dummy_hosdates <- sort(data$date_hospital)
+data$dummy_value <- 1
+
+data$dummy_disdates <- sort(data$date_discharge, na.last = TRUE)
+
+```
+
+
+```{r cases by date}
+
+cols <- c("Cumulative hospitalized"="#440154FF", "Cumulative discharged"="#1F968BFF", "Hospitalized per day"="#39568CFF")
+
+data %>%
+ggplot() +
+  geom_bar(aes(x = date_hospital), fill = "#39568CFF") +
+  geom_line(aes(x = dummy_hosdates, y = cumsum(dummy_value), color = "Cumulative hospitalized"), size = 1) +
+  geom_line(aes(x = dummy_disdates, y = cumsum(dummy_value), color = "Cumulative discharged"), size = 1) +
+
+  geom_blank(aes(color = "Hospitalized per day")) +
+  xlab(label = "Date") +
+  ylab(label = "# Cases") +
+  ggtitle(label = "Singapore COVID-19 Cases") +
+  theme(plot.title = element_text(hjust = 0.5)) + #centre main title
+  theme(axis.text.x = element_text(angle =60, hjust = 0.6, size = 6.5),
+        axis.ticks.x = element_blank(), #remove x axis ticks
+        axis.ticks.y = element_blank()) + #remove y axis ticks
+  scale_x_date(date_breaks = "day") +
+  scale_y_continuous(breaks=pretty_breaks(n=20)) +
+  scale_colour_manual(name = "Legend", values = cols) +
+  theme(panel.background = element_rect(fill = "white"))
+
+
+```
+
+
