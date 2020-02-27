@@ -17,12 +17,12 @@ library(tidyverse)
 # data<-read.table("data/COVID-19_Singapore_Heatmap-table.tsv", header = TRUE, sep = "\t")
 data <- read.csv("data/COVID-19_Singapore_Heatmap-table.csv")
 
-data_long <- data %>% gather(key=date, value=status, X1.18.2020:X2.23.2020)
+data_long <- data %>% gather(key=date, value=status, X1.18.2020:X2.26.2020)
 
 data_long$date <- gsub('X', '0', data_long$date)
 data_long$date <- gsub('\\.', '\\/', data_long$date)
 
-write.csv(data_long, "data/COVID-19_Singapore_Heatmap_long_23-02-2020.csv")
+write.csv(data_long, "data/COVID-19_Singapore_Heatmap_long_26-02-2020.csv")
 
 ##########
 
@@ -33,7 +33,7 @@ library(ggplot2)
 library(viridis)
 library(plotly)
 
-data <- read.csv("data/COVID-19_Singapore_Heatmap_long_23-02-2020.csv")
+data <- read.csv("data/COVID-19_Singapore_Heatmap_long_26-02-2020.csv")
 data$date <- factor(data$date, levels=unique(data$date))
 data$case <- factor(data$case, levels=unique(data$case))
 
