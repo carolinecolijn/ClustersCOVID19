@@ -1,4 +1,3 @@
-Column1,Column2,Column3,Column4,Column5,Column6,Column7,Column8,Column9,Column10,Column11,Column12,Column13,Column14,Column15
 case_id,case,gender ,age,start_source,end_source,symptom_onset,confirm_date,death,symptom_type,Infection_source,infection_source_named,severity,recorrection,notes
 TJ1,"Case TJ1, 59F, Wuhan",F,59,5/1/2020,14/01/2020,14/01/2020,21/01/2020,,NA,Wuhan,Wuhan,severe,added end source,sometimes Tianjin didn't mention the patient's severity
 TJ10,"Case TJ10, 30M, Wuhan",M,30,18/01/2020,20/01/2020,24/01/2020,25/01/2020,,fever,Wuhan,Wuhan,normal,,
