@@ -143,11 +143,12 @@ ntj=ggnetwork(tj_net)
 
 ntj_clean=merge(ntj,edges_cleaned,by="name")
 ntj_clean$case_num=str_remove_all(ntj_clean$name,"[TJ]")
-
+#write.csv(ntj_clean,here("Clustering/network_diagram/tianjin_cluster_known_edges.csv"))
 
 ```
 There should be 89 edges in this distinct dataset 
 ```{r}
+#Upload the tianjin_cluster_known_edges.csv for this plot 
 tj_cov_net = ggplot(ntj_clean, aes(x = x, y = y, xend = xend, yend = yend))+
   geom_edges(aes(),linetype="solid",colour="black") +
   geom_nodes(aes(color=cluster),size=8) +
@@ -240,9 +241,11 @@ tj_net_ic=graph_from_data_frame(edges_dist_full,vertices = edges_full_df,directe
 ntj_ic=ggnetwork(tj_net_ic)
 
 ntj_ic$case_num=str_remove_all(ntj_ic$name,"[TJ]")
+#write.csv(ntj_ic,here("Clustering/network_diagram/tianjin_cluster_all_edges.csv"))
 
 ```
 ```{r}
+#upload tianjin_cluster_all_edges.csv for this plot
 tj_cov_net_ic = ggplot(ntj_ic, aes(x = x, y = y, xend = xend, yend = yend))+
   geom_edges(aes(),subset(ntj_ic,edge1!=""),linetype="solid",colour="black") +
   geom_nodes(aes(color=cluster),size=8) +
