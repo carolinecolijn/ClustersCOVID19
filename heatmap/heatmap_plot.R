@@ -15,14 +15,14 @@
 library(tidyverse)
 
 # data<-read.table("data/COVID-19_Singapore_Heatmap-table.tsv", header = TRUE, sep = "\t")
-data <- read.csv("data/COVID-19_Singapore_Heatmap-table.csv")
+data <- read.csv("Clustering/data/COVID-19_Singapore_Heatmap-table.csv")
 
-data_long <- data %>% gather(key=date, value=status, X1.18.2020:X2.26.2020)
+data_long <- data %>% gather(key=date, value=status, starts_with("X"))
 
 data_long$date <- gsub('X', '0', data_long$date)
 data_long$date <- gsub('\\.', '\\/', data_long$date)
 
-write.csv(data_long, "data/COVID-19_Singapore_Heatmap_long_26-02-2020.csv")
+write.csv(data_long, "Clustering/data/COVID-19_Singapore_Heatmap_long_26-02-2020.csv")
 
 ##########
 
@@ -42,7 +42,7 @@ data$status_word=ifelse(data$status == 0,"Unexposed",
                                 ifelse(data$status == 2,"Symptomatic",
                                        ifelse(data$status == 3,"Hospitalized","Discharged"))))
 
-write.csv(data, "data/COVID-19_Singapore_Heatmap_plot.csv")
+write.csv(data, "Clustering/data/COVID-19_Singapore_Heatmap_plot.csv")
 
 p1 <- ggplot(
   data, 
@@ -96,7 +96,7 @@ p_static=ggplot(
 
 p_static
 
-ggsave("Clustering/heatmap/heatmap_static.png",plot=p_static, device="png",width = 12,height = 8,units="in")
+ggsave("Clustering/heatmap/heatmap_static.pdf",plot=p_static, device="pdf",width = 12,height = 8,units="in")
 
 
  
