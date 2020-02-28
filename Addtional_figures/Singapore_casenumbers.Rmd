@@ -25,13 +25,6 @@ data$dummy_disdates <- sort(data$date_discharge, na.last = TRUE)
 
 ```
 
-```{r}
-d_ends <- data %>% 
-  top_n(1, dummy_hosdates) %>% 
-  pull(cumsum(dummy_value))
-
-```
-
 
 ```{r cases by date}
 
