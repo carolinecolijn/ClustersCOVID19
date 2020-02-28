@@ -14,7 +14,7 @@
 
 library(tidyverse)
 
-data<-read.table("COVID-19_Tianjin_Heatmap-table.csv", header = TRUE, sep = ",")
+data<-read.table("Clustering/data/COVID-19_Tianjin_Heatmap-table.csv", header = TRUE, sep = ",")
 
 #data_long <- data %>% gather(key=date, value=status, X1.18.2020:X2.21.2020)
 data_long <- data %>% gather(key=date, value=status, starts_with("X"))
@@ -25,7 +25,7 @@ data_long$date <- gsub('X', '0', data_long$date)
 data_long$date <- gsub('\\.', '\\/', data_long$date)
 
 
-write.csv(data_long, "tianjin_heatmap_long.csv", row.names=FALSE)
+write.csv(data_long, "Clustering/data/tianjin_heatmap_long.csv", row.names=FALSE)
 
 ##########
 
@@ -36,7 +36,7 @@ library(ggplot2)
 library(viridis)
 library(plotly)
 
-data <- read.csv("tianjin_heatmap_long.csv")
+data <- read.csv("Clustering/data/tianjin_heatmap_long.csv")
 data$date <- factor(data$date, levels=unique(data$date))
 data$case <- factor(data$case, levels=unique(data$case))
 
@@ -45,7 +45,7 @@ data$status_word=ifelse(data$status == 0,"Unexposed",
                                 ifelse(data$status == 2,"Symptomatic",
                                        ifelse(data$status == 3,"Confirmed","Dead"))))
 
-write.csv(data, "COVID-19_Tianjin_Heatmap_plot.csv")
+write.csv(data, "Clustering/data/COVID-19_Tianjin_Heatmap_plot.csv")
 
 
 ## Manually set the colours for the heatmap so that they are consistent with the Singapore heatmap
@@ -106,7 +106,7 @@ p_static=ggplot(
 
 p_static
 
-ggsave("heatmap_tianjin_static.png",plot=p_static, device="png",width = 10,height = 12,units="in")
+ggsave("Clustering/heatmap/heatmap_tianjin_static.pdf",plot=p_static, device="pdf",width = 10,height = 12,units="in")
 
 
  
