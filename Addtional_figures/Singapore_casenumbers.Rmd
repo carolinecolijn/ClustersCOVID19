@@ -25,6 +25,13 @@ data$dummy_disdates <- sort(data$date_discharge, na.last = TRUE)
 
 ```
 
+```{r}
+d_ends <- data %>% 
+  top_n(1, dummy_hosdates) %>% 
+  pull(cumsum(dummy_value))
+
+```
+
 
 ```{r cases by date}
 
@@ -41,7 +48,7 @@ ggplot() +
   ylab(label = "# Cases") +
   ggtitle(label = "Singapore COVID-19 Cases") +
   theme(plot.title = element_text(hjust = 0.5)) + #centre main title
-  theme(axis.text.x = element_text(angle =60, hjust = 0.6, size = 6.5),
+  theme(axis.text.x = element_text(angle =60, hjust = 1, size = 6.5),
         axis.ticks.x = element_blank(), #remove x axis ticks
         axis.ticks.y = element_blank()) + #remove y axis ticks
   scale_x_date(date_breaks = "day") +
