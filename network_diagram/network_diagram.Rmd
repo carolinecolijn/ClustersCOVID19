@@ -121,21 +121,31 @@ edges_unclean$close_conn=ifelse(edges_unclean$close_conn=="character(0)",as.char
 edges_unclean$close_conn=gsub("^c\\(|\\)$", "", edges_unclean$close_conn)
 
 
-write.csv(edges_unclean,here("Clustering/tianjin_edges.csv"))
+#write.csv(edges_unclean,here("Clustering/tianjin_edges.csv"))
 ```
+
 Using the edges from the Tianjin.Rmd cluster 
+
 ```{r}
+mynodes = tdata$case_id
+edges = data.frame(from=mynodes[9],to=mynodes[21],stringsAsFactors = F ) # i read this one manually 
+for (id in 1:nrow(tdata)) {
+tonode=tdata$case_id[id]
+fromnodes=str_extract_all(tdata$Infection_source[id], "TJ\\d+", simplify = T)
+  if (length(fromnodes)>0) {
+    for (k in 1:length(fromnodes)) {
+      edges=rbind(edges, c(fromnodes[k], tonode))
+    }
+  }
+}
+head(edges)
+edges=edges[-1,]
+edges=edges[-which(is.na(edges[,1])),]
 edges[1:2] <- t(apply(edges[1:2], 1, sort))
 edges_dist = select(edges, from, to)
 edges_dist = distinct(edges_dist)
-
-edges_full=read.csv(here("Clustering/tianjin_edges_clean.csv"))
-edges_cleaned=edges_full[,c(2,4)]
-names(edges_cleaned)=c("name","cluster")
-
-
-
 ```
+
 
 ```{r}
 
@@ -144,12 +154,14 @@ ntj=ggnetwork(tj_net)
 
 ntj_clean=merge(ntj,edges_cleaned,by="name")
 ntj_clean$case_num=str_remove_all(ntj_clean$name,"[TJ]")
-
+#write.csv(ntj_clean,here("Clustering/network_diagram/tianjin_cluster_known_edges.csv"))
 
 ```
+There should be 89 edges in this distinct dataset 
 ```{r}
+#Upload the tianjin_cluster_known_edges.csv for this plot 
 tj_cov_net = ggplot(ntj_clean, aes(x = x, y = y, xend = xend, yend = yend))+
-  geom_edges(aes(), linetype="solid",colour="black") +
+  geom_edges(aes(),linetype="solid",colour="black") +
   geom_nodes(aes(color=cluster),size=8) +
   geom_text(aes(label=case_num), check_overlap = TRUE)+
   scale_color_viridis_d()+
@@ -159,31 +171,48 @@ tj_cov_net = ggplot(ntj_clean, aes(x = x, y = y, xend = xend, yend = yend))+
 tj_cov_net
 
 ```
+Now goingn to try and get things to cluster more accurately and then show the more inportantant edges within those clusters 
 
+Tianjin Data-not the nice stuff that caroline already cleaned 
 ```{r}
-edges[1:2] <- t(apply(edges[1:2], 1, sort))
-edges_dist = select(edges, from, to)
-edges_dist = distinct(edges_dist)
+#tj=read.csv(here("Clustering/Tianjin135casesFeb22.csv"))
+edges_unclean=tdata
+edges_unclean$close_conn=str_extract_all(edges_unclean$Infection_source, regex("TJ\\d+"))
+#edges_unclean$close_conn=ifelse(edges_unclean$close_conn=="character(0)",as.character(edges_unclean$Infection_source),edges_unclean$close_conn)
+edges_unclean$close_conn=gsub("^c\\(|\\)$", "", edges_unclean$close_conn)
+
+head(edges_unclean)
+#write.csv(edges_unclean,here("Clustering/tianjin_edges.csv"))
 ```
 
+
 ```{r}
+tdata_cc=read.csv(here("Clustering/tianjin_edges_clean.csv"))
+colnames(tdata_cc)[4]="cluster"
+edges_cleaned=tdata_cc
 edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"coworker ","coworker")
 edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"confirmed patient","unknown")
 edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"not specified","unknown")
+edges_cleaned$edge_list=paste(paste(edges_cleaned$edge1,edges_cleaned$edge2,edges_cleaned$edge3,edges_cleaned$edge4,sep=","))
 
-cluster_list=(unique(edges_cleaned$cluster))
 
+edges_full_df=merge(edges_cleaned,edges_unclean,by="case_id")
+edges_full=edges_full_df[,c(1,9,15,22)]
+colnames(edges_full)[3]="infection_source_named"
 
 
 ```
+
 ```{r}
+cluster_list=(unique(edges_cleaned$cluster))
 for (c in cluster_list){
-  assign(paste0("list",c),edges_cleaned[edges_cleaned$cluster==c,1])
+  assign(paste0("list",c),edges_cleaned[edges_cleaned$cluster==c,2])
 }
 
 
 ```
 ```{r}
+
 edges_full$cluster_list=ifelse(edges_full$infection_source_named=="Wuhan",list(as.character(listWuhan)),
                             ifelse(edges_full$infection_source_named=="Wuhan; train import",list(as.character(`listWuhan; train import`)),
                             ifelse(edges_full$infection_source_named=="unkown",list(as.character(listunknown)),
@@ -192,17 +221,54 @@ edges_full$cluster_list=ifelse(edges_full$infection_source_named=="Wuhan",list(a
                             ifelse(edges_full$infection_source_named=="mall",list(as.character(listmall)),
                             ifelse(edges_full$infection_source_named=="Hubei",list(as.character(listHubei)), 
                             ifelse(edges_full$infection_source_named=="coworker",list(as.character(listcoworker)),
-                            ifelse(edges_full$infection_source_named==" close contact ",list(as.character(`list close contact `)),NA
-                                   )))))))))
-edges_full$contact_list=paste(edges_full$edge1,edges_full$edge2,edges_full$edge3,edges_full$edge4,sep=",")
+                            ifelse(edges_full$infection_source_named==" close contact ","NA","NA")))))))))
+                                
 
-edges_reduced=edges_full[,c(2,10,11)]
-edges_reduced$edge_list=as.character(edges_reduced$edge_list)
-edges_reduced$edge_list=gsub("^c\\(|\\)$", "", edges_reduced$edge_list)
-edges_reduced$edge_list=gsub('"', "", edges_reduced$edge_list)
 
-edges_long=gather(edges_reduced,type,links,edge_list,contact_list)
-edges_long=separate(edges_long$links, paste("relations", 1:41, sep=""),sep=",",extra="drop")
+edges_reduced=edges_full[,c(1,2,5)]
+edges_reduced$cluster_list=ifelse(edges_reduced$cluster_list=="NA",as.character(edges_reduced$edge_list),as.character(edges_reduced$cluster_list))
+edges_reduced$cluster_list=as.character(edges_reduced$cluster_list)
+edges_reduced$cluster_list=gsub("^c\\(|\\)$", "", edges_reduced$cluster_list)
+edges_reduced$cluster_list=gsub('"', "", edges_reduced$cluster_list)
+
+
+
+edges_long=separate(edges_reduced, 'cluster_list', paste("relations", 1:31, sep=""),sep=",",extra="drop")%>%select(-edge_list)
+edges_exp_long_na=gather(edges_long, rel, link, relations1:relations31)%>%select(-rel)
 ```
 
-                         
+```{r}
+edges_exp_long = edges_exp_long_na[!(is.na(edges_exp_long_na$link) | edges_exp_long_na$link == "NA" | edges_exp_long_na$link == ""),]
+names(edges_exp_long)=c("from","to")
+edges_exp_long=as.data.frame(apply(edges_exp_long,2,function(x)gsub('\\s+', '',x)))
+edges_exp_long[1:2] <- t(apply(edges_exp_long[1:2], 1, sort))
+edges_dist_full = distinct(edges_exp_long)
+
+```
+                   
+```{r}
+tdata_cc=tdata_cc[,-1]
+tj_net_ic=graph_from_data_frame(edges_dist_full,vertices = edges_full_df,directed = FALSE)
+ntj_ic=ggnetwork(tj_net_ic)
+
+ntj_ic$case_num=str_remove_all(ntj_ic$name,"[TJ]")
+#write.csv(ntj_ic,here("Clustering/network_diagram/tianjin_cluster_all_edges.csv"))
+
+```
+```{r}
+#upload tianjin_cluster_all_edges.csv for this plot
+tj_cov_net_ic = ggplot(ntj_ic, aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_edges(aes(),subset(ntj_ic,edge1!=""),linetype="solid",colour="black") +
+  geom_nodes(aes(color=cluster),size=8) +
+  geom_text(aes(label=case_num), check_overlap = TRUE)+
+  scale_color_viridis_d()+
+  ggtitle("Clusters of COVID-19 cases in Tianjin, China")+
+  theme_blank()
+
+tj_cov_net_ic
+
+#ggsave("tianjin_cluster_feb28v1.png",plot=tj_cov_net_ic,device="png",path=here("Clustering/network_diagram"))
+```
+
+
+
