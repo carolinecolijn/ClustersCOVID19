@@ -32,18 +32,19 @@ names(ncov_sing)[1] <- 'CaseID'
 
 
 ```{r}
-links_two = ncov_sing[, c(1:3)]
-links_condense = gather(links_two, key="linktype", value="relations", Related.cases:Cluster.links)
+links_two = ncov_sing[, c(1:2)]
+#links_condense = gather(links_two, key="linktype", value="relations", Related.cases:Cluster.links)
+
 ```
 
 ```{r}
-links_exp = separate(links_condense, 'relations', paste("relations", 1:21, sep=""), sep=",", extra="drop")
-edges = gather(links_exp, rel, link, relations1:relations21) %>% select("CaseID", "link", "linktype")
+links_exp = separate(links_two, 'Related.cases', paste("relations", 1:7, sep=""), sep=",", extra="drop")
+edges = gather(links_exp, rel, link, relations1:relations7) %>% select("CaseID", "link")
 # write.csv(edges,("../data/links_long.csv"))
 ```
 make it clear that those links are the edges we will be using. Also omit any of the cases that don't have  links to others in the dataset 
 ```{r}
-names(edges) = c("from", "to", "linktype")
+names(edges) = c("from", "to")
 edges$from = as.character(edges$from)
 edges$from = as.integer(edges$from)
 edges$to = as.character(edges$to)
@@ -110,7 +111,7 @@ cov_net = ggplot(n, aes(x = x, y = y, xend = xend, yend = yend)) +
 
  
 cov_net
-ggsave("singapore_static_network.pdf",plot=cov_net,device="pdf",path=here("network_diagram"),height=8,width=11,units="in")
+ggsave("singapore_static_network.pdf",plot=cov_net,device="pdf",height=8,width=11,units="in")
 ```
 ####Tianjin Data####
 
