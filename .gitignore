@@ -1,2 +1,6 @@
 additional_figures
 .DS_Store
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
