@@ -26,11 +26,9 @@ Thanks to EpiCoronaHack Cluster team. These data are manually entered from posti
 
 
 ```{r}
-spdata <- read_csv("COVID-19_Singapore - singapore_ncov_2019_fix.csv")
+spdata <- read_csv("~/EpiCoronaHack_Cluster/Clustering/data/COVID-19_Singapore.csv")
 # Ensure properly imported
 glimpse(spdata)
-head(spdata)
-tail(spdata)
 colSums(is.na(spdata))
 # Rename columns 2, 3 and 4 so no spaces
 spdata <- rename(spdata, related_cases = starts_with("Related"),
@@ -55,12 +53,10 @@ range(spdata$date_hospital, na.rm = T)
 range(spdata$date_confirmation, na.rm = T)
 range(spdata$date_discharge, na.rm = T)
 # Note that case 36 is listed has having symptoms 16 days AFTER being hospitalized; suspect a typo in the month, fixing: 
-spdata$date_onset_symptoms[spdata$CaseID==36] <- ymd("2020-01-24")
+# spdata$date_onset_symptoms[spdata$CaseID==36] <- ymd("2020-01-24")
 # Note that the date of symp_presumed_infector for CaseID 79 changed was originally listed as 2020-02-07 (based on online visualizations) but was changed to 2020-02-10, due to Feb 10, 2020 being on the earliest date of onset of symptoms from case 72, as from online info provided, presumed infective contact for CaseID 79 is from 72 (family member), rather than directly from case 52
 spdata$symp_presumed_infector[spdata$CaseID == 79] <- ymd("2020-02-10")
 # Change symp_presumed_infector to Feb 10, 2020 (date of symptom onset from caseID 72, the presumed infector)
-spdata$symp_presumed_infector[spdata$CaseID == 79] <- ymd("2020-02-10")
-# havesymp <- which(!is.na(spdata$date_onset_symptoms)) #index of cases that do not have info on date of symptom onset ; not sure I need this???
 spdata <- filter(spdata, !is.na(date_onset_symptoms)) #Remove all the cases that do not have info on date of symptom onset 
 # NOTE NOTE 12 of these, but they have a date of confiramation and dates of presumed infection - COULD FIX 
 ```
@@ -123,21 +119,79 @@ xlab="Days",
 ylab = "Overall probability of no symptoms yet")
 ```
 
-For a parametric estimate we remove any remaining NAs and use interval censoring, because we know only that exposure was some time between the minimum and maximum possible values. 
+
+I'll just try one where I stratify by whether the person has a last possible exposure given, or not. 
+
+```{r}
+spcopy = spdata; spcopy$has_last = as.factor(!(is.na(spdata$last_poss_exposure)))
+spcopyfit <- ic_par(Surv(spcopy$minIncTimes, spcopy$maxIncTimes, type="interval2") ~ has_last, data = spcopy, dist = "weibull")
+summary(spcopyfit) 
+
+getFitEsts(spcopyfit, newdata = data.frame(has_last=as.factor(TRUE)), p
+                      =c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975))
+getFitEsts(spcopyfit, newdata = data.frame(has_last=as.factor(FALSE)), p
+                      =c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975))
+# OK - so for those who have a last poss exposure we have inc of 5.22 days , and for everyone, 7.46 days (!) suggesting that using the infected times for those presumed
+# infectors is not correct. there are missing intermediate cases. 
+ggsurvplot(
+fit <- survfit(Surv(spcopy$minIncTimes, spcopy$maxIncTimes, type="interval2") ~ spcopy$has_last), data = spcopy, 
+xlab="Days",
+ylab = "Overall probability of no symptoms yet",
+surv.median.line = c('hv'))
+ggsave("inc_sing_by_haslastexp.pdf", height = 6, width = 8)
+```
+
+Based on this result I am going to create a supplementary  analysis using only those people who had a last possible exposure; then can create the same for all cases or for just those who don't. 
+
+ We use interval censoring, because we know only that exposure was some time between the minimum and maximum possible values. 
 
 ```{r}
 # sum(is.na(spdata$minIncTimes)) # 0
-spfit <- ic_par(Surv(spdata$minIncTimes, spdata$maxIncTimes, type="interval2") ~ 1, data = spdata, dist = "weibull")
+
+# to switch: choose from these two lines
+
+# spfirst = spcopy[which(spcopy$has_last ==TRUE),]
+spfirst = spdata 
+
+spfit <- ic_par(Surv(spfirst$minIncTimes, spfirst$maxIncTimes, type="interval2") ~ 1, data = spdata, dist = "weibull")
 summary(spfit)
+
+spfit_gamma<- ic_par(Surv(spfirst$minIncTimes, spfirst$maxIncTimes, type="interval2") ~ 1, data = spdata, dist = "gamma")
+summary(spfit_gamma)
+
+spfit_lnorm =  ic_par(Surv(spfirst$minIncTimes, spfirst$maxIncTimes, type="interval2") ~ 1, data = spdata, dist = "lnorm")
+summary(spfit_lnorm)
 ```
 
 The log of the shape parameter is `r spfit$coefficients[1]` $\pm$ `r sqrt(spfit$var[1,1])`, which gives a shape parameter of `r exp(spfit$coefficients[1])` with a 1.96-sd (in the log) giving the range (`r exp(spfit$coefficients[1]-1.96*sqrt(spfit$var[1,1]))`, `r exp(spfit$coefficients[1]+1.96*sqrt(spfit$var[1,1]))`).
 
 Similarly the log scale parameter is `r spfit$coefficients[2]` $\pm$ `r sqrt(spfit$var[2,2])`, which gives a scale parameter of `r exp(spfit$coefficients[2])` with a one-sd (in the log) giving the range (`r exp(spfit$coefficients[2]-1.96*sqrt(spfit$var[2,2]))`, `r exp(spfit$coefficients[2]+1.96*sqrt(spfit$var[2,2]))`). 
 
+
+
+
 ```{r}
 interqs <- getFitEsts(spfit, newdata = NULL, p
                       =c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)) #
+interqs
+interqs_gamma <- getFitEsts(spfit_gamma, newdata=NULL,  p
+                      =c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975))
+interqs_gamma
+interqs_lnorm <- getFitEsts(spfit_lnorm, newdata=NULL,  p
+                      =c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975))
+interqs_lnorm
+```
+Information for a table for the paper: 
+
+```{r}
+# weibull shape scale then quantiles: 
+c( exp(spfit$coefficients[1]), scale = exp(spfit$coefficients[2])  , getFitEsts(spfit, newdata = NULL, p =c(0.025,  0.5,  0.975)))
+
+# gamma shape, scale then quants 
+c( shape = exp(spfit_gamma$coefficients[1]), scale = exp(spfit_gamma$coefficients[2]), getFitEsts(spfit_gamma, newdata=NULL,  p =c(0.025,  0.5,  0.975)))
+
+# lnorm meanlog, sdlog and quants 
+c( meanlog = spfit_lnorm$coefficients[1], sdlog = exp(spfit_lnorm$coefficients[2]), getFitEsts(spfit_lnorm, newdata=NULL,  p =c(0.025,  0.5,  0.975))) 
 ```
 
 The median is `r interqs[4]` days and the  0.95 at `r interqs[6]`. 
@@ -147,12 +201,20 @@ Here is a plot of the estimated distribution together with the empirical surviva
 ```{r}
 spdays <- seq(0,20, by=0.05)
 spdensity <- dweibull(spdays, shape = exp(spfit$coefficients[1]), scale = exp(spfit$coefficients[2]))
+spdens_gamma=dgamma(spdays, shape = exp(spfit_gamma$coefficients[1]), scale = exp(spfit_gamma$coefficients[2]))
+spdens_lnorm=dlnorm(spdays, meanlog = spfit_lnorm$coefficients[1], sdlog = exp(spfit_lnorm$coefficients[2]))
+
 ggsp = ggsurvplot(
-fit=survfit(Surv(spdata$minIncTimes, spdata$maxIncTimes, type="interval2")~1, data=spdata), 
+fit=survfit(Surv(spfirst$minIncTimes, spfirst$maxIncTimes, type="interval2")~1, data=spfirst), 
 xlab="Days",  ylab = "Overall probability of no symptoms yet")
-pdata <- data.frame(days=spdays,  fitsurv=1-pweibull(spdays, shape = exp(spfit$coefficients[1]),
-scale = exp(spfit$coefficients[2])))
-ggsp$plot + geom_line(data = pdata, aes(x = spdays, y = fitsurv))
+pdata <- data.frame(days=rep(spdays,3),  
+            fitsurv=c(1-pweibull(spdays, shape = exp(spfit$coefficients[1]), scale = exp(spfit$coefficients[2])),
+        1-pgamma(spdays,  shape = exp(spfit_gamma$coefficients[1]), scale = exp(spfit_gamma$coefficients[2])),
+        1-plnorm(spdays,  meanlog = spfit_lnorm$coefficients[1], sdlog = exp(spfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(spdays)), rep("Gamma",length(spdays)), rep("Lognorm", length(spdays)) )) 
+                                                            
+
+ggsp$plot + geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn))
+  # ggsave(filename = "inc_Sing_firstonly.pdf", width = 8, height = 6)
 ```
 
 
@@ -163,8 +225,9 @@ The simplest serial interval estimate we can make with these data is a direct es
 ```{r}
 directSI=spdata$date_onset_symptoms - spdata$symp_presumed_infector
 directSI=as.numeric(directSI[!is.na(directSI)])
-hist(directSI)
+hist(directSI,breaks = 10)
 mean(directSI)
+sd(directSI)
 ```
 
 
@@ -229,14 +292,14 @@ spdata$presumed_reason <- str_trim(spdata$presumed_reason)
 table(spdata$presumed_reason)
 sum(is.na(spdata$presumed_reason)) #15 NAs
 # Make a new column where we group the 'presumed_reason' under a label (known relationship, gathering, wuhan travel) for each of the above three groups
-spdata <- mutate(spdata, presumed_reason_group = case_when(!is.na(str_match(presumed_reason, "symptom onset|via")) ~ "known relationship",
-                                                           !is.na(str_match(presumed_reason, "grace")) ~ "grace assembly of god",
-                                                           !is.na(str_match(presumed_reason, "grand")) ~ "grand hyatt singapore",
-                                                           !is.na(str_match(presumed_reason, "life")) ~ "life church",
-                                                           !is.na(str_match(presumed_reason, "seletar")) ~ "seletar aerospace heights",
-                                                           !is.na(str_match(presumed_reason, "yong")) ~ "yong thai hang",
-                                                           !is.na(str_match(presumed_reason, "wuhan|airport")) ~ "wuhan travel", #'airport' case (CaseID 17) does not have 'wuhan' in reason but does have it under 'Case' column that they are from Wuhan
-                                                           is.na(presumed_reason) ~ "unknown",
+spdata <- mutate(spdata, presumed_reason_group = case_when(!is.na(str_match(presumed_reason, "symptom onset|via")) ~ "Known relationship",
+                                                           !is.na(str_match(presumed_reason, "grace")) ~ "Grace Assembly of God",
+                                                           !is.na(str_match(presumed_reason, "grand")) ~ "Grand Hyatt Singapore",
+                                                           !is.na(str_match(presumed_reason, "life")) ~ "Life Church",
+                                                           !is.na(str_match(presumed_reason, "seletar")) ~ "Seletar Aerospace Heights",
+                                                           !is.na(str_match(presumed_reason, "yong")) ~ "Yong Thai Hang",
+                                                           !is.na(str_match(presumed_reason, "wuhan|airport")) ~ "Wuhan travel", #'airport' case (CaseID 17) does not have 'wuhan' in reason but does have it under 'Case' column that they are from Wuhan
+                                                           is.na(presumed_reason) ~ "Unknown",
                                                            TRUE ~ "other")) #should not be any other, so is just a double check this has run correctly, especially as dataset grows
 table(spdata$presumed_reason_group)
 ```
@@ -293,9 +356,34 @@ iccdata
 source("TianjinSI_VinkWallinga_CC.R")
 myestimate = serial_mix_est(data=iccdata, N=100, startmu=10, startsig =4)
 myestimate
-days = seq(from=0, to=13, by=0.1) 
-density= dnorm(days, mean = myestimate[1], sd = myestimate[2])
+days = seq(from=0, to=10, by=0.1) 
+ density= dnorm(days, mean = myestimate[1], sd = myestimate[2])
 ggplot(data=data.frame(days=days, density=density), aes(x=days,y=density)) + geom_line() + ggtitle("ICC estimate of the Singapore cluster serial interval")
+ggsave(file="sing_serialint.pdf", height = 4, width = 6)
 ```
 
 I note that the serial interval gets longer if we include more cases per cluster (because the mixture of 4 pathways in Vink et al does not include longer transmission chains, which forces the assumption that everyone in the cluster was infected by the initial case, which in turn lengthens the estimated serial interval). We do not know the true infection pathways but it is reasonable not to constrain the model to enforce that most are infected by the first few cases. 
+
+
+```{r, eval=FALSE}
+# bootstrap analysis
+Nboot=100
+bestimates=myestimate # NOTE this loop had errors a few times; I just restarted it. 
+for (kk in 1:Nboot) {
+bdata = sample(x=iccdata, size = length(iccdata), replace = T)
+bestimates = rbind(bestimates, serial_mix_est(data=bdata, N=100, startmu=10, startsig =4))
+}
+```
+
+The mean of the mean serial intervals is 5 days and the standard deviation of these means is 1.09. 
+
+```{r, eval=FALSE}
+hist(bestimates[,1],breaks = 10)
+bootdf=data.frame(mu=bestimates[,1], sig=bestimates[,2])
+ggplot(bootdf, aes(x=mu, y=sig))+geom_point()
+mean(bestimates[,1]) # higher estimates also have high uncertainty 
+sd(bestimates[,1])
+mean(bestimates[,2])
+sd(bestimates[,2])
+```
+
