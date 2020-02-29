@@ -5,7 +5,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ## Load packages and data
@@ -14,10 +14,10 @@ library(tidyverse)
 library(lubridate)
 library(incidence)
 #library(RColorBrewer)
-#library(viridis)
-library(mgcv)
+library(viridis)
+library(scales)
 
-s.data <- read_csv("data/COVID-19_Singapore - singapore_ncov_2019_fix.csv")
+s.data <- read_csv("data/COVID-19_Singapore.csv")
 t.data <- read_csv("Tianjin135casesFeb22.csv")
 
 #Need to replace one date which is labelled as "none" with NA
@@ -25,37 +25,51 @@ t.data$symptom_onset[which(t.data$symptom_onset == "none")] <- NA
 ```
 
 ## Select variables of interest and clean for incidence plotting purposes
-There are two possible choices of dates we can use to demonstrate the incidence curve of the epidemic: the date of symptom onset or the date of COVID-19 confirmation. The date of symptom onset is biologically more consistent (there is nothing about the nature of the virus that would mean each case would be confirmed on the same day post-infection); however, there is missing data for 10 cases (in both Tianjin and Singapore datasets). Therefore, I will make the curves using the date of symptom onset, but we could also run the same analysis using the date of confirmation instead as a sensitivity analysis to make sure it does not impact the results.
+There are two possible choices of dates we can use to demonstrate the incidence curve of the epidemic: the date of symptom onset or the date of COVID-19 confirmation. The date of symptom onset is biologically more consistent (there is nothing about the nature of the virus that would suggest each case should be confirmed on the same day post-infection); however, there is missing data for 10 cases (in both Tianjin and Singapore datasets). Therefore, I will make the curves using the date of symptom onset.
 
+However, we could also run the same analysis using the date of confirmation instead as a sensitivity analysis to make sure it does not impact the results.
+
+For the time being, I have also deleted cases that do not have a date of symptom onset (in both datasets); however, these also could be imputed and all cases used for analysis instead.
+
+### Notes on how cases were grouped based on source of infection
+It is important to note in the making of source of infection grouping labels, that some cases in the *Tianjin dataset* have multiple possible sources of infection listed (which may or may not represent the same "source" of infection, eg 'wuhan; train import' could be both a 'train' source, a from 'Wuhan' source, or—most likely—arrived on a train coming from Wuhan). 
+To keep things consistent, a decision rule was made to try apply a source of infection group label as broadly as possible, based on the information provided in the 'Infection_source' column. Thus, sources listed as types of travel or regions of travel were grouped into 'Wuhan origin', 'Other China travel', or 'Location unclear travel'. 
+However, there were still instances when a case could fall into multiple grouping labels. For instance, in Tianjin dataset case_id TJ60 has 'wuhan; tj1' listed under the 'Infection_source' column; so should we say the source is Wuhan, or from case TJ1? To be consistent across the whole dataset, a heirarchical decision rule was applied where infection sources, where the highest valued label would get priority if there were multiple possible source of infection grouping labels. The source grouping hierarchy is as follows: 
+*(highest) Known relationship > Wuhan origin > Other China travel > Location unclear travel > Mall (for shoppers, workers, or individuals living near to the Baodi mall outbreak) > Unknown (lowest)*
+
+For instance, with case TJ60 (where 'Infection_source is 'wuhan; tj1'), the highest priority is a close relationship with another known case ('known relationship') over travel in 'Wuhan', thus for case TJ60 the 'source_group' becomes 'Known relationship'. 
+
+It should also be noted that a similar decision rule is implicit in the coding for selecting infection source group labels ('presumed_reason_group') in the *Singapore dataset*; however, at this time, the data does not have cases with multiple possible sources in the 'presumed_reason' column that could lead to multiple labels. But to keep things consistent between the analysis of both datasets, the Singapore source grouping hierarchy is as follows:
+*(highest) Known relationship > Wuhan travel > Grace Assembly of God > Grand Hyatt Singapore > Life Church > Seletar Aerospace Heights > Yong Thai Hang > Unknown (lowest)*
 
 ```{r}
 ### 1. Singapore dataset
 head(s.data$date_onset_symptoms)
-sum(is.na(s.data$date_onset_symptoms)) #10
+sum(is.na(s.data$date_onset_symptoms)) #12
 
 # Make a column for grouping, based on the reason why the case was exposed
 # Turn 'presumed_reason' into lower case and get trim any whitespace so don't have issues with case sensitivity, etc
 s.data$presumed_reason <- str_to_lower(s.data$presumed_reason)
 s.data$presumed_reason <- str_trim(s.data$presumed_reason)
 table(s.data$presumed_reason)
-sum(is.na(s.data$presumed_reason)) #15 NAs
+sum(is.na(s.data$presumed_reason)) #16 NAs
 
 # Make a new column where we group the 'presumed_reason' under a label (known relationship, gathering, wuhan travel) for each of the above three groups
-s.data <- mutate(s.data, presumed_reason_group = case_when(!is.na(str_match(presumed_reason, "symptom onset|via")) ~ "known relationship",
-                                                           !is.na(str_match(presumed_reason, "wuhan|airport")) ~ "wuhan travel", #'airport' case (CaseID 17) does not have 'wuhan' in reason but does have it under 'Case' column that they are from Wuhan
-                                                           !is.na(str_match(presumed_reason, "grace")) ~ "grace assembly of god",
-                                                           !is.na(str_match(presumed_reason, "grand")) ~ "grand hyatt singapore",
-                                                           !is.na(str_match(presumed_reason, "life")) ~ "life church",
-                                                           !is.na(str_match(presumed_reason, "seletar")) ~ "seletar aerospace heights",
-                                                           !is.na(str_match(presumed_reason, "yong")) ~ "yong thai hang",
-                                                           is.na(presumed_reason) ~ "unknown",
+s.data <- mutate(s.data, presumed_reason_group = case_when(!is.na(str_match(presumed_reason, "symptom onset|via")) ~ "Known relationship",
+                                                           !is.na(str_match(presumed_reason, "wuhan|airport")) ~ "Wuhan travel", #'airport' case (CaseID 17) does not have 'wuhan' in reason but does have it under 'Case' column that they are from Wuhan
+                                                           !is.na(str_match(presumed_reason, "grace")) ~ "Grace Assembly of God",
+                                                           !is.na(str_match(presumed_reason, "grand")) ~ "Grand Hyatt Singapore",
+                                                           !is.na(str_match(presumed_reason, "life")) ~ "Life Church",
+                                                           !is.na(str_match(presumed_reason, "seletar")) ~ "Seletar Aerospace Heights",
+                                                           !is.na(str_match(presumed_reason, "yong")) ~ "Yong Thai Hang",
+                                                           is.na(presumed_reason) ~ "Unknown",
                                                            TRUE ~ "other")) #should not be any other, so is just a double check this has run correctly, especially as dataset grows
 
 # Make a second new column that puts all the gatherings together, possibly for a clearer plot?
-s.data <- mutate(s.data, presumed_reason_group2 = case_when(!is.na(str_match(presumed_reason, "symptom onset|via")) ~ "known relationship",
-                                                            !is.na(str_match(presumed_reason, "wuhan|airport")) ~ "wuhan travel", #'airport' case (CaseID 17) does not have 'wuhan' in reason but does have it under 'Case' column that they are from Wuhan
-                                                           !is.na(str_match(presumed_reason, "grace|grand|life|seletar|yong")) ~ "gatherings",
-                                                           is.na(presumed_reason) ~ "unknown",
+s.data <- mutate(s.data, presumed_reason_group2 = case_when(!is.na(str_match(presumed_reason, "symptom onset|via")) ~ "Known relationship",
+                                                            !is.na(str_match(presumed_reason, "wuhan|airport")) ~ "Wuhan travel", #'airport' case (CaseID 17) does not have 'wuhan' in reason but does have it under 'Case' column that they are from Wuhan
+                                                           !is.na(str_match(presumed_reason, "grace|grand|life|seletar|yong")) ~ "Gatherings",
+                                                           is.na(presumed_reason) ~ "Unknown",
                                                            TRUE ~ "other"))
 table(s.data$presumed_reason_group)
 table(s.data$presumed_reason_group2)
@@ -71,19 +85,19 @@ s.sympt <- s.data %>%
                   date_onset_symptoms = dmy(date_onset_symptoms),
                   #date_confirmation = dmy(date_confirmation),
                   presumed_reason_group = factor(presumed_reason_group, 
-                                                 levels = c("known relationship",
-                                                            "wuhan travel",
-                                                            "grace assembly of god",
-                                                            "grand hyatt singapore",
-                                                            "life church",
-                                                            "seletar aerospace heights",
-                                                            "yong thai hang",
-                                                            "unknown")),
+                                                 levels = c("Known relationship",
+                                                            "Wuhan travel",
+                                                            "Grace Assembly of God",
+                                                            "Grand Hyatt Singapore",
+                                                            "Life Church",
+                                                            "Seletar Aerospace Heights",
+                                                            "Yong Thai Hang",
+                                                            "Unknown")),
                   presumed_reason_group2 = factor(presumed_reason_group2, 
-                                                 levels = c("known relationship",
-                                                            "wuhan travel",
-                                                            "gatherings",
-                                                            "unknown")))
+                                                 levels = c("Known relationship",
+                                                            "Wuhan travel",
+                                                            "Gatherings",
+                                                            "Unknown")))
 
 # Get rid of rows where date of symptom onset is not known; could be imputed as another option
 s.sympt <- s.sympt[which(!is.na(s.sympt$date_onset_symptoms)), ]
@@ -104,13 +118,13 @@ sum(is.na(t.data$Infection_source)) #3 NAs
   #For those that meet multiple criteria (e.g. wuhan; tj1), the str_match which is highest in the case_when call (i.e. "tj|coworker|patient|partner") will have priority over those matching later 
   #so that the 'source' column contain "wuhan; tj1" would be labelled as infection from a "known relationship" rather than from a "wuhan" origin 
 
-t.data <- mutate(t.data, source_group = case_when(!is.na(str_match(Infection_source, "tj|coworker|patient|partner")) ~ "known relationship", #placing this first means that an individual that has another case listed as source,regardless if there is another reason (i.e. wuhan; tj1) will have 'known relationship' as their source_group reason
-                                                  !is.na(str_match(Infection_source, "wuhan")) ~ "wuhan origin",
-                                                  !is.na(str_match(Infection_source, "hubei|hebei|dalian")) ~ "other China travel",
-                                                  !is.na(str_match(Infection_source, "train|travel")) ~ "location unclear travel",
-                                                  !is.na(str_match(Infection_source, "mall|store|shopper")) ~ "mall",
-                                                  !is.na(str_match(Infection_source, "unknown|unclear")) ~ "unknown",
-                                                  is.na(Infection_source) ~ "unknown",
+t.data <- mutate(t.data, source_group = case_when(!is.na(str_match(Infection_source, "tj|coworker|patient|partner")) ~ "Known relationship", #placing this first means that an individual that has another case listed as source,regardless if there is another reason (i.e. wuhan; tj1) will have 'known relationship' as their source_group reason
+                                                  !is.na(str_match(Infection_source, "wuhan")) ~ "Wuhan origin",
+                                                  !is.na(str_match(Infection_source, "hubei|hebei|dalian")) ~ "Other China travel",
+                                                  !is.na(str_match(Infection_source, "train|travel")) ~ "Location unclear travel",
+                                                  !is.na(str_match(Infection_source, "mall|store|shopper")) ~ "Mall",
+                                                  !is.na(str_match(Infection_source, "unknown|unclear")) ~ "Unknown",
+                                                  is.na(Infection_source) ~ "Unknown",
                                                   T ~ "other")) #there should be none of these, so this is just a sanity check!  
 table(t.data$source_group)
 
@@ -126,12 +140,12 @@ t.sympt <- t.data %>%
                  symptom_onset = dmy(symptom_onset),
                  #confirm_date = dmy(confirm_date),
                  source_group = factor(source_group,
-                                       levels = c("known relationship",
-                                                "wuhan origin",
-                                                "other China travel",
-                                                "location unclear travel",
-                                                "mall",
-                                                "unknown")),
+                                       levels = c("Known relationship",
+                                                "Wuhan origin",
+                                                "Other China travel",
+                                                "Location unclear travel",
+                                                "Mall",
+                                                "Unknown")),
                  severity = factor(severity,
                                    levels = c("minor",
                                               "normal",
@@ -145,6 +159,7 @@ t.sympt <- t.sympt[which(!is.na(t.sympt$symptom_onset)), ]
 ## Plot daily incidence curves for both clusters
 Now to make the incidence plots using the R package 'incidence'. First, we will plot all the weekly cases in each cluster, without any type of grouping. Our cluster outbreaks have only been going for about 1 month so plotting daily incidence makes more sense.
 ```{r}
+#~~~~~~~~~~~~~~ A) Using 'indicidence package' and base graphics plotting ; NOT for manuscript ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 s.daily <- incidence(s.sympt$date_onset_symptoms, 
                      interval = 1) 
 s.daily
@@ -157,9 +172,13 @@ plot(t.daily)
 ```
 
 ## Plot daily incidence curves grouped by source of infection, for both clusters
-What happens when we look at the incidence plots for each source of infection?
+What happens when we look at the incidence plots for each source of infection? Can either use the incidence package in R and base graphics plotting device or I can make the same plot using ggplot. We will use the ggplot versions for the manuscript so it is consistent with the other figures.
+
+### For Singapore dataset
 ```{r}
-### 1. Singapore
+#~~~~~~~~~~~~~~ A) Using 'indicidence package' and base graphics plotting ; NOT for manuscript ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+  #Downside is that I can't match the virdis color scheme and graphing style used in the rest of our manuscript very easily
+
 s.grouped <- incidence(s.sympt$date_onset_symptoms,
                        interval = 1,
                        groups = s.sympt$presumed_reason_group)
@@ -168,22 +187,114 @@ plot(s.grouped,
     # stacked = TRUE,
      border = "grey")
   #Hmmm, kinda hard to read with so many groups
+ 
+#Using the presumed_reason_group2 column to group cases is better to look at but less informative, so we will just leave out
+#s.grouped2 <- incidence(s.sympt$date_onset_symptoms,
+#                       interval = 1,
+#                       groups = s.sympt$presumed_reason_group2)
+#s.grouped2
+#plot(s.grouped2,
+#     border = "grey")
 
-s.grouped2 <- incidence(s.sympt$date_onset_symptoms,
-                       interval = 1,
-                       groups = s.sympt$presumed_reason_group2)
-s.grouped2
-plot(s.grouped2,
-#     stacked = TRUE,
-     border = "grey")
-  #Better!
 
-#Hmmm...also kinda hard to read, need to fill each date with NAs for each group in 
-#ggplot(s.sympt, aes(x = date_onset_symptoms, fill = presumed_reason_group2)) +
-#  geom_bar(position = "dodge") +
-#  scale_fill_viridis_d()
+#~~~~~~~~~~~~~~~~~~ B) Using 'ggplot2' and 'viridis' - FOR MANUSCRIPT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-### 2. Tianjin
+### Reshape dataset to plot with ggplot
+#Group dataset by date and by infection source group
+s.gg <- s.sympt %>% 
+          group_by(date_onset_symptoms, presumed_reason_group) %>% 
+          summarize(n_daily = n())
+
+# Need to add zeros to for the dates where there are no cases, for each of the groups
+sdays <- seq(min(s.sympt$date_onset_symptoms), max(s.sympt$date_onset_symptoms), by = "day") #We have 28 days worth of data for Singapore
+
+s.zeros <- data.frame(date_onset_symptoms = c(rep(sdays[1], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[2], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[3], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[4], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[5], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[6], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[7], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[8], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[9], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[10], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[11], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[12], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[13], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[14], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[15], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[16], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[17], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[18], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[19], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[20], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[21], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[22], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[23], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[24], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[25], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[26], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[27], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[28], times = length(unique(s.sympt$presumed_reason_group)))),  
+                      presumed_reason_group = rep(c("Known relationship",
+                                                    "Wuhan travel",
+                                                    "Grace Assembly of God",
+                                                    "Grand Hyatt Singapore",
+                                                    "Life Church",
+                                                    "Seletar Aerospace Heights",
+                                                    "Yong Thai Hang",
+                                                    "Unknown"),
+                                                  times = length(seq(min(s.sympt$date_onset_symptoms), max(s.sympt$date_onset_symptoms), by = "day"))),
+                      n_daily = rep(0, length.out = length(seq(min(s.sympt$date_onset_symptoms), max(s.sympt$date_onset_symptoms), by = "day")) * length(unique(s.sympt$presumed_reason_group))))
+
+# Anti join with s.gg with s.zeros to add zero-filled rows where do not have a count
+s.missing.zeros <- anti_join(s.zeros, s.gg, by = c("date_onset_symptoms", "presumed_reason_group")) 
+    #Just ignore the coercing to character warning
+
+# Now bind the missing zeros to the grouped dataset
+s.gg <- bind_rows(s.gg, s.missing.zeros) #Note that the presumed_reason_group is now back to a factor with our pre-set levels; hooray!
+
+### Plot with ggplot
+#Define a colour palatte
+show_col(viridis_pal(option = "inferno") (8))
+viridisLite::inferno(n = 8)
+
+s.cols <- c("Known relationship" = "#000004FF",
+            "Wuhan travel" = "#280B54FF",
+            "Grace Assembly of God" = "#65156EFF",
+            "Grand Hyatt Singapore" = "#9F2A63FF",
+            "Life Church" = "#D44842FF",
+            "Seletar Aerospace Heights" = "#F57D15FF",
+            "Yong Thai Hang" = "#FAC127FF",
+            "Unknown" = "#FCFFA4FF")
+
+#Write to PDF
+pdf("Singapore incidence by source of infection.pdf", 
+     #family = "Times", 
+     width = 8, height = 6)
+
+s <- ggplot(s.gg, aes(x = date_onset_symptoms, y = n_daily, fill = presumed_reason_group)) +
+        geom_col(color = "grey") +
+        labs(title = "Daily Singapore COVID-19 cases, per probable source of infection",
+             y = "Number of Cases",
+             x = "Date of symptom onset") +
+        theme(axis.text.x = element_text(angle =60, hjust = 1, size = 6.5),
+              axis.ticks.x = element_blank(), #remove x axis ticks
+              axis.ticks.y = element_blank()) + #remove y axis ticks
+        scale_x_date(date_breaks = "day") +
+        scale_y_continuous(breaks=pretty_breaks(n=10)) +
+        scale_fill_manual(name = "Legend", values = s.cols) +
+        theme(panel.background = element_rect(fill = "white"))
+s 
+
+dev.off()
+
+```
+
+### For Tianjin dataset
+```{r}
+#~~~~~~~~~~~~~~ A) Using 'indicidence package' and base graphics plotting ; NOT for manuscript ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+  #Downside is that I can't match the virdis color scheme and graphing style used in the rest of our manuscript very easily
 t.grouped <- incidence(t.sympt$symptom_onset,
                        interval = 1,
                        groups = t.sympt$source_group)
@@ -192,13 +303,112 @@ plot(t.grouped,
     # stacked = TRUE,
      border = "grey")
 
+#~~~~~~~~~~~~~~~~~~ B) Using 'ggplot2' and 'viridis' - FOR MANUSCRIPT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+### Reshape dataset to plot with ggplot
+#Group dataset by date and by infection source group
+t.gg <- t.sympt %>% 
+          group_by(symptom_onset, source_group) %>% 
+          summarize(n_daily = n())
+
+# Need to add zeros to for the dates where there are no cases, for each of the groups
+tdays <- seq(min(t.sympt$symptom_onset), max(t.sympt$symptom_onset), by = "day") #We have 37 days worth of data for Tianjin
+
+t.zeros <- data.frame(symptom_onset = c(rep(tdays[1], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[2], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[3], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[4], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[5], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[6], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[7], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[8], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[9], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[10], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[11], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[12], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[13], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[14], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[15], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[16], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[17], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[18], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[19], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[20], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[21], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[22], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[23], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[24], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[25], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[26], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[27], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[28], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[29], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[30], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[31], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[32], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[33], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[34], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[35], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[36], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[37], times = length(unique(t.sympt$source_group)))),
+                      source_group = rep(c("Known relationship",
+                                           "Wuhan origin",
+                                           "Other China travel",
+                                           "Location unclear travel",
+                                           "Mall",
+                                           "Unknown"),
+                                         times = length(seq(min(t.sympt$symptom_onset), max(t.sympt$symptom_onset), by = "day"))),
+                      n_daily = rep(0, length.out = length(seq(min(t.sympt$symptom_onset), max(t.sympt$symptom_onset), by = "day")) * length(unique(t.sympt$source_group))))
+
+# Anti join with s.gg with s.zeros to add zero-filled rows where do not have a count
+t.missing.zeros <- anti_join(t.zeros, t.gg, by = c("symptom_onset", "source_group")) 
+    #Just ignore the coercing to character warning
+
+# Now bind the missing zeros to the grouped dataset
+t.gg <- bind_rows(t.gg, t.missing.zeros) #Note that the presumed_reason_group is now back to a factor with our pre-set levels; hooray!
+
+### Plot with ggplot
+#Define a colour palatte
+show_col(viridis_pal(option = "inferno") (6))
+viridisLite::inferno(n = 6)
+
+#Write to PDF
+pdf("Tianjin incidence by source of infection.pdf", 
+     #family = "Times", 
+     width = 8, height = 6)
+
+t.cols <- c("Known relationship" = "#000004FF",  #Use the same as Singapore plot, as are using the same criteria
+            "Wuhan origin" = "#280B54FF",   #Use the same as Singapore plot, as are using the same criteria
+            "Other China travel" = "#932667FF",
+            "Location unclear travel" = "#DD513AFF",
+            "Mall" = "#FCA50AFF",
+            "Unknown" = "#FCFFA4FF")  #Use the same as Singapore plot, as are using the same criteria
+
+t <- ggplot(t.gg, aes(x = symptom_onset, y = n_daily, fill = source_group)) +
+        geom_col(color = "grey") +
+        labs(title = "Daily Tianjin COVID-19 cases, per probable source of infection",
+             y = "Number of Cases",
+             x = "Date of symptom onset") +
+        theme(axis.text.x = element_text(angle =60, hjust = 1, size = 6.5),
+              axis.ticks.x = element_blank(), #remove x axis ticks
+              axis.ticks.y = element_blank()) + #remove y axis ticks
+        scale_x_date(date_breaks = "day") +
+        scale_y_continuous(breaks=pretty_breaks(n=10)) +
+        scale_fill_manual(name = "Legend", values = t.cols) +
+        theme(panel.background = element_rect(fill = "white"))
+t 
+
+dev.off()
+                                              
 ```
 
 
 ## Predictions of incidence
-We would like to know what the incidence might be in the future, which can be done by using two log-linear regressions of the incidence data (excluding zeros), where the first regression is fit to the growth phase of the epidemic and a second regression model is fit the decreasing phase of the epidemic. This can be done using the 'incidence' package, which will also automatically determine what is the date of the peak of the epidemic (and thus where to split the two regressions)
+If we would like to know what the incidence might be in the future, which can be done by using two log-linear regressions of the incidence data (excluding zeros), where the first regression is fit to the growth phase of the epidemic and a second regression model is fit the decreasing phase of the epidemic. The 'incidence' package, will do this for us, as well as also automatically determine what is the date of the peak of the epidemic (and thus where to split the two regressions). Note that it splits the two regressions but doesn't actually seem to join them.
 
 Another option would be to use a generalized additive model (GAM) to fit the curve of the data: would need to group by date, count # of cases, and I think put in zeros for the dates that had no cases. Could additionally do this by infection source groups.
+
+As we don't have a lot of data to built a good model and an accurate prediction, it is probably better to stay away from publishing these results, given the high level of uncertainty and the potential for misinterpretation. 
 
 ```{r}
 ### 1. Singapore
