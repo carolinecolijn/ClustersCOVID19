@@ -19,6 +19,7 @@ data_long <- data %>% gather(key=date, value=status, starts_with("X"))
 
 data_long$date <- gsub('X', '0', data_long$date)
 data_long$date <- gsub('\\.', '\\/', data_long$date)
+data_long$date <- as.Date(data_long$date, "%m/%d/%Y")
 
 
 write.csv(data_long, "../data/tianjin_heatmap_long.csv", row.names=FALSE)
