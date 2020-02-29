@@ -128,7 +128,7 @@ Here are some plots of the estimated distribution together with the empirical su
 days=seq(0,20,by=0.05)
 ggs = ggsurvplot(
   fit=myfit, 
-  xlab="Days",  ylab = "Overall probability of no symptoms yet", combine = TRUE,    legend.labs=c("pre-lockdown", "post-lockdown"))
+  xlab="Days",  ylab = "Overall probability of no symptoms yet", combine = TRUE,    legend.labs=c("pre-quarantine", "post-quarantine"))
 tmp=data.frame(days=days,  fitsurv=1-pweibull(days, shape = exp(myfit1$coefficients[1]),
                       scale = exp(myfit1$coefficients[2])))
 tmp2=data.frame(days=days,  fitsurv=1-pweibull(days, shape = exp(myfit2$coefficients[1]),
