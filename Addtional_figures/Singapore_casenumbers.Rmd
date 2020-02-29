@@ -1,6 +1,6 @@
 ---
 title: "Singapore figures"
-output: html_document
+output: html_documenton
 ---
 
 ```{r setup, include=FALSE}
@@ -17,6 +17,8 @@ data <- read.csv("../data/COVID-19_Singapore.csv", na.strings=c("","NA"))
 
 data$date_hospital <- as.Date(data$date_hospital, "%d/%m/%Y")
 data$date_discharge <- as.Date(data$date_discharge, "%d/%m/%Y")
+data$presumed_infected_date<- as.Date(data$presumed_infected_date, "%d/%m/%Y")
+data$date_onset_symptoms<- as.Date(data$date_onset_symptoms, "%d/%m/%Y")
 
 data$dummy_hosdates <- sort(data$date_hospital)
 data$dummy_value <- 1
@@ -25,12 +27,25 @@ data$dummy_disdates <- sort(data$date_discharge, na.last = TRUE)
 
 ```
 
+```{r}
+data$days_between_hos_dis = difftime(data$date_discharge, data$date_hospital, units = "days")
+data$days_between_inf_symp = difftime(data$date_onset_symptoms, data$presumed_infected_date, units = "days")
+data$days_between_symp_hosp = difftime(data$date_hospital, data$date_onset_symptoms, units = "days")
+
+data %>% select(days_between_inf_symp) %>% summarize(mean=mean(days_between_inf_symp, na.rm = TRUE), sd=sd(days_between_inf_symp, na.rm = TRUE))
+
+data %>% select(days_between_symp_hosp) %>% summarize(mean=mean(days_between_symp_hosp, na.rm = TRUE), sd=sd(days_between_symp_hosp, na.rm = TRUE))
+
+data %>% select(days_between_hos_dis) %>% summarize(mean=mean(days_between_hos_dis, na.rm = TRUE), sd=sd(days_between_hos_dis, na.rm = TRUE))
+```
+
+
 
 ```{r cases by date}
 
 cols <- c("Cumulative hospitalized"="#440154FF", "Cumulative discharged"="#1F968BFF", "Hospitalized per day"="#39568CFF")
 
-data %>%
+p<-data %>%
 ggplot() +
   geom_bar(aes(x = date_hospital), fill = "#39568CFF") +
   geom_line(aes(x = dummy_hosdates, y = cumsum(dummy_value), color = "Cumulative hospitalized"), size = 1) +
@@ -48,9 +63,11 @@ ggplot() +
   scale_y_continuous(breaks=pretty_breaks(n=20)) +
   scale_colour_manual(name = "Legend", values = cols) +
   theme(panel.background = element_rect(fill = "white"))+
-    annotate(geom="text", x=as.Date("2020-02-26"), y=93, label="93", hjust="left") +
+  annotate(geom="text", x=as.Date("2020-02-26"), y=93, label="93", hjust="left") +
   annotate(geom="text", x=as.Date("2020-02-27"), y=62, label="62") 
   
+
+ggsave("case_count_singapore.pdf",plot=p, device="pdf",width = 10,height = 6,units="in")
 
 
 ```
