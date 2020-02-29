@@ -1,7 +1,7 @@
 ---
-title: "Tianjin"
-author: "Caroline Colijn, Jessica Stockdale"
-date: "26/02/2020"
+title: "Tianjin Stratified Incubation analysis"
+author: "Jessica Stockdale, Caroline Colijn"
+date: "28/02/2020"
 output: html_document
 ---
 
@@ -19,7 +19,7 @@ options(digits=3)
 
 ## Data 
 
-Thanks to Dongxuan Chen and Louxin Zhang. These data are from three main sources:
+We use the same data as in the un-stratified analysis. Thanks to Dongxuan Chen and Louxin Zhang. These data are from three main sources:
 
 * source1: http://wsjk.tj.gov.cn/col/col87/index.html#!uid=259&pageNum=1 (Tianjin health commission official website, for daily announcements)
 
@@ -38,12 +38,11 @@ str(tdata)
 ```
 
 
-
 ## Incubation period, stratified by pre-/post- quarantine procedures in China
 
-The incubation period is the time between exposure and the onset of symptoms. We estimate this directly from the stated start and end times for cases' exposure windows. Because it is explicitly about the symptom onset, we remove those who don't have symptom onset defined. These are a small minority of cases and the alternative would be to impute their symptom onset time using the others' delay to confirmation time.  For now, we remove them.  Then,  if no other end time for the exposure is given or  if the end of the exposure time is after the time of symptom onset, set the last exposure time to the symptom onset time. This is because they must have been exposed before symptom onset.  If no other start time is given, they must have been exposed since the start of the outbreak (Dec 1, 2019). These give us  the maximum and minimum incubation times. 
+The incubation period is the time between exposure and the onset of symptoms. We estimate this directly from the stated start and end times for cases' exposure windows. Because it is explicitly about the symptom onset, we remove those who don't have symptom onset defined. These are a small minority of cases and the alternative would be to impute their symptom onset time using the others' delay to confirmation time. For now, we remove them. Then, if no other end time for the exposure is given or if the end of the exposure time is after the time of symptom onset, set the last exposure time to the symptom onset time. This is because they must have been exposed before symptom onset.  If no other start time is given, they must have been exposed since the start of the outbreak (Dec 1, 2019). These give us the maximum and minimum incubation times. 
 
-In this analysis we divide the data into 2 different datasets: from pre- and post- introduction of quarantine measures in China, to consider the potential impact of this (as well as associated factors e.g. public attention on the disease?) on the length of the incubation period.
+In this analysis we divide the data into 2 different datasets: from pre- and post- introduction of quarantine measures in China on January 23rd. 
 
 ```{r}
 goodii=which(!is.na(tdata$symptom_onset))
@@ -57,10 +56,9 @@ tdata$minIncTimes
 tdata$maxIncTimes[27] = 50 # for some reason this was coming up negative 
 ```
 
-We stratify the data according to whether each case was exposed before or after the quarantine measures were put in place on 23rd January 2020. Since the exposure times are not known, we use the estimated median incubation period of 8.554 days from the full data analysis. For each case, if the time of symptom appearance minus 8.554 days is prior to January 23rd, the are placed in the pre-quarantine dataset, and if not they are placed in the post-quarantine dataset.
+We stratify the data according to whether each case was exposed before or after the quarantine measures were put in place on 23rd January 2020. Since the exposure times are not known, we estimated them using the estimated median incubation period of 8.554 days from the full data analysis. For each case, if the time of symptom appearance minus 8.554 days is prior to January 23rd, the are placed in the pre-quarantine dataset, and if not they are placed in the post-quarantine dataset.
 
-For cases with no known symptom onset date, we take their case detection time - median(time between symptom onset and case detection) - 8.554 instead.
-
+For cases with no known symptom onset date, we take their case detection time - median(time between symptom onset and case detection) - 8.554 to determine which strata they are placed in instead. In actuality, we will remove cases with unknown symptom onset before using interval censoring to estimate the incubation period. However, we still place them in their respective dataset for now for completeness.
 
 ```{r}
 symp_to_case <- as.numeric(median(as.Date(tdata$confirm_date, "%d/%m/%Y") - tdata$symptom_onset, na.rm=T)) # median 5 
@@ -82,11 +80,11 @@ for (i in 1:135){
     
   }
 }
-
+str(tdata1)
+str(tdata2)
 ```
 
 We use survival analysis in the icenReg package to make parametric estimates, and we use the regular survival package to estimate the time to onset of symptoms. 
-
 
 ```{r}
 myfit = list(preq = survfit(Surv(tdata1$minIncTimes, tdata1$maxIncTimes, type="interval2")~1, data=tdata1), postq = survfit(Surv(tdata2$minIncTimes, tdata2$maxIncTimes, type="interval2")~1, data=tdata2))
@@ -94,15 +92,15 @@ myfit = list(preq = survfit(Surv(tdata1$minIncTimes, tdata1$maxIncTimes, type="i
 ggsurvplot(
   fit=myfit, 
   xlab="Days",
-  ylab = "Overall probability of no symptoms yet",  combine = TRUE, legend.labs=c("pre-lockdown", "post-lockdown"))
+  ylab = "Overall probability of no symptoms yet",  combine = TRUE, legend.labs=c("pre-quarantine   ", "post-quarantine "))
 
-## Check if the split is perfect down the middle: it's not e.g. there's a 2 day in tdata2 and a 50 day in tdata1
+## Check if the split is perfect down the middle: it's not e.g. there's a 2 day in tdata2 and a 50 day in tdata1. This is reassuring
 ```
 
 The median is about 7 days pre-lockdown and 11 days post-lockdown. For a parametric estimate we remove any remaining NAs and use interval censoring, because we know only that exposure was some time between the minimum and maximum possible values. 
 
 ```{r}
-reddata1=tdata1[which(!is.na(tdata1$minIncTimes)),] # NAs always occur for max and min together
+reddata1=tdata1[which(!is.na(tdata1$minIncTimes)),] # NAs always occur for max and min  and symptom_onset together
 myfit1 = ic_par(Surv(reddata1$minIncTimes, reddata1$maxIncTimes,type="interval2")~1, data = reddata1,dist="weibull")
 
 reddata2=tdata2[which(!is.na(tdata2$minIncTimes)),] # NAs always occur for max and min together
@@ -122,7 +120,7 @@ incqs1=getFitEsts(myfit1, newdata = NULL, p=c(0.025,0.05, 0.25, 0.5, 0.75,0.95,0
 incqs2=getFitEsts(myfit2, newdata = NULL, p=c(0.025,0.05, 0.25, 0.5, 0.75,0.95,0.975))
 ```
 
-The median is `r incqs1[4]` days and the 0.95 is `r incqs1[6]` pre-quarantine, and equivalently `r incqs2[4]` days and the  0.95 is `r incqs2[6]` post-quarantine. 
+The median is `r incqs1[4]` days and the 95th percentile estimate is `r incqs1[6]` pre-quarantine, and equivalently median `r incqs2[4]` days and 95th percentile `r incqs2[6]` post-quarantine. 
 
 Here are some plots of the estimated distribution together with the empirical survival curve from the data. 
 

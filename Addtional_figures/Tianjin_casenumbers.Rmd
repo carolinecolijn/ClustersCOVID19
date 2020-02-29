@@ -20,6 +20,24 @@ data$date <- as.Date(data$date, "%d/%m/%Y")
 ```
 
 
+#Calculate average duration between exposure, symptom onset, hospitaization, and discharge
+```{r}
+
+data_master <- read.csv("../data/COVID-19_Tianjin.csv", header = TRUE,  na.strings=c("","NA"))
+
+data_master$symptom_onset <- as.Date(data_master$symptom_onset, "%d/%m/%Y")
+data_master$confirm_date <- as.Date(data_master$confirm_date, "%d/%m/%Y")
+data_master$start_source <- as.Date(data_master$start_source, "%d/%m/%Y")
+data_master$end_source <- as.Date(data_master$end_source, "%d/%m/%Y")
+
+data_master$days_between_inf_symp = difftime(data_master$symptom_onset, data_master$end_source, units = "days")
+data_master$days_between_symp_conf = difftime(data_master$confirm_date, data_master$symptom_onset, units = "days")
+
+
+mean_sd<-data_master %>% select(days_between_inf_symp:days_between_symp_conf) %>% summarise_all(list(mean=mean, sd=sd), na.rm=TRUE)
+
+```
+
 
 ```{r cases by date}
 

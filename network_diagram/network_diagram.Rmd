@@ -91,10 +91,11 @@ We can subset by
 cov_net = ggplot(n, aes(x = x, y = y, xend = xend, yend = yend)) +
   geom_edges(aes(), subset(n, Related.cases != ""), linetype="solid") +
   geom_nodes(aes(color=cluster),size=8) +
-  geom_text(aes(label=name), check_overlap = TRUE) +
-  ggtitle("COVID-19 Singapore Cluster Network") +
+  geom_text(aes(label=name),check_overlap = TRUE) +
+  geom_text(aes(label=name),subset(n, cluster == "Grace Assembly of God"),colour="white",check_overlap = TRUE) +
   guides(colour = guide_legend(title.position="top", title.hjust = 0.5, override.aes = list(size=3))) +
   scale_colour_viridis_d(na.value="lightgrey") +
+  labs(color="Cluster")+
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5)) + #centre main title
   theme(panel.grid = element_blank(),
@@ -108,13 +109,13 @@ cov_net = ggplot(n, aes(x = x, y = y, xend = xend, yend = yend)) +
 
  
 cov_net
-
+ggsave("singapore_static_network.pdf",plot=cov_net,device="pdf",path=here("network_diagram"),height=8,width=11,units="in")
 ```
 #####THIS CODE IS A MESS RIGHT NOW-working to fix this right now but I wanted to push it########
 
 Tianjin Data
 ```{r}
-tj=read.csv(here("Clustering/Tianjin135casesFeb22.csv"))
+tj=read.csv(here("Tianjin135casesFeb22.csv"))
 edges_unclean=tj[,c(1,7)]
 edges_unclean$close_conn=str_extract_all(edges_unclean$Infection_source, regex("TJ\\d+"))
 edges_unclean$close_conn=ifelse(edges_unclean$close_conn=="character(0)",as.character(edges_unclean$Infection_source),edges_unclean$close_conn)
@@ -148,28 +149,40 @@ edges_dist = distinct(edges_dist)
 
 
 ```{r}
-
 tj_net=graph_from_data_frame(edges_dist,vertices = tdata,directed = FALSE)
 ntj=ggnetwork(tj_net)
 
 ntj_clean=merge(ntj,edges_cleaned,by="name")
-ntj_clean$case_num=str_remove_all(ntj_clean$name,"[TJ]")
+ntj_clean$case_num=str_extract_all(ntj_clean$name,"\\(?[0-9,.]+\\)?")
 #write.csv(ntj_clean,here("Clustering/network_diagram/tianjin_cluster_known_edges.csv"))
 
 ```
-There should be 89 edges in this distinct dataset 
+
 ```{r}
 #Upload the tianjin_cluster_known_edges.csv for this plot 
 tj_cov_net = ggplot(ntj_clean, aes(x = x, y = y, xend = xend, yend = yend))+
   geom_edges(aes(),linetype="solid",colour="black") +
   geom_nodes(aes(color=cluster),size=8) +
   geom_text(aes(label=case_num), check_overlap = TRUE)+
+  geom_text(aes(label=case_num),subset(ntj_clean,cluster==" close contact "),colour="white",check_overlap = TRUE)+
   scale_color_viridis_d()+
-  ggtitle("Clusters of COVID-19 cases in Tianjin, China")+
-  theme_blank()
+  labs(color="Cluster")+
+  guides(colour = guide_legend(title.position="top", title.hjust = 0.5, override.aes = list(size=3))) +
+  #ggtitle("Clusters of COVID-19 cases in Tianjin, China")+
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.grid = element_blank(),
+        axis.title = element_blank(),
+        axis.line = element_blank(),
+        axis.text=element_blank(),
+        axis.ticks = element_blank(),
+        panel.border = element_blank(),
+        legend.position = "bottom",
+        legend.direction = "horizontal")
 
 tj_cov_net
 
+ggsave("tj_static_network.pdf",plot=tj_cov_net,device="pdf",path=here("network_diagram"),height=8,width=11,units="in")
 ```
 Now goingn to try and get things to cluster more accurately and then show the more inportantant edges within those clusters 
 
@@ -187,8 +200,9 @@ head(edges_unclean)
 
 
 ```{r}
-tdata_cc=read.csv(here("Clustering/tianjin_edges_clean.csv"))
+tdata_cc=read.csv(here("tianjin_edges_clean.csv"))
 colnames(tdata_cc)[4]="cluster"
+colnames(tdata_cc)[2]="name"
 edges_cleaned=tdata_cc
 edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"coworker ","coworker")
 edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"confirmed patient","unknown")
@@ -251,7 +265,10 @@ tdata_cc=tdata_cc[,-1]
 tj_net_ic=graph_from_data_frame(edges_dist_full,vertices = edges_full_df,directed = FALSE)
 ntj_ic=ggnetwork(tj_net_ic)
 
-ntj_ic$case_num=str_remove_all(ntj_ic$name,"[TJ]")
+ntj_ic$case_num=str_extract_all(ntj_ic$name,"\\(?[0-9,.]+\\)?")
+ntj_ic$edge1 <- gsub('\\s+', '', ntj_ic$edge1)
+
+
 #write.csv(ntj_ic,here("Clustering/network_diagram/tianjin_cluster_all_edges.csv"))
 
 ```
@@ -260,7 +277,8 @@ ntj_ic$case_num=str_remove_all(ntj_ic$name,"[TJ]")
 tj_cov_net_ic = ggplot(ntj_ic, aes(x = x, y = y, xend = xend, yend = yend))+
   geom_edges(aes(),subset(ntj_ic,edge1!=""),linetype="solid",colour="black") +
   geom_nodes(aes(color=cluster),size=8) +
-  geom_text(aes(label=case_num), check_overlap = TRUE)+
+  geom_text(aes(label=case_num))+
+  geom_text(aes(label=case_num), subset(ntj_ic,cluster==" close contact "),colour="white")+
   scale_color_viridis_d()+
   ggtitle("Clusters of COVID-19 cases in Tianjin, China")+
   theme_blank()

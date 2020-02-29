@@ -27,16 +27,15 @@ data$dummy_disdates <- sort(data$date_discharge, na.last = TRUE)
 
 ```
 
+#Calculate average duration between exposure, symptom onset, hospitaization, and discharge
 ```{r}
-data$days_between_hos_dis = difftime(data$date_discharge, data$date_hospital, units = "days")
+
 data$days_between_inf_symp = difftime(data$date_onset_symptoms, data$presumed_infected_date, units = "days")
 data$days_between_symp_hosp = difftime(data$date_hospital, data$date_onset_symptoms, units = "days")
+data$days_between_hos_dis = difftime(data$date_discharge, data$date_hospital, units = "days")
 
-data %>% select(days_between_inf_symp) %>% summarize(mean=mean(days_between_inf_symp, na.rm = TRUE), sd=sd(days_between_inf_symp, na.rm = TRUE))
+mean<-data %>% select(days_between_inf_symp:days_between_hos_dis) %>% summarise_all(list(mean=mean, sd=sd), na.rm=TRUE)
 
-data %>% select(days_between_symp_hosp) %>% summarize(mean=mean(days_between_symp_hosp, na.rm = TRUE), sd=sd(days_between_symp_hosp, na.rm = TRUE))
-
-data %>% select(days_between_hos_dis) %>% summarize(mean=mean(days_between_hos_dis, na.rm = TRUE), sd=sd(days_between_hos_dis, na.rm = TRUE))
 ```
 
 
