@@ -49,7 +49,7 @@ goodii=which(!is.na(tdata$symptom_onset))
 
 tdata$end_source[which(is.na(tdata$end_source))]=tdata$symptom_onset[which(is.na(tdata$end_source))]  # if no end exposure: set to symptom onset 
 tdata$end_source = pmin(tdata$end_source, tdata$symptom_onset) # if end exposure after onset, set to onset 
-tdata$start_source[which(is.na(tdata$start_source))]=as.Date("2019-12-31") # start date 
+tdata$start_source[which(is.na(tdata$start_source))]=as.Date("2020-01-05") # start date 
 
 tdata$maxIncTimes=tdata$symptom_onset-tdata$start_source 
 tdata$minIncTimes = tdata$symptom_onset-tdata$end_source
@@ -74,6 +74,13 @@ The median is about 8 days. For a parametric estimate we remove any remaining NA
 reddata=tdata[which(!is.na(tdata$minIncTimes)),]
 
 myfit = ic_par(Surv(reddata$minIncTimes, reddata$maxIncTimes,type="interval2")~1, data = reddata,dist="weibull")
+
+
+myfit_gamma<- ic_par(Surv(reddata$minIncTimes, reddata$maxIncTimes, type="interval2") ~ 1, data = reddata, dist = "gamma")
+summary(myfit_gamma)
+
+myfit_lnorm =  ic_par(Surv(reddata$minIncTimes, reddata$maxIncTimes, type="interval2") ~ 1, data = reddata, dist = "lnorm")
+summary(myfit_lnorm)
 ```
 
 The log of the shape parameter is `r myfit$coefficients[1]` $\pm$ `r sqrt(myfit$var[1,1])`, which gives a shape parameter of `r exp(myfit$coefficients[1])` with a 1.96-sd (in the log) giving the range (`r exp(myfit$coefficients[1]-1.96*sqrt(myfit$var[1,1]))`, `r exp(myfit$coefficients[1]+1.96*sqrt(myfit$var[1,1]))`).
@@ -83,10 +90,32 @@ Similarly the log scale parameter is `r myfit$coefficients[2]` $\pm$ `r sqrt(myf
 If the earliest date of exposure is Dec 1 instead of Dec 31 these are: shape 2.28 (1.8, 2.8), scale 10.0 (8.86, 11.38). If it's Jan 5 they are shape: 2.28 (1.86, 2.84) and scale 9.79 (8.69, 11.03). 
 
 ```{r}
-incqs=getFitEsts(myfit, newdata = NULL, p=c(0.025,0.05, 0.25, 0.5, 0.75,0.95,0.975)) #
+interqs=getFitEsts(myfit, newdata = NULL, p=c(0.025,0.05, 0.25, 0.5, 0.75,0.95,0.975)) #
+
+interqs
+interqs_gamma <- getFitEsts(myfit_gamma, newdata=NULL,  p
+                      =c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975))
+interqs_gamma
+interqs_lnorm <- getFitEsts(myfit_lnorm, newdata=NULL,  p
+                      =c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975))
+interqs_lnorm
 ```
 
-The median is `r incqs[4]` days and the  0.95 at `r incqs[6]`. These are longer than my estimate from the line list data, which matched Backer et al's analysis of the same data.  Here is a plot of the estimated distribution together with the empirical survival curve from the data. 
+The median is `r interqs[4]` days and the  0.95 at `r interqs[6]`. These are longer than my estimate from the line list data, which matched Backer et al's analysis of the same data.  Here is a plot of the estimated distribution together with the empirical survival curve from the data. 
+
+Information for a table for the paper: 
+
+```{r}
+# weibull shape scale then quantiles: 
+c( exp(myfit$coefficients[1]), scale = exp(myfit$coefficients[2])  , getFitEsts(myfit, newdata = NULL, p =c(0.025,  0.5,  0.975)))
+
+# gamma shape, scale then quants 
+c( shape = exp(myfit_gamma$coefficients[1]), scale = exp(myfit_gamma$coefficients[2]), getFitEsts(myfit_gamma, newdata=NULL,  p =c(0.025,  0.5,  0.975)))
+
+# lnorm meanlog, sdlog and quants 
+c( meanlog = myfit_lnorm$coefficients[1], sdlog = exp(myfit_lnorm$coefficients[2]), getFitEsts(myfit_lnorm, newdata=NULL,  p =c(0.025,  0.5,  0.975))) 
+```
+
 
 ```{r}
 days=seq(0,20,by=0.05)
@@ -95,10 +124,24 @@ density=dweibull(days, shape = exp(myfit$coefficients[1]), scale = exp(myfit$coe
 ggs = ggsurvplot(
   fit=survfit(Surv(tdata$minIncTimes, tdata$maxIncTimes, type="interval2")~1, data=tdata), 
   xlab="Days",  ylab = "Overall probability of no symptoms yet")
+
+pdata <- data.frame(days=rep(days,3),  
+            fitsurv=c(1-pweibull(days, shape = exp(myfit$coefficients[1]), scale = exp(myfit$coefficients[2])),
+        1-pgamma(days,  shape = exp(myfit_gamma$coefficients[1]), scale = exp(myfit_gamma$coefficients[2])),
+        1-plnorm(days,  meanlog = myfit_lnorm$coefficients[1], sdlog = exp(myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(days)), rep("Gamma",length(days)), rep("Lognorm", length(days)) ))  # i know, i know... 
+
+
 tmp=data.frame(days=days,  fitsurv=1-pweibull(days, shape = exp(myfit$coefficients[1]),
                       scale = exp(myfit$coefficients[2])))
 ggs$plot + geom_line(data = tmp, aes(x = days, y = fitsurv))
+# ggsave(filename = "inc_Tianjin.pdf", width = 8, height = 6)
 ```
+
+
+
+
+
+
 
 
 
@@ -182,7 +225,34 @@ ggplot(data=data.frame(days=days, density=density), aes(x=days,y=density)) + geo
 ```
 
 
+Bootstrap
 
+
+
+```{r, eval=TRUE}
+# bootstrap analysis
+Nboot=100
+bestimates=myestimate 
+for (kk in 1:Nboot) {
+bdata = sample(x=iccdata, size = length(iccdata), replace = T)
+bestimates = rbind(bestimates, serial_mix_est(data=bdata, N=50, startmu=10, startsig =4))
+}
+```
+
+```{r}
+mean(bestimates[,1]) # mean of the mean serial intervals 
+mean(bestimates[,2]) # sd of the sd serial intervals 
+```
+
+7 of the bootstrap means were above 6 days, and all of these had a high standard deviation. The rest are distributed around a mean of about 4.3 days. 
+
+
+```{r}
+hist(bestimates[,1],breaks = 10)
+bootdf=data.frame(mu=bestimates[,1], sig=bestimates[,2])
+ggplot(bootdf, aes(x=mu, y=sig))+geom_point()
+mean(bestimates[,1]) # higher estimates also have high uncertainty 
+```
 
 
 
