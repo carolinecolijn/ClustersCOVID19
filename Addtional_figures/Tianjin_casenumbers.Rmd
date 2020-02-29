@@ -13,15 +13,9 @@ library(plotly)
 library(scales)
 
 
-data <- read.csv("../data/COVID-19_Tianjin.csv", header = TRUE,  na.strings=c("","NA"))
+data <- read.csv("../data/COVID-19_Tianjin_confirmed_discharges.csv", header = TRUE,  na.strings=c("","NA"))
 
-data$confirm_date <- as.Date(data$confirm_date, "%d/%m/%Y")
-data$death <- as.Date(data$death, "%d/%m/%Y")
-
-data$dummy_condates <- sort(data$confirm_date)
-data$dummy_value <- 1
-
-data$dummy_deathdates <- sort(data$death, na.last = TRUE)
+data$date <- as.Date(data$date, "%d/%m/%Y")
 
 ```
 
@@ -29,13 +23,14 @@ data$dummy_deathdates <- sort(data$death, na.last = TRUE)
 
 ```{r cases by date}
 
-cols <- c("Cumulative confirmed"="#440154FF", "Death per day"="#FDE725FF", "Confirmed per day"="#39568CFF")
+cols <- c("Cumulative confirmed"="#440154FF", "Cumulative discharged"="#1F968BFF", "Death per day"="#FDE725FF", "Confirmed per day"="#39568CFF")
 
 p<-data %>%
 ggplot() +
-  geom_bar(aes(x = confirm_date), fill = "#39568CFF") +
-  geom_line(aes(x = dummy_condates, y = cumsum(dummy_value), color = "Cumulative confirmed"), size = 1) +
-  geom_bar(aes(x = death), width = 0.5,  fill = "#FDE725FF") +
+  geom_bar(aes(x = date, y=confirmed), fill = "#39568CFF", stat="identity") +
+  geom_line(aes(x = date, y = total_confirmed, color = "Cumulative confirmed"), size = 1) +
+  geom_bar(aes(x = date, y=deaths), width = 0.5,  fill = "#FDE725FF", stat="identity") +
+  geom_line(aes(x = date, y = total_discharge, color = "Cumulative discharged"), size = 1) +
 
   geom_blank(aes(color = "Confirmed per day")) +
   geom_blank(aes(color = "Death per day")) +
@@ -50,9 +45,12 @@ ggplot() +
   scale_y_continuous(breaks=pretty_breaks(n=20)) +
   scale_colour_manual(name = "Legend", values = cols) +
   theme(panel.background = element_rect(fill = "white"))+
-  annotate(geom="text", x=as.Date("2020-02-22"), y=135, label="135", hjust="left") 
+  annotate(geom="text", x=as.Date("2020-02-22"), y=135, label="135", hjust="left") +
+  annotate(geom="text", x=as.Date("2020-02-22"), y=65, label="65", hjust="left") 
 
-ggsave("case_count_tianjin.png",plot=p, device="png",width = 10,height = 6,units="in")
+p
+
+ggsave("case_count_tianjin.pdf",plot=p, device="pdf",width = 10,height = 6,units="in")
 
 
 ```
