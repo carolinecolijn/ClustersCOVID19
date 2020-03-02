@@ -1,16 +1,16 @@
 # Analysis of novel Coronavirus Disease (COVID-19) Singapore and Tianjin outbreak clusters
 
 ## Authors and contact information
-* [Lauren Tindale](https://github.com/ltindale)
+* [Lauren Tindale](https://github.com/ltindale) at tindale13@gmail.com
 * [Michelle Coombe](https://github.com/mkc030) at michelle.coombe.vet@gmail.com
 * [Emma Garlock](https://github.com/esgarlock)
 * [Venus Lau](https://github.com/vlauu)
 * [Jessica Stockdale](https://github.com/jessicastockdale) at jessica_stockdale@sfu.ca
 * [Y. Brian Lee](https://github.com/yxblee)
 * [Manu Saraswat](https://github.com/saraswatmanu) at msaraswat@cmmt.ubc.ca
-* Louxin Zhang
-* Dongxuan Chen
-* Jacco Wallinga
+* Louxin Zhang at matzlx@nus.edu.sg
+* Dongxuan Chen at dongxuan_chen@outlook.com
+* Jacco Wallinga at jacco.wallinga@rivm.nl
 * [Caroline Colijn](https://github.com/carolinecolijn), who is corresponding author at ccolijn@sfu.ca
 
 ## Summary of work
