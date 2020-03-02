@@ -5,7 +5,7 @@
 * [Michelle Coombe](https://github.com/mkc030) at michelle.coombe.vet@gmail.com
 * [Emma Garlock](https://github.com/esgarlock)
 * [Venus Lau](https://github.com/vlauu)
-* [Jessica Stockdale](https://github.com/jessicastockdale)
+* [Jessica Stockdale](https://github.com/jessicastockdale) at jessica_stockdale@sfu.ca
 * [Y. Brian Lee](https://github.com/yxblee)
 * [Manu Saraswat](https://github.com/saraswatmanu) at msaraswat@cmmt.ubc.ca
 * Louxin Zhang
