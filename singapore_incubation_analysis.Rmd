@@ -1,0 +1,321 @@
+---
+title: "Singapore Cluster Incubation period analysis"
+author: "Caroline Colijn, Michelle Coombe, Manu Saraswat"
+date: "25/02/2020"
+output: html_document
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(survminer)
+library(survival)
+library(tidyverse)
+library(lubridate)
+library(icenReg)
+library(igraph)
+library(visNetwork)
+library(stringr)
+options(digits=3)
+```
+
+## Data 
+
+Thanks to EpiCoronaHack Cluster team. These data are manually entered from postings from the Government of Singapore website:
+  
+  
+
+
+```{r}
+spdata <- read_csv("COVID-19_Singapore.csv")
+# Ensure properly imported
+glimpse(spdata)
+colSums(is.na(spdata))
+# Rename columns 2, 3 and 4 so no spaces
+spdata <- rename(spdata, related_cases = starts_with("Related"),
+                 cluster_links = "Cluster links",
+                 relationship_notes = starts_with("Relation"))
+# Change date columns into date objects
+spdata <- mutate(spdata, presumed_infected_date = dmy(presumed_infected_date),
+                 last_poss_exposure = dmy(last_poss_exposure),
+                 symp_presumed_infector = dmy(symp_presumed_infector),
+                 date_onset_symptoms = dmy(date_onset_symptoms),
+                 date_quarantine = dmy(date_quarantine),
+                 date_hospital = dmy(date_hospital),
+                 date_confirmation = dmy(date_confirmation),
+                 date_discharge = dmy(date_discharge))
+# make sure dates parsed properly
+range(spdata$presumed_infected_date, na.rm = T)
+range(spdata$last_poss_exposure, na.rm = T)
+range(spdata$symp_presumed_infector, na.rm = T)
+range(spdata$date_onset_symptoms, na.rm = T)
+range(spdata$date_quarantine, na.rm = T)
+range(spdata$date_hospital, na.rm = T)
+range(spdata$date_confirmation, na.rm = T)
+range(spdata$date_discharge, na.rm = T)
+# Note that case 36 is listed has having symptoms 16 days AFTER being hospitalized; suspect a typo in the month, fixing: 
+# spdata$date_onset_symptoms[spdata$CaseID==36] <- ymd("2020-01-24")
+# Note that the date of symp_presumed_infector for CaseID 79 changed was originally listed as 2020-02-07 (based on online visualizations) but was changed to 2020-02-10, due to Feb 10, 2020 being on the earliest date of onset of symptoms from case 72, as from online info provided, presumed infective contact for CaseID 79 is from 72 (family member), rather than directly from case 52
+spdata$symp_presumed_infector[spdata$CaseID == 79] <- ymd("2020-02-10")
+# Change symp_presumed_infector to Feb 10, 2020 (date of symptom onset from caseID 72, the presumed infector)
+spdata <- filter(spdata, !is.na(date_onset_symptoms)) #Remove all the cases that do not have info on date of symptom onset 
+# NOTE NOTE 12 of these, but they have a date of confiramation and dates of presumed infection - COULD FIX 
+```
+
+
+
+## Incubation period
+
+The incubation period is the time between exposure and the onset of symptoms. We estimate this directly from the stated start and end times for cases' exposure windows. These are explicitly listed for the Tianjin dataset but in Singapore they are approximated using contact tracing and the route by which a case was exposed. Because it is explicitly about the symptom onset, we remove those who don't have symptom onset defined. (These are a small minority of 12 cases and the alternative would be to impute their symptom onset time using the others' delay to confirmation time.  For now, we remove them).   
+
+Then, if no other end time for the exposure is given or if the end of the exposure time is after the time of symptom onset, set the last exposure time to the symptom onset time. This is because they must have been exposed before symptom onset.   We use four ideas to set the end time for the exposure window: 
+
+* 1: the end source is last possible exposure, if this is given 
+
+* 2:  if it is not given, then we set the end of the exposure window to the time of  symptoms of the presumed infector plus a noise term epsilon (eps)
+
+* 3: and if neither the last possible expsure or the symptom time of the presumed infector are given, the last exposure time is set to the time of symptom onset. 
+
+* 4 Finally, we do not let the last possible exposure time be later than the time of symptom onset 
+
+```{r}
+spdata$end_source = spdata$last_poss_exposure # 1 above 
+
+eps=4
+hasPresInf = which(is.na(spdata$last_poss_exposure) & !(is.na(spdata$symp_presumed_infector))) # 2 above 
+spdata$end_source[hasPresInf] = spdata$presumed_infected_date[hasPresInf]+eps
+
+hasNone = which(is.na(spdata$last_poss_exposure) & is.na(spdata$symp_presumed_infector)) # 3 above 
+spdata$end_source[hasNone] = spdata$date_onset_symptoms[hasNone]
+
+spdata$end_source = pmin(spdata$end_source, spdata$date_onset_symptoms) # 4
+```
+
+Model the start source 
+
+* 1 if the time of presumed infector is given, use that - epsilon 
+
+* If it is not given use symptom onset minus say 20 days, based on prior 
+knowledge 
+
+```{r}
+spdata$start_source = spdata$presumed_infected_date - eps # 1
+spdata$start_source[is.na(spdata$presumed_infected_date)] = spdata$date_onset_symptoms[is.na(spdata$presumed_infected_date)]-20
+```
+
+
+
+
+```{r}
+spdata$minIncTimes <- spdata$date_onset_symptoms - spdata$end_source
+spdata$maxIncTimes <- spdata$date_onset_symptoms - spdata$start_source
+```
+
+We use survival analysis in the icenReg package to make parametric estimates, and we use the regular survival package to estimate the time to onset of symptoms. 
+
+```{r}
+ggsurvplot(
+fit <- survfit(Surv(spdata$minIncTimes, spdata$maxIncTimes, type="interval2") ~ 1, data = spdata), 
+xlab="Days",
+ylab = "Overall probability of no symptoms yet")
+```
+
+Next we obtain parameter estimates from various distributions for this data
+
+```{r}
+
+
+spfit <- ic_par(Surv(spdata$minIncTimes, spdata$maxIncTimes, type="interval2") ~ 1, data = spdata, dist = "weibull")
+summary(spfit)
+
+spfit_gamma<- ic_par(Surv(spdata$minIncTimes, spdata$maxIncTimes, type="interval2") ~ 1, data = spdata, dist = "gamma")
+summary(spfit_gamma)
+
+spfit_lnorm =  ic_par(Surv(spdata$minIncTimes, spdata$maxIncTimes, type="interval2") ~ 1, data = spdata, dist = "lnorm")
+summary(spfit_lnorm)
+```
+
+
+#generating figure 3 above panel from paper
+```{r}
+spdays <- seq(0,20, by=0.05)
+spdensity <- dweibull(spdays, shape = exp(spfit$coefficients[1]), scale = exp(spfit$coefficients[2]))
+spdens_gamma=dgamma(spdays, shape = exp(spfit_gamma$coefficients[1]), scale = exp(spfit_gamma$coefficients[2]))
+spdens_lnorm=dlnorm(spdays, meanlog = spfit_lnorm$coefficients[1], sdlog = exp(spfit_lnorm$coefficients[2]))
+
+ggsp = ggsurvplot(
+fit=survfit(Surv(spfirst$minIncTimes, spfirst$maxIncTimes, type="interval2")~1, data=spfirst), combine = TRUE,
+xlab="Days",  ylab = "Overall probability of no symptoms yet",palette = "lancet",legend=c('right'))
+pdata <- data.frame(days=rep(spdays,3),  
+            fitsurv=c(1-pweibull(spdays, shape = exp(spfit$coefficients[1]), scale = exp(spfit$coefficients[2])),
+        1-pgamma(spdays,  shape = exp(spfit_gamma$coefficients[1]), scale = exp(spfit_gamma$coefficients[2])),
+        1-plnorm(spdays,  meanlog = spfit_lnorm$coefficients[1], sdlog = exp(spfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(spdays)), rep("Gamma",length(spdays)), rep("Lognorm", length(spdays)) )) 
+                                                            
+
+ ggsp$plot+geom_line(data = pdata, aes(x = days, y = fitsurv,,color=distn))
+  ggsave(filename = "inc_Sing_all.pdf", width = 8, height = 6)
+```
+
+
+Next we do a stratified analysis by whether the person has a last possible exposure given, or not. 
+
+```{r}
+spcopy = spdata; spcopy$has_last = as.factor(!(is.na(spdata$last_poss_exposure)))
+spcopyfit <- ic_par(Surv(spcopy$minIncTimes, spcopy$maxIncTimes, type="interval2") ~ has_last, data = spcopy, dist = "weibull")
+summary(spcopyfit) 
+
+getFitEsts(spcopyfit, newdata = data.frame(has_last=as.factor(TRUE)), p
+                      =c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975))
+getFitEsts(spcopyfit, newdata = data.frame(has_last=as.factor(FALSE)), p
+                      =c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975))
+# OK - so for those who have a last poss exposure we have inc of 5.22 days , and for everyone, 7.46 days (!) suggesting that using the infected times for those presumed
+# infectors is not correct. there are missing intermediate cases. 
+ggsurvplot(
+fit <- survfit(Surv(spcopy$minIncTimes, spcopy$maxIncTimes, type="interval2") ~ spcopy$has_last), data = spcopy, 
+xlab="Days",
+ylab = "Overall probability of no symptoms yet",
+surv.median.line = c('hv'))
+ggsave("inc_sing_by_haslastexp.pdf", height = 6, width = 8)
+```
+
+
+
+ We use interval censoring, because we know only that exposure was some time between the minimum and maximum possible values. 
+
+```{r}
+# sum(is.na(spdata$minIncTimes)) # 0
+
+# here we create two dataframes, spfirst for early onset and sp_late for late onset 
+
+spfirst = spcopy[which(spcopy$has_last ==TRUE),]
+#spfirst = spdata 
+
+
+#fitting different distributions for early onset
+spfit <- ic_par(Surv(spfirst$minIncTimes, spfirst$maxIncTimes, type="interval2") ~ 1, data = spdata, dist = "weibull")
+summary(spfit)
+
+spfit_gamma<- ic_par(Surv(spfirst$minIncTimes, spfirst$maxIncTimes, type="interval2") ~ 1, data = spdata, dist = "gamma")
+summary(spfit_gamma)
+
+spfit_lnorm =  ic_par(Surv(spfirst$minIncTimes, spfirst$maxIncTimes, type="interval2") ~ 1, data = spdata, dist = "lnorm")
+summary(spfit_lnorm)
+
+
+sp_late = spcopy[which(spcopy$has_last ==FALSE),]
+
+#fitting different distributions for late onset
+spfit_late <- ic_par(Surv(sp_late$minIncTimes, sp_late$maxIncTimes, type="interval2") ~ 1, data = spdata, dist = "weibull")
+summary(spfit_late)
+
+spfit_gamma_late<- ic_par(Surv(sp_late$minIncTimes, sp_late$maxIncTimes, type="interval2") ~ 1, data = spdata, dist = "gamma")
+summary(spfit_gamma_late)
+
+spfit_lnorm_late =  ic_par(Surv(sp_late$minIncTimes, sp_late$maxIncTimes, type="interval2") ~ 1, data = spdata, dist = "lnorm")
+summary(spfit_lnorm_late)
+```
+
+The log of the shape parameter is `r spfit$coefficients[1]` $\pm$ `r sqrt(spfit$var[1,1])`, which gives a shape parameter of `r exp(spfit$coefficients[1])` with a 1.96-sd (in the log) giving the range (`r exp(spfit$coefficients[1]-1.96*sqrt(spfit$var[1,1]))`, `r exp(spfit$coefficients[1]+1.96*sqrt(spfit$var[1,1]))`).
+
+Similarly the log scale parameter is `r spfit$coefficients[2]` $\pm$ `r sqrt(spfit$var[2,2])`, which gives a scale parameter of `r exp(spfit$coefficients[2])` with a one-sd (in the log) giving the range (`r exp(spfit$coefficients[2]-1.96*sqrt(spfit$var[2,2]))`, `r exp(spfit$coefficients[2]+1.96*sqrt(spfit$var[2,2]))`). 
+
+
+
+
+```{r}
+interqs <- getFitEsts(spfit, newdata = NULL, p
+                      =c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975)) #
+interqs
+interqs_gamma <- getFitEsts(spfit_gamma, newdata=NULL,  p
+                      =c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975))
+interqs_gamma
+interqs_lnorm <- getFitEsts(spfit_lnorm, newdata=NULL,  p
+                      =c(0.025, 0.05, 0.25, 0.5, 0.75, 0.95, 0.975))
+interqs_lnorm
+```
+
+
+
+
+Here is a plot of the estimated distribution together with the empirical survival curve from the data. 
+
+```{r}
+
+#generating figure 3 below panel from the paper
+spdays <- seq(0,20, by=0.05)
+spdensity <- dweibull(spdays, shape = exp(spfit$coefficients[1]), scale = exp(spfit$coefficients[2]))
+spdens_gamma=dgamma(spdays, shape = exp(spfit_gamma$coefficients[1]), scale = exp(spfit_gamma$coefficients[2]))
+spdens_lnorm=dlnorm(spdays, meanlog = spfit_lnorm$coefficients[1], sdlog = exp(spfit_lnorm$coefficients[2]))
+
+spdensity_late <- dweibull(spdays, shape = exp(spfit_late$coefficients[1]), scale = exp(spfit_late$coefficients[2]))
+spdens_gamma_late=dgamma(spdays, shape = exp(spfit_gamma_late$coefficients[1]), scale = exp(spfit_gamma_late$coefficients[2]))
+spdens_lnorm_late=dlnorm(spdays, meanlog = spfit_lnorm_late$coefficients[1], sdlog = exp(spfit_lnorm_late$coefficients[2]))
+
+
+fit1<-survfit(Surv(spfirst$minIncTimes, spfirst$maxIncTimes, type="interval2")~1, data=spfirst)
+fit2<-survfit(Surv(sp_late$minIncTimes, sp_late$maxIncTimes, type="interval2")~1, data=sp_late)
+
+fit <- list(early = fit1, late = fit2)
+ggsp2=ggsurvplot(fit, data = spcopy, combine = TRUE, # Combine curves
+             # Clean risk table
+           palette = "lancet",legend.labs=c("Stratum:Early","Stratum:Late"),legend=c('right'))
+
+
+
+pdata <- data.frame(days=rep(spdays,3),  
+            fitsurv=c(1-pweibull(spdays, shape = exp(spfit$coefficients[1]), scale = exp(spfit$coefficients[2])),
+        1-pgamma(spdays,  shape = exp(spfit_gamma$coefficients[1]), scale = exp(spfit_gamma$coefficients[2])),
+        1-plnorm(spdays,  meanlog = spfit_lnorm$coefficients[1], sdlog = exp(spfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(spdays)), rep("Gamma",length(spdays)), rep("Lognorm", length(spdays)) )) 
+                                                            
+pdata1 <- data.frame(days=rep(spdays,3),  
+            fitsurv=c(1-pweibull(spdays, shape = exp(spfit_late$coefficients[1]), scale = exp(spfit_late$coefficients[2])),
+        1-pgamma(spdays,  shape = exp(spfit_gamma_late$coefficients[1]), scale = exp(spfit_gamma_late$coefficients[2])),
+        1-plnorm(spdays,  meanlog = spfit_lnorm_late$coefficients[1], sdlog = exp(spfit_lnorm_late$coefficients[2]))),distn=c(rep("Weibull", length(spdays)), rep("Gamma",length(spdays)), rep("Lognorm", length(spdays)) )) 
+                                                            
+ggsp2$plot + geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn)) +geom_line(data = pdata1, aes(x = days, y = fitsurv,color=distn)) 
+  ggsave(filename = "inc_Sing_strata.pdf", width = 8, height = 6)
+```
+# Generating Supplementary Table Data
+#early onset
+
+#gamma distribution parameters
+The log of the shape parameter is `r spfit_gamma$coefficients[1]` $\pm$ `r sqrt(spfit_gamma$var[1,1])`, which gives a shape parameter of `r exp(spfit_gamma$coefficients[1])` with a 1.96-sd (in the log) giving the range (`r exp(spfit_gamma$coefficients[1]-1.96*sqrt(spfit_gamma$var[1,1]))`, `r exp(spfit_gamma$coefficients[1]+1.96*sqrt(spfit_gamma$var[1,1]))`).
+
+Similarly the log scale parameter is `r spfit_gamma$coefficients[2]` $\pm$ `r sqrt(spfit_gamma$var[2,2])`, which gives a scale parameter of `r exp(spfit_gamma$coefficients[2])` with a one-sd (in the log) giving the range (`r exp(spfit_gamma$coefficients[2]-1.96*sqrt(spfit_gamma$var[2,2]))`, `r exp(spfit_gamma$coefficients[2]+1.96*sqrt(spfit_gamma$var[2,2]))`). 
+
+
+#lognormal  distribution parameters
+The  mean parameter is `r spfit_lnorm$coefficients[1]` $\pm$ `r sqrt(spfit_lnorm$var[1,1])`, which gives a shape parameter of `r spfit_lnorm$coefficients[1]` with a 1.96-sd giving the range (`r spfit_lnorm$coefficients[1]-1.96*sqrt(spfit_lnorm$var[1,1])`, `r spfit_lnorm$coefficients[1]+1.96*sqrt(spfit_lnorm$var[1,1])`).
+
+Similarly the log sd parameter is `r spfit_lnorm$coefficients[2]` $\pm$ `r sqrt(spfit_lnorm$var[2,2])`, which gives sd parameter of `r exp(spfit_lnorm$coefficients[2])` with a one-sd (in the log) giving the range (`r exp(spfit_lnorm$coefficients[2]-1.96*sqrt(spfit_lnorm$var[2,2]))`, `r exp(spfit_lnorm$coefficients[2]+1.96*sqrt(spfit_lnorm$var[2,2]))`)
+
+
+#weibull distribution parameters
+The log of the shape parameter is `r spfit$coefficients[1]` $\pm$ `r sqrt(spfit$var[1,1])`, which gives a shape parameter of `r exp(spfit$coefficients[1])` with a 1.96-sd (in the log) giving the range (`r exp(spfit$coefficients[1]-1.96*sqrt(spfit$var[1,1]))`, `r exp(spfit$coefficients[1]+1.96*sqrt(spfit$var[1,1]))`).
+
+Similarly the log scale parameter is `r spfit$coefficients[2]` $\pm$ `r sqrt(spfit$var[2,2])`, which gives a scale parameter of `r exp(spfit$coefficients[2])` with a one-sd (in the log) giving the range (`r exp(spfit$coefficients[2]-1.96*sqrt(spfit$var[2,2]))`, `r exp(spfit$coefficients[2]+1.96*sqrt(spfit$var[2,2]))`)
+
+#late onset
+
+#gamma distribution parameters
+The log of the shape parameter is `r spfit_gamma_late$coefficients[1]` $\pm$ `r sqrt(spfit_gamma_late$var[1,1])`, which gives a shape parameter of `r exp(spfit_gamma_late$coefficients[1])` with a 1.96-sd (in the log) giving the range (`r exp(spfit_gamma_late$coefficients[1]-1.96*sqrt(spfit_gamma_late$var[1,1]))`, `r exp(spfit_gamma_late$coefficients[1]+1.96*sqrt(spfit_gamma_late$var[1,1]))`).
+
+Similarly the log scale parameter is `r spfit_gamma_late$coefficients[2]` $\pm$ `r sqrt(spfit_gamma_late$var[2,2])`, which gives a scale parameter of `r exp(spfit_gamma_late$coefficients[2])` with a one-sd (in the log) giving the range (`r exp(spfit_gamma_late$coefficients[2]-1.96*sqrt(spfit_gamma_late$var[2,2]))`, `r exp(spfit_gamma_late$coefficients[2]+1.96*sqrt(spfit_gamma_late$var[2,2]))`). 
+
+
+#lognormal distribution parameters
+The  mean parameter is `r spfit_lnorm_late$coefficients[1]` $\pm$ `r sqrt(spfit_lnorm_late$var[1,1])`, which gives a shape parameter of `r spfit_lnorm_late$coefficients[1]` with a 1.96-sd giving the range (`r spfit_lnorm_late$coefficients[1]-1.96*sqrt(spfit_lnorm_late$var[1,1])`, `r spfit_lnorm_late$coefficients[1]+1.96*sqrt(spfit_lnorm_late$var[1,1])`).
+
+Similarly the log sd parameter is `r spfit_lnorm_late$coefficients[2]` $\pm$ `r sqrt(spfit_lnorm_late$var[2,2])`, which gives sd parameter of `r exp(spfit_lnorm_late$coefficients[2])` with a one-sd (in the log) giving the range (`r exp(spfit_lnorm_late$coefficients[2]-1.96*sqrt(spfit_lnorm_late$var[2,2]))`, `r exp(spfit_lnorm_late$coefficients[2]+1.96*sqrt(spfit_lnorm_late$var[2,2]))`)
+
+
+#weibull distribution parameters
+The log of the shape parameter is `r spfit_late$coefficients[1]` $\pm$ `r sqrt(spfit_late$var[1,1])`, which gives a shape parameter of `r exp(spfit_late$coefficients[1])` with a 1.96-sd (in the log) giving the range (`r exp(spfit_late$coefficients[1]-1.96*sqrt(spfit_late$var[1,1]))`, `r exp(spfit_late$coefficients[1]+1.96*sqrt(spfit_late$var[1,1]))`).
+
+Similarly the log scale parameter is `r spfit_late$coefficients[2]` $\pm$ `r sqrt(spfit_late$var[2,2])`, which gives a scale parameter of `r exp(spfit_late$coefficients[2])` with a one-sd (in the log) giving the range (`r exp(spfit_late$coefficients[2]-1.96*sqrt(spfit_late$var[2,2]))`, `r exp(spfit_late$coefficients[2]+1.96*sqrt(spfit_late$var[2,2]))`)
+
+
+
+
+
+
+
