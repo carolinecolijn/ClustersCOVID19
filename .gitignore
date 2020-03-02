@@ -1,5 +1,4 @@
-additional_figures
-.DS_Store
+*.DS_Store
 .Rproj.user
 .Rhistory
 .RData
