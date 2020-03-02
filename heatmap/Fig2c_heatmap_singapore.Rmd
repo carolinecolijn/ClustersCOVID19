@@ -97,7 +97,7 @@ p_static=ggplot(
 
 p_static
 
-ggsave("../heatmap/heatmap_static.pdf",plot=p_static, device="pdf",width = 12,height = 8,units="in")
+ggsave("../heatmap/Fig2c_heatmap_singapore.pdf",plot=p_static, device="pdf",width = 12,height = 8,units="in")
 
 ```
  

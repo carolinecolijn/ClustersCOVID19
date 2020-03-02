@@ -105,7 +105,7 @@ p_static=ggplot(
 
 p_static
 
-ggsave("../heatmap/heatmap_tianjin_static.pdf",plot=p_static, device="pdf",width = 10,height = 11,units="in")
+ggsave("../heatmap/Fig3c_heatmap_tianjin.pdf",plot=p_static, device="pdf",width = 10,height = 11,units="in")
 
 ```
  
