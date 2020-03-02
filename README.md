@@ -7,7 +7,7 @@
 * [Venus Lau](https://github.com/vlauu)
 * [Jessica Stockdale](https://github.com/jessicastockdale)
 * [Y. Brian Lee](https://github.com/yxblee)
-* [Manu Saraswat] (https://github.com/saraswatmanu)
+* [Manu Saraswat](https://github.com/saraswatmanu) at msaraswat@cmmt.ubc.ca
 * Louxin Zhang
 * Dongxuan Chen
 * Jacco Wallinga
