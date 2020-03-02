@@ -1,5 +1,6 @@
 ---
 title: "Singapore figures"
+author: "Venus Lau; Lauren Tindale"
 output: html_document
 ---
 
