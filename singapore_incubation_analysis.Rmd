@@ -20,7 +20,7 @@ options(digits=3)
 
 ## Data 
 
-Thanks to EpiCoronaHack Cluster team. These data are manually entered from postings from the Government of Singapore website:
+Thanks to EpiCoronaHack Cluster team. These data are manually entered from postings from the Government of Singapore website: [website](https://www.moh.gov.sg/covid-19).
   
   
 
