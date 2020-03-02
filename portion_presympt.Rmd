@@ -1,0 +1,125 @@
+---
+title: "Portion pre-symptomatic"
+author: "Caroline Colijn"
+date: "01/03/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+## Pre-symptomatic transmission 
+
+Finally - let's sample the distribution of the time between symptom onset of a case to its infecting others (the distribution of  serial interval minus incubation time). The proportion of this duration that is negative gives the proportion of infections caused before symptom onset, which is per Fraser et al. PNAS 2004 one of the key factors that determines if an outbreak is controllable by non-pharmaceutical measures. Here we use either the conservative estimate of the incubation period 
+
+We'll use estimates in the manuscript for all distributions. These are: serial interval mean 4.220 (sd.978) for Tianjin and mean 4.56 (sd 1.16), and for incubation period we have  Weibull distributions for Tianjin 
+
+* Early median 6.86 shape 2.74  (2.01, 3.73) scale 7.84 (6.85, 8.972)
+
+* Late median 12.43 shape 3.95 (2.66, 5.85) scale 13.64 (11.99, 15.51)
+
+* unstratified 8.55 shape 2.29 (1.86, 2.84) scale 9.79 (8.69, 11.03) 
+
+and for Singapore 
+
+* Early median 5.46 shape 2.35 (1.5,3.67) scale 6.38 (5.14,7.93) 
+
+* Late median 7.27 shape 1.93 (1.43,2.61) scale 8.79 (7.35,10.5)
+
+* unstratified median 6.40 shape 3.36 (2.09, 5.4) scale 2.11 (1.32,3.4)
+
+```{r}
+tianjin=list()
+tianjin[[1]]=list(median=6.86, shape=2.74, minshape=2.01, maxshape=3.73, scale=7.84, minscale=6.85, maxscale=8.97)
+tianjin[[2]]=list(median=12.43, shape=3.95, minshape=2.66, maxshape=5.85, scale=13.64, minscale=11.99, maxscale=15.51)
+tianjin[[3]]=list(median= 6.40, shape= 2.25, minshape=NA, maxshape=NA, scale =10.1, minscale=NA, maxscale=NA)
+
+singapore=list()
+singapore[[1]]=list(median= 5.46, shape= 2.35, scale= 6.38)
+singapore[[2]]=list(median= 7.27, shape= 1.93, scale= 8.79)
+singapore[[3]]=list(median=6.55 , shape=1.876 , scale =7.968)
+```
+
+We will perform 6 experiments: Tianjin early, late, unstratified; Singapore early, late, unstratified.
+
+## Tianjin 
+
+```{r}
+Nsamp=10000
+inctimesE = rweibull(Nsamp, shape = tianjin[[1]]$shape, scale = tianjin[[1]]$scale)
+inctimesL = rweibull(Nsamp, shape = tianjin[[2]]$shape, scale = tianjin[[2]]$scale)
+inctimesU = rweibull(Nsamp, shape = tianjin[[3]]$shape, scale = tianjin[[3]]$scale)
+
+
+sertimes= rnorm(Nsamp, mean = 4.22, sd = 0.978)
+
+d1=data.frame(TimeDiff=sertimes-inctimesE, group="Early")
+d2=data.frame(TimeDiff=sertimes-inctimesL, group="Late")
+d3=data.frame(TimeDiff=sertimes-inctimesU, group="Unstratified")
+
+df=rbind(d1,d2, d3) 
+
+ggplot(data=df, aes(x=TimeDiff, fill=group))+geom_histogram(position="dodge")+theme_bw()+ggtitle("Tianjin")
+
+ggsave(file="portion_pre_Tianjin.pdf", height=4,width = 6)
+#sum(sertimes-inctimes < 0)/Nsamp
+sum(d1$TimeDiff<0)/length(d1$TimeDiff)
+sum(d2$TimeDiff<0)/length(d2$TimeDiff)
+sum(d3$TimeDiff<0)/length(d3$TimeDiff)
+```
+
+
+## Singapore 
+
+```{r}
+Nsamp=10000
+inctimesE = rweibull(Nsamp, shape = singapore[[1]]$shape, scale = singapore[[1]]$scale)
+inctimesL = rweibull(Nsamp, shape = singapore[[2]]$shape, scale = singapore[[2]]$scale)
+inctimesU = rweibull(Nsamp, shape = singapore[[3]]$shape, scale = singapore[[3]]$scale)
+
+
+sertimes= rnorm(Nsamp, mean = 4.22, sd = 0.978)
+
+d1=data.frame(TimeDiff=sertimes-inctimesE, group="Early")
+d2=data.frame(TimeDiff=sertimes-inctimesL, group="Late")
+d3=data.frame(TimeDiff=sertimes-inctimesU, group="Unstratified")
+
+df=rbind(d1,d2, d3) 
+
+ggplot(data=df, aes(x=TimeDiff, fill=group))+geom_histogram(position="dodge")+theme_bw()+ggtitle("Singapore")
+
+ggsave(file="portion_pre_Singapore.pdf", height=4,width = 6)
+#sum(sertimes-inctimes < 0)/Nsamp
+sum(d1$TimeDiff<0)/length(d1$TimeDiff)
+sum(d2$TimeDiff<0)/length(d2$TimeDiff)
+sum(d3$TimeDiff<0)/length(d3$TimeDiff)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+Now a broader experiment where we sample the shape and scale parameters from the above distribution, assuming they themselves are normal. 
+
+```{r}
+Nsamp=10000
+shapes=rnorm(Nsamp, tianjin[[1]]$shape, (tianjin[[1]]$maxshape-tianjin[[1]]$shape)/1.96)
+scales=rnorm(Nsamp, tianjin[[1]]$scale, (tianjin[[1]]$maxscale-tianjin[[1]]$scale)/1.96)
+inctimes = rweibull(Nsamp, shape=shapes, scale=scales)
+# tianjin mean 4.22 (3.15, 5.29) so sd of the means is 
+serialmeansd=(4.22-3.15)/1.96
+sermeans = rnorm(Nsamp, 4.22, serialmeansd)
+sersd=1 # sd in the mean  ... ok 
+sertimes= rnorm(Nsamp, mean =sermeans, sd=sersd)
+hist(sertimes-inctimes,breaks = 30) # even worse 
+```
+

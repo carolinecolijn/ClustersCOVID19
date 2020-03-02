@@ -49,7 +49,7 @@ goodii=which(!is.na(tdata$symptom_onset))
 
 tdata$end_source[which(is.na(tdata$end_source))]=tdata$symptom_onset[which(is.na(tdata$end_source))]  # if no end exposure: set to symptom onset 
 tdata$end_source = pmin(tdata$end_source, tdata$symptom_onset) # if end exposure after onset, set to onset 
-tdata$start_source[which(is.na(tdata$start_source))]=as.Date("2020-01-05") # start date 
+tdata$start_source[which(is.na(tdata$start_source))]=as.Date("2019-12-01") # start date 
 
 tdata$maxIncTimes=tdata$symptom_onset-tdata$start_source 
 tdata$minIncTimes = tdata$symptom_onset-tdata$end_source
@@ -87,7 +87,7 @@ The log of the shape parameter is `r myfit$coefficients[1]` $\pm$ `r sqrt(myfit$
 
 Similarly the log scale parameter is `r myfit$coefficients[2]` $\pm$ `r sqrt(myfit$var[2,2])`, which gives a scale parameter of `r exp(myfit$coefficients[2])` with a one-sd (in the log) giving the range (`r exp(myfit$coefficients[2]-1.96*sqrt(myfit$var[2,2]))`, `r exp(myfit$coefficients[2]+1.96*sqrt(myfit$var[2,2]))`). 
 
-If the earliest date of exposure is Dec 1 instead of Dec 31 these are: shape 2.28 (1.8, 2.8), scale 10.0 (8.86, 11.38). If it's Jan 5 they are shape: 2.28 (1.86, 2.84) and scale 9.79 (8.69, 11.03). 
+
 
 ```{r}
 interqs=getFitEsts(myfit, newdata = NULL, p=c(0.025,0.05, 0.25, 0.5, 0.75,0.95,0.975)) #
@@ -197,67 +197,140 @@ tdata$component=vapply(tdata$case_id, function(x)
 ```
 
 
-Extract ICC interval data 
+Extract ICC interval data: a function 
+
+```{r}
+ getICCs <- function(thisdata, ccs, K, orderby= "onset" ) {
+  iccs=1
+for (n in 1:max(ccs$membership)) {
+  mycases  = which(thisdata$component==n)
+  if (orderby == "onset")
+  {  myonsets = sort(thisdata$symptom_onset[mycases])[1:min(K, length(mycases))]}
+  if (orderby == "exposure") {
+ myonsets =thisdata$symptom_onset[mycases][order(thisdata$end_source[mycases])][1:min(K,length(mycases))]
+  }
+  iccs =c(iccs, myonsets[-1]-myonsets[1])
+}
+  return(iccs[-1]) 
+  }
+```
 
 
 
 ```{r}
-iccdata = 1  # just initialises
 stdata = tdata[which(!is.na(tdata$symptom_onset)),]
-for (n in 1:max(ccs$membership)) {
-  mycases  = which(stdata$component==n)
-  myonsets = sort(stdata$symptom_onset[mycases])[1:min(5, length(mycases))]
-  iccdata =c(iccdata, myonsets[-1]-myonsets[1])
-}
-iccdata=iccdata[-1] # remove first initializing entry
-iccdata
+
+icc3 = getICCs(stdata,ccs,3)
+icc4 = getICCs(stdata,ccs,4)
+icc5 = getICCs(stdata,ccs,5)
+icc6 = getICCs(stdata,ccs,6)
+icc_expose = getICCs(stdata, ccs, 4, orderby ="exposure")
 ```
 
 Perform the estimate using the Vink et al method, and display the result:
 
 ```{r}
 source("TianjinSI_VinkWallinga_CC.R")
-myestimate = serial_mix_est(data=iccdata, N=30, startmu=10, startsig =4)
+myestimate = serial_mix_est(data=icc4, N=100, startmu=10, startsig =4)
 myestimate
+myest3 = serial_mix_est(data=icc3, N=100, startmu=10, startsig =4)
+myest4 = serial_mix_est(data=icc4, N=100, startmu=10, startsig =4)
+myest5 = serial_mix_est(data=icc5, N=100, startmu=10, startsig =4)
+myest6 = serial_mix_est(data=icc6, N=100, startmu=10, startsig =4)
+myest_exp= serial_mix_est(data=icc_expose, N=100, startmu=10, startsig =4)
+
+mm=rbind(myestimate,myest3, myest4, myest5,myest6, myest_exp)
+colnames(mm)=c("mu","sig")
+mm=as.data.frame(mm)
+mm$K=c(9, 3, 4, 5, 6, 4) 
+mm$ordering = c("Onset","Onset","Onset","Onset","Onset","LastExposure")
+print(mm[,c(4,3,1,2)]) 
+```
+
+
+```{r,eval=FALSE} 
 days = seq(from=0, to=10, by=0.1) 
 density= dnorm(days, mean = myestimate[1], sd = myestimate[2])
 ggplot(data=data.frame(days=days, density=density), aes(x=days,y=density)) + geom_line() + ggtitle("ICC estimate of the Tianjin cluster serial interval")
 ```
 
 
-Bootstrap
+Bootstrap analysis - have left off in the Rmd because it takes time. 
 
-
-
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 # bootstrap analysis
 Nboot=100
 bestimates=myestimate 
 for (kk in 1:Nboot) {
-bdata = sample(x=iccdata, size = length(iccdata), replace = T)
+bdata = sample(x=icc4, size = length(iccall), replace = T)
 bestimates = rbind(bestimates, serial_mix_est(data=bdata, N=50, startmu=10, startsig =4))
 }
 ```
 
-```{r}
-mean(bestimates[,1]) # mean of the mean serial intervals 
+```{r,eval=FALSE}
+mean(bestimates[,1]) # mean of the mean serial intervals
+median(bestimates[,1])
 mean(bestimates[,2]) # sd of the sd serial intervals 
+sd(bestimates[,1]) # sd of the sd serial intervals 
 ```
 
-7 of the bootstrap means were above 6 days, and all of these had a high standard deviation. The rest are distributed around a mean of about 4.3 days. 
 
-
-```{r}
+```{r, eval=FALSE}
 hist(bestimates[,1],breaks = 10)
 bootdf=data.frame(mu=bestimates[,1], sig=bestimates[,2])
 ggplot(bootdf, aes(x=mu, y=sig))+geom_point()
-mean(bestimates[,1]) # higher estimates also have high uncertainty 
+
+ggplot(bootdf, aes(x=mu))+geom_histogram()
+ ggsave(file = "bootst_SI_tianjin.pdf", width = 6, height = 4)
 ```
 
 
+The direct infections from case 34 according to the figure at https://mp.weixin.qq.com/s/x4HBXGFw5vnWU7nXXdyWVg. 
+
+```{r,eval=FALSE}
+tdata$direct34=FALSE
+contacts_fig = c(43,37,53,83,89,131,124,48,71,51,57,58,
+                 66,68,50,73,74,87,78,80,36,92,110,111)
+contacts_id=paste("TJ",contacts_fig,sep="")
+tdata$direct34[match(contacts_id, tdata$case_id)]=TRUE
+# now i need to subtract 34's onset time from these infectees' onset times 
+SI34s= as.numeric(tdata$symptom_onset[which(tdata$direct34)])-as.numeric(tdata$symptom_onset[which(tdata$case_id=="TJ34")])
+mean(as.numeric((SI34s)))# don't need all the as.numerics 
+sd(SI34s)
+
+```
 
 
+We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equation $R=\exp{r \mu - 1/2 r^2 \sigma^2}$. To obtain CIs for R, we could use our bootstrap estimates of $\mu$ and $\sigma^2$ and simply resample R using this equation. 
 
+Jung et al Scenario 1
+
+```{r,eval=FALSE}
+# load("tianjin_bootstraps.Rdata") # in case in Rmd with above evals set to FALSE 
+myrate=0.15
+
+Rs=0*(1:100) 
+for (n in 1:100) {
+  Rs[n]= exp(myrate*bestimates[n,1] - 0.5*(myrate)^2*bestimates[n,2]^2)
+}
+hist(Rs,breaks = 30)
+mean(Rs)
+sd(Rs)
+hist(Rs)
+quantile(Rs, probs = c(0.025, 0.975))
+```
+Scenario 2: leads to  high R values, not in keeping with most analyses to date. 
+
+```{r,eval=FALSE}
+myrate=0.29
+Rs=0*(1:100) 
+for (n in 1:100) {
+  Rs[n]= exp(myrate*bestimates[n,1] - 0.5*(myrate)^2*bestimates[n,2]^2)
+}
+hist(Rs,breaks = 30)
+mean(Rs)
+quantile(Rs, probs = c(0.025, 0.975))
+```
 
 
 
