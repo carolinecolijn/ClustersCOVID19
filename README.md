@@ -16,12 +16,12 @@
 ## Summary of work
 The novel Coronavirus Disease, COVID-19, was first identified in Wuhan, Hubei Province, China in December 2019 and has since spread around the globe. It is crucial to identify accurate estimates of parameters that describe the SARS-CoV-2 virus' transmission patterns to understand and control this new pathogen. New, distinct outbreak clusters that report detailed case information (e.g. exposure contact networks and timing of symptom onset) are ideal for understanding how COVID-19 can spread through a population with no prior exposure to the virus. In our analysis we estimate the serial interval (i.e. the time between symptom onset in a primary case to symptom onset in a successive case in the chain of transmission) and incubation period (i.e. the time between infection and symptom onset) from two COVID-19 outbreak locations: Singapore and Tianjin, China. Using these parameters we are able to infer the basic reproductive number (R0) and identify the extent of the pre-symptomatic transmission (i.e. transmission that occurs prior to a patient displaying clinical symptoms). Our analysis suggest that there is substantial pre-symptomatic transmission, as the serial interval is shorter than incubation period by 2-4 days, and that stopping half the transmission events may be sufficient to control outbreaks, as R0 is approximately 2 in both populations.
 
-This analysis originated from work begun at EpiCoronaHack which took place at Simon Fraser University, BC, Canada on Feb 18-19, 2020. The work began by compiling data on Singapore and Tianjin COVID-19 cases into a matrix, and has resulted in a Shiny App ( [Relative link to Shiny App](../Shiny)), which uses a heatmap to visualize the disease progression timeline of cases in each population, as well as a manuscript detailing results of statistical analyses.  *MANUSCRIPT LINK TO GO HERE*
+This analysis originated from work begun at EpiCoronaHack which took place at Simon Fraser University, BC, Canada on Feb 18-19, 2020. The work began by compiling data on Singapore and Tianjin COVID-19 cases into a matrix, and has resulted in a Shiny App ( [Relative link to Shiny App](/Shiny)), which uses a heatmap to visualize the disease progression timeline of cases in each population, as well as a manuscript detailing results of statistical analyses.  *MANUSCRIPT LINK TO GO HERE*
 
 
 ## Summary of data sources
 ### Singapore Cluster
-This dataset [link to copy of dataset](data/nCov_Singapore_2019.csv) includes the 93 cases confirmed between Jan 19 to Feb 26, 2020. The data was obtained from press releases from the Ministry of Health Singapore [website](https://www.moh.gov.sg/covid-19). Close contacts and a few transmission clusters were identified for many of the Singapore cases. The dataset includes the following information:
+This dataset [link to copy of dataset](/data/nCov_Singapore_2019.csv) includes the 93 cases confirmed between Jan 19 to Feb 26, 2020. The data was obtained from press releases from the Ministry of Health Singapore [website](https://www.moh.gov.sg/covid-19). Close contacts and a few transmission clusters were identified for many of the Singapore cases. The dataset includes the following information:
 
 * CaseID = case identification number
 
@@ -71,7 +71,7 @@ This dataset [link to copy of dataset](data/nCov_Singapore_2019.csv) includes th
 
 
 ### Tianjin Cluster
-The Tianjin dataset [link to copy of dataset](../data/Tianjin135casesFeb22.csv) was compiled by Dongxuan Chen and Louxin Zhang, and includes 135 confirmed cases between Jan 21 to Feb 27, 2020. The case information was obtained from online press releases, as well as local media sources including Zounai Jianjin and Jinyun News on Weibo. The three primary sources for the dataset are the following: 
+The Tianjin dataset [link to copy of dataset](/data/Tianjin135casesFeb22.csv) was compiled by Dongxuan Chen and Louxin Zhang, and includes 135 confirmed cases between Jan 21 to Feb 27, 2020. The case information was obtained from online press releases, as well as local media sources including Zounai Jianjin and Jinyun News on Weibo. The three primary sources for the dataset are the following: 
 
 * source1: Tianjin health commission official website, for daily announcements [link for source1](http://wsjk.tj.gov.cn/col/col87/index.html#!uid=259&pageNum=1)
 
