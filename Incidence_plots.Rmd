@@ -260,7 +260,8 @@ show_col(viridis_pal(option = "inferno") (8))
 viridisLite::inferno(n = 8)
 
 s.cols <- c("Known relationship" = "#000004FF",
-            "Wuhan travel" = "#280B54FF",
+#            "Wuhan travel" = "#280B54FF",  #Pretty dark, kinda hard to distinguish from the black
+            "Wuhan travel" = "#404788FF",
             "Grace Assembly of God" = "#65156EFF",
             "Grand Hyatt Singapore" = "#9F2A63FF",
             "Life Church" = "#D44842FF",
@@ -378,7 +379,7 @@ pdf("Tianjin incidence by source of infection.pdf",
      width = 8, height = 6)
 
 t.cols <- c("Known relationship" = "#000004FF",  #Use the same as Singapore plot, as are using the same criteria
-            "Wuhan origin" = "#280B54FF",   #Use the same as Singapore plot, as are using the same criteria
+            "Wuhan origin" = "#404788FF",   #Use the same as Singapore plot, as are using the same criteria
             "Other China travel" = "#932667FF",
             "Location unclear travel" = "#DD513AFF",
             "Mall" = "#FCA50AFF",
