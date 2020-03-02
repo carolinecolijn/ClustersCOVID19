@@ -53,12 +53,15 @@ ggplot() +
   geom_blank(aes(color = "Confirmed per day")) +
   geom_blank(aes(color = "Death per day")) +
   xlab(label = "Date") +
-  ylab(label = "# Cases") +
+  ylab(label = "Number of Cases") +
   ggtitle(label = "Tianjin COVID-19 Cases") +
-  theme(plot.title = element_text(hjust = 0.5)) + #centre main title
-  theme(axis.text.x = element_text(angle =60, hjust = 1, size = 6.5),
+  theme(plot.title = element_text(hjust = 0.5, size=16)) + #centre main title
+  theme(axis.text.x = element_text(angle =60, hjust = 1, size = 8),
+        axis.title = element_text(size=14),
         axis.ticks.x = element_blank(), #remove x axis ticks
-        axis.ticks.y = element_blank()) + #remove y axis ticks
+        axis.ticks.y = element_blank(),
+        legend.text=element_text(size=12),
+        legend.title = element_text(size=14)) + #remove y axis ticks
   scale_x_date(date_breaks = "day") +
   scale_y_continuous(breaks=pretty_breaks(n=20)) +
   scale_colour_manual(name = "Legend", values = cols) +
@@ -68,7 +71,7 @@ ggplot() +
 
 p
 
-ggsave("case_count_tianjin.pdf",plot=p, device="pdf",width = 10,height = 6,units="in")
+ggsave("case_count_tianjin.pdf",plot=p, device="pdf",width = 10,height = 7.4,units="in")
 
 
 ```
