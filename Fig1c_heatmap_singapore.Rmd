@@ -1,6 +1,6 @@
 ---
  title: "Progression Heatmap Data Preprocessing & Plotting"
- author: "Venus Lau; Yen-Hsiang (Brian) Lee"
+ author: "Venus Lau; Yen-Hsiang (Brian) Lee, Lauren Tindale"
  date: "19/02/2020"
  updated: "23/02/2020"
  ---
