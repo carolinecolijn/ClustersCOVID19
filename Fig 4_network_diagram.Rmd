@@ -111,7 +111,7 @@ cov_net = ggplot(n, aes(x = x, y = y, xend = xend, yend = yend)) +
 
  
 cov_net
-ggsave("singapore_static_network.pdf",plot=cov_net,device="pdf",height=8,width=11,units="in")
+ggsave("../final_figures/Fig4a_singapore_static_network.pdf",plot=cov_net,device="pdf",height=8,width=11,units="in")
 ```
 ####Tianjin Data####
 
@@ -186,7 +186,7 @@ tj_cov_net = ggplot(ntj_clean, aes(x = x, y = y, xend = xend, yend = yend))+
 
 tj_cov_net
 
-#ggsave("tj_static_network.pdf",plot=tj_cov_net,device="pdf",path=here("network_diagram"),height=8,width=11,units="in")
+#ggsave("../final_figures/Fig4b_tj_static_network.pdf",plot=tj_cov_net,device="pdf",path=here("network_diagram"),height=8,width=11,units="in")
 ```
 Ideally I can get the network diagram to cluster accoring to the broader clusters and not jsut based on the known conncections. It doesn't change the information, just shows it in a much nicer way. So we won't use the list of edges generated above, but we will use that list to confirm the accuracy of the new diagram. 
 

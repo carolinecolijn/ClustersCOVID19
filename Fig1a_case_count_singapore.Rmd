@@ -69,7 +69,7 @@ ggplot() +
   annotate(geom="text", x=as.Date("2020-02-27"), y=62, label="62") 
   
 
-ggsave("Fig2a_case_count_singapore.pdf",plot=p, device="pdf",width = 10,height = 7.4,units="in")
+ggsave("Fig1a_case_count_singapore.pdf",plot=p, device="pdf",width = 10,height = 7.4,units="in")
 
 
 ```

@@ -18,7 +18,7 @@ library(viridis)
 library(scales)
 
 s.data <- read_csv("data/COVID-19_Singapore.csv")
-t.data <- read_csv("Tianjin135casesFeb22.csv")
+t.data <- read_csv("data/Tianjin135casesFeb22.csv")
 
 #Need to replace one date which is labelled as "none" with NA
 t.data$symptom_onset[which(t.data$symptom_onset == "none")] <- NA
@@ -270,7 +270,7 @@ s.cols <- c("Known relationship" = "#000004FF",
             "Unknown" = "#FCFFA4FF")
 
 #Write to PDF
-pdf("Singapore incidence by source of infection.pdf", 
+pdf("final_figures/Fig 1b_Singapore incidence by source of infection.pdf", 
      #family = "Times", 
      width = 8, height = 6)
 
@@ -374,7 +374,7 @@ show_col(viridis_pal(option = "inferno") (6))
 viridisLite::inferno(n = 6)
 
 #Write to PDF
-pdf("Tianjin incidence by source of infection.pdf", 
+pdf("final_figures/Fig 2b_Tianjin incidence by source of infection.pdf", 
      #family = "Times", 
      width = 8, height = 6)
 

@@ -71,7 +71,7 @@ ggplot() +
 
 p
 
-ggsave("Fig3a_case_count_tianjin.pdf",plot=p, device="pdf",width = 10,height = 7.4,units="in")
+ggsave("Fig2a_case_count_tianjin.pdf",plot=p, device="pdf",width = 10,height = 7.4,units="in")
 
 
 ```
