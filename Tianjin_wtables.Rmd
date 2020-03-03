@@ -1,0 +1,421 @@
+---
+title: "Tianjin"
+author: "Caroline Colijn"
+date: "25/02/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(survminer)
+library(survival)
+library(ggplot2)
+library(icenReg)
+library(igraph)
+library(visNetwork)
+library(stringr)
+library(mvtnorm)
+options(digits=3)
+set.seed(1234) 
+```
+
+## Data 
+
+Thanks to Dongxuan Chen and Louxin Zhang. These data are from three main sources:
+
+* source1: http://wsjk.tj.gov.cn/col/col87/index.html#!uid=259&pageNum=1 (Tianjin health commission official website, for daily announcements)
+
+* source2: https://weibo.com/u/2967529507 (Jinyun News, Tianjin offical local media weibo account, for patient symptom onset reference)
+
+* source3: https://m.weibo.cn/status/IrrHI1FHm?jumpfrom=weibocom (another Tianjin local media weibo link, for mall cluster reference)
+
+
+```{r}
+tdata=read.csv("Tianjin135casesFeb22.csv",na.strings = "", stringsAsFactors = F)
+tdata$symptom_onset=as.Date(tdata$symptom_onset, format = "%d/%m/%Y")
+tdata$start_source=as.Date(tdata$start_source, format = "%d/%m/%Y")
+tdata$end_source=as.Date(tdata$end_source,format = "%d/%m/%Y" )
+tdata$confirm_date=as.Date(tdata$confirm_date,format = "%d/%m/%Y" )
+str(tdata)
+```
+
+
+
+## Incubation period
+
+The incubation period is the time between exposure and the onset of symptoms. We estimate this directly from the stated start and end times for cases' exposure windows. Because it is explicitly about the symptom onset, we remove those who don't have symptom onset defined. These are a small minority of cases and the alternative would be to impute their symptom onset time using the others' delay to confirmation time.  For now, we remove them.  Then,  if no other end time for the exposure is given or  if the end of the exposure time is after the time of symptom onset, set the last exposure time to the symptom onset time. This is because they must have been exposed before symptom onset.  If no other start time is given, they must have been exposed since the start of the outbreak (Dec 1, 2019). These give us  the maximum and minimun incubation times. 
+
+```{r}
+goodii=which(!is.na(tdata$symptom_onset))
+
+tdata$end_source[which(is.na(tdata$end_source))]=tdata$symptom_onset[which(is.na(tdata$end_source))]  # if no end exposure: set to symptom onset 
+tdata$end_source = pmin(tdata$end_source, tdata$symptom_onset) # if end exposure after onset, set to onset 
+tdata$start_source[which(is.na(tdata$start_source))]=as.Date("2019-12-01") # start date 
+
+tdata$maxIncTimes=tdata$symptom_onset-tdata$start_source 
+tdata$minIncTimes = tdata$symptom_onset-tdata$end_source
+
+tdata$maxIncTimes
+tdata$minIncTimes
+tdata$maxIncTimes[27] = 50 # for some reason this was coming up negative 
+```
+
+We use survival analysis in the icenReg package to make parametric estimates, and we use the regular survival package to estimate the time to onset of symptoms. 
+
+```{r}
+ggsurvplot(
+  fit=survfit(Surv(tdata$minIncTimes, tdata$maxIncTimes, type="interval2")~1, data=tdata), 
+  xlab="Days",
+  ylab = "Overall probability of no symptoms yet")
+```
+
+The median is about 8 days. For a parametric estimate we remove any remaining NAs and use interval censoring, because we know only that exposure was some time between the minimum and maximum possible values. 
+
+```{r}
+reddata=tdata[which(!is.na(tdata$minIncTimes)),]
+
+getthreefits = function(reddata) {
+  myfit = ic_par(Surv(reddata$minIncTimes, reddata$maxIncTimes,type="interval2")~1, data = reddata,dist="weibull")
+
+myfit_gamma<- ic_par(Surv(reddata$minIncTimes, reddata$maxIncTimes, type="interval2") ~ 1, data = reddata, dist = "gamma")
+
+
+myfit_lnorm =  ic_par(Surv(reddata$minIncTimes, reddata$maxIncTimes, type="interval2") ~ 1, data = reddata, dist = "lnorm")
+return(list(myfit=myfit, myfit_gamma=myfit_gamma, myfit_lnorm=myfit_lnorm))
+}
+
+allthree=getthreefits(reddata)
+myfit=allthree$myfit
+myfit_gamma=allthree$myfit_gamma
+myfit_lnorm=allthree$myfit_lnorm
+```
+
+We want to report (1) the parameters for these fits and the quantiles (including median). This describes the distribution.
+
+Then we want to report (2) the resulting mean (95% CI for the mean). This describes our uncertainty in the distribution. 
+
+(1) For the point estimates, get the parameters and quantiles for these  distributions. For Weibull and gamma distributions, the two parameters are shape and scale. For log normal they are mu and sdlog. 
+
+```{r}
+getQuantileDF <- function(myfit,myfit_gamma,myfit_lnorm) {
+interqs=getFitEsts(myfit, newdata = NULL, p=c(0.025, 0.25, 0.5, 0.75,0.975)) #
+interqs_gamma <- getFitEsts(myfit_gamma, newdata=NULL,  p
+                      =c(0.025, 0.25, 0.5, 0.75, 0.975))
+
+interqs_lnorm <- getFitEsts(myfit_lnorm, newdata=NULL,  p
+                      =c(0.025,  0.25, 0.5, 0.75, 0.975))
+mm=rbind(interqs, interqs_gamma, interqs_lnorm)
+colnames(mm)=paste("q_",c(0.025, 0.25, 0.5, 0.75, 0.975),sep="")
+
+df=as.data.frame(mm); df$distr =c("Weibull","Gamma","Log normal")
+df$par1=c(exp(myfit$coefficients[1]), exp(myfit_gamma$coefficients[1]), 
+          myfit_lnorm$coefficients[1])
+df$par2=c(exp(myfit$coefficients[2]), exp(myfit_gamma$coefficients[2]), 
+          exp(myfit_lnorm$coefficients[2]))
+rownames(df)=NULL
+
+return(df[,c(6,7,8,1:5)])
+}
+
+getQuantileDF(myfit,myfit_gamma,myfit_lnorm)
+```
+
+
+(2) Now we want the mean and 95% CIs on this mean. The "myfit" objects contain the estimates and covariance for these. Without wanting to code up the theory, the quick approach is to resample the shape and scale with appropriate covariance and compute the resampled means, then take the 95\% CIs. The functional form is different for the three different distributions. 
+
+```{r}
+getMeanCI <- function(statfit, dist = "weibull") {
+  if (dist == "weibull") {
+  x=exp(rmvnorm(n=10000, mean = statfit$coefficients, sigma=statfit$var))
+  mymeans=x[,2]*gamma(1+1/x[,1]) # shape, scale for weibull 
+  }
+  if (dist == "gamma") {
+      x=exp(rmvnorm(n=10000, mean = statfit$coefficients, sigma=statfit$var)) # shape, scale for gamma
+      mymeans = x[,1]*x[,2] # gamma: mean  is shape*scale
+  }
+  if (dist == "lognorm") {
+  x=rmvnorm(n=10000, mean = statfit$coefficients, sigma=statfit$var) 
+  # these are the log of the mean, and the log of sd? 
+  # mean is exp(mu + 0.5 sig^2) 
+  mymeans=exp(x[,1]+0.5*exp(x[,2])^2) # i think
+  }
+return(list(means=mymeans, qs = quantile(mymeans, probs = c(0.025, 0.5, 0.975)), meanmeans=mean(mymeans), sdmeans=sd(mymeans)))
+}
+```
+
+Table for unstratified mean incubation period and CI for these fits: 
+
+```{r}
+getMeanCI_DF = function(myfit,myfit_gamma,myfit_lnorm) {
+out_weib=getMeanCI(statfit = myfit, dist = "weibull")
+out_gamm = getMeanCI(statfit =myfit_gamma, dist = "gamma")
+out_lnorm=getMeanCI(statfit =myfit_lnorm, dist="lognorm")
+return(data.frame(means=c(out_weib$meanmeans, 
+                          out_gamm$meanmeans, 
+                          out_lnorm$meanmeans),
+           lowerCI=c(out_weib$qs[1], out_gamm$qs[1],
+                     out_lnorm$qs[1]),
+           upperCI=c(out_weib$qs[3],out_gamm$qs[3],
+                     out_lnorm$qs[3])))
+}
+getMeanCI_DF(myfit,myfit_gamma,myfit_lnorm)
+```
+
+
+
+Plot a fit and the KM curve together. 
+
+```{r}
+days=seq(0,20,by=0.05)
+density=dweibull(days, shape = exp(myfit$coefficients[1]), scale = exp(myfit$coefficients[2]))
+
+ggs = ggsurvplot(
+  fit=survfit(Surv(tdata$minIncTimes, tdata$maxIncTimes, type="interval2")~1, data=tdata), 
+  xlab="Days",  ylab = "Overall probability of no symptoms yet")
+
+pdata <- data.frame(days=rep(days,3),  
+            fitsurv=c(1-pweibull(days, shape = exp(myfit$coefficients[1]), scale = exp(myfit$coefficients[2])),
+        1-pgamma(days,  shape = exp(myfit_gamma$coefficients[1]), scale = exp(myfit_gamma$coefficients[2])),
+        1-plnorm(days,  meanlog = myfit_lnorm$coefficients[1], sdlog = exp(myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(days)), rep("Gamma",length(days)), rep("Lognorm", length(days)) ))  # i know, i know... 
+
+
+tmp=data.frame(days=days,  fitsurv=1-pweibull(days, shape = exp(myfit$coefficients[1]),
+                      scale = exp(myfit$coefficients[2])))
+ggs$plot + geom_line(data = tmp, aes(x = days, y = fitsurv))
+# ggsave(filename = "inc_Tianjin.pdf", width = 8, height = 6)
+```
+
+
+Finally, we want to do this all again but stratifying the data between early occurring cases and late. This is why we used functions in the above, though it was clumsy. 
+
+```{r}
+earlydata=tdata[which(!is.na(tdata$minIncTimes) & tdata$symptom_onset <= as.Date("2020-01-31")),]
+latedata=tdata[which(!is.na(tdata$minIncTimes) & tdata$symptom_onset > as.Date("2020-01-31")),]
+```
+
+Fit to the three distributions: 
+
+```{r}
+Eallthree=getthreefits(earlydata)
+Lallthree=getthreefits(latedata)
+```
+
+EARLY: parameter point estimates and the quantiles
+
+```{r}
+getQuantileDF(Eallthree[[1]],Eallthree[[2]], Eallthree[[3]])
+```
+
+LATE: parameter point estimates and the quantiles
+
+```{r}
+getQuantileDF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
+```
+
+EARLY: how variable are these point estimates? Look at mean and 95\% CI
+
+```{r}
+getMeanCI_DF(Eallthree[[1]],Eallthree[[2]], Eallthree[[3]])
+```
+
+LATE: how variable are these point estimates? Look at mean and 95\% CI
+
+```{r}
+getMeanCI_DF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Serial interval 
+
+
+We will estimate the serial interval using the 'interval case to case' approach given in Vink et al (https://academic.oup.com/aje/article/180/9/865/2739204). 
+
+The dataset has quite a few instances where a putative infector or contact is known. These are listed in the 'Infection_source' column. We first make a graph in which nodes are individuals and edges are present from cases listed as possible sources, to the cases for whom they are possible sources. 
+
+```{r}
+mynodes = tdata$case_id
+edges = data.frame(from=mynodes[9],to=mynodes[21],stringsAsFactors = F ) # i read this one manually 
+for (id in 1:nrow(tdata)) {
+tonode=tdata$case_id[id]
+fromnodes=str_extract_all(tdata$Infection_source[id], "TJ\\d+", simplify = T)
+  if (length(fromnodes)>0) {
+    for (k in 1:length(fromnodes)) {
+      edges=rbind(edges, c(fromnodes[k], tonode))
+    }
+  }
+}
+head(edges)
+edges=edges[-1,]
+edges=edges[-which(is.na(edges[,1])),] # NAs arose from a few empty entries for Infection_source 
+```
+
+From this edge list we can use visNetwork to visualise the graph. Colours are from the infection source column (but we should have a better colour scheme, like date of symptom onset). 
+
+```{r}
+edges$arrows="to"
+nodes = data.frame(id=tdata$case_id, label=tdata$case_id,
+                   group=tdata$Infection_source)
+visNetwork(nodes,edges)
+```
+
+The interval case to case (ICC) data are the times between the (presumed) index case for a small cluster and the other cases in the cluster. The Vink et al approach allows these intervals to be one of 4 types, and estimates the serial interval and the probability of each type. To extract ICC intervals, we let the clusters be the components of the graph, and we let the presumed index case be the first to develop symptoms. For each cluster, we subtract the index cases' symptom time from the symtom times of the rest of the cluster (or just the first few; it turns out that the estimate is not sensitive to this). This results in a list of time intervals between symptom onset in presumed index cases and symptom onset in other cases in the same cluster (graph component). 
+
+
+First construct the graph
+
+```{r}
+#serialdata=edges # REMOVE? 
+#serialdata$symps_from = tdata$symptom_onset[match(edges$from, tdata$case_id)]
+#serialdata$symps_to=tdata$symptom_onset[match(edges$to, tdata$case_id)]
+tgraph = graph_from_edgelist(as.matrix(edges[,1:2]), directed = FALSE)
+ccs=components(tgraph)
+
+tdata$component=vapply(tdata$case_id, function(x)
+  { if (x %in% names(ccs$membership)) { return(ccs$membership[match(x, names(ccs$membership))])
+  } else { 
+    return(NA)}}, FUN.VALUE = 3)
+```
+
+
+Extract ICC interval data: a function 
+
+```{r}
+ getICCs <- function(thisdata, ccs, K, orderby= "onset" ) {
+  iccs=1
+for (n in 1:max(ccs$membership)) {
+  mycases  = which(thisdata$component==n)
+  if (orderby == "onset")
+  {  myonsets = sort(thisdata$symptom_onset[mycases])[1:min(K, length(mycases))]}
+  if (orderby == "exposure") {
+ myonsets =thisdata$symptom_onset[mycases][order(thisdata$end_source[mycases])][1:min(K,length(mycases))]
+  }
+  iccs =c(iccs, myonsets[-1]-myonsets[1])
+}
+  return(iccs[-1]) 
+  }
+```
+
+
+
+```{r}
+stdata = tdata[which(!is.na(tdata$symptom_onset)),]
+
+icc3 = getICCs(stdata,ccs,3)
+icc4 = getICCs(stdata,ccs,4)
+icc5 = getICCs(stdata,ccs,5)
+icc6 = getICCs(stdata,ccs,6)
+icc_expose = getICCs(stdata, ccs, 4, orderby ="exposure")
+```
+
+Perform the estimate using the Vink et al method, and display the result:
+
+```{r}
+source("TianjinSI_VinkWallinga_CC.R")
+
+myest3 = serial_mix_est(data=icc3, N=100, startmu=10, startsig =4)
+myest4 = serial_mix_est(data=icc4, N=100, startmu=10, startsig =4)
+myest5 = serial_mix_est(data=icc5, N=100, startmu=10, startsig =4)
+myest6 = serial_mix_est(data=icc6, N=100, startmu=10, startsig =4)
+myest_exp= serial_mix_est(data=icc_expose, N=100, startmu=10, startsig =4)
+
+mm=rbind(myest3, myest4, myest5,myest6, myest_exp)
+colnames(mm)=c("mu","sig")
+mm=as.data.frame(mm)
+mm$NumCasesPerCluster=c( 3, 4, 5, 6, 4) 
+mm$ordering = c("Onset","Onset","Onset","Onset","LastExposure")
+print(mm[,c(4,3,1,2)]) 
+```
+
+Bootstrap analysis - have left it set to eval=FALSE in the Rmd because it takes time. 
+
+```{r, eval=FALSE}
+# bootstrap analysis
+Nboot=100
+bestimates=myestimate 
+for (kk in 1:Nboot) {
+bdata = sample(x=icc4, size = length(iccall), replace = T)
+bestimates = rbind(bestimates, serial_mix_est(data=bdata, N=50, startmu=10, startsig =4))
+}
+```
+
+```{r,eval=FALSE}
+mean(bestimates[,1]) # mean of the mean serial intervals
+median(bestimates[,1])
+mean(bestimates[,2]) # sd of the sd serial intervals 
+sd(bestimates[,1]) # sd of the sd serial intervals 
+```
+
+
+```{r, eval=FALSE}
+hist(bestimates[,1],breaks = 10)
+bootdf=data.frame(mu=bestimates[,1], sig=bestimates[,2])
+ggplot(bootdf, aes(x=mu, y=sig))+geom_point()
+
+ggplot(bootdf, aes(x=mu))+geom_histogram()
+ ggsave(file = "bootst_SI_tianjin.pdf", width = 6, height = 4)
+```
+
+
+The direct infections from case 34 according to the figure at https://mp.weixin.qq.com/s/x4HBXGFw5vnWU7nXXdyWVg. These were not included in the paper because the links were compiled by volunteers and they differed from the offical reports. 
+
+```{r,eval=FALSE}
+tdata$direct34=FALSE
+contacts_fig = c(43,37,53,83,89,131,124,48,71,51,57,58,
+                 66,68,50,73,74,87,78,80,36,92,110,111)
+contacts_id=paste("TJ",contacts_fig,sep="")
+tdata$direct34[match(contacts_id, tdata$case_id)]=TRUE
+# now i need to subtract 34's onset time from these infectees' onset times 
+SI34s= as.numeric(tdata$symptom_onset[which(tdata$direct34)])-as.numeric(tdata$symptom_onset[which(tdata$case_id=="TJ34")])
+mean(as.numeric((SI34s)))# don't actually need all the as.numerics 
+sd(SI34s)
+
+```
+
+
+We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equation $R=\exp{r \mu - 1/2 r^2 \sigma^2}$. To obtain CIs for R, we could use our bootstrap estimates of $\mu$ and $\sigma^2$ and simply resample R using this equation. 
+
+Jung et al Scenario 1
+
+```{r,eval=FALSE}
+ load("tianjin_bootstraps.Rdata") # in case in Rmd with above evals set to FALSE 
+myrate=0.15
+
+Rs=0*(1:100) 
+for (n in 1:100) {
+  Rs[n]= exp(myrate*bestimates[n,1] - 0.5*(myrate)^2*bestimates[n,2]^2)
+}
+hist(Rs,breaks = 30)
+mean(Rs)
+sd(Rs)
+hist(Rs)
+quantile(Rs, probs = c(0.025, 0.975))
+```
+
+Scenario 2: leads to  high R values, not in keeping with most analyses to date. 
+
+```{r,eval=FALSE}
+myrate=0.29
+Rs=0*(1:100) 
+for (n in 1:100) {
+  Rs[n]= exp(myrate*bestimates[n,1] - 0.5*(myrate)^2*bestimates[n,2]^2)
+}
+hist(Rs,breaks = 30)
+mean(Rs)
+quantile(Rs, probs = c(0.025, 0.975))
+```
+
+
+
+
