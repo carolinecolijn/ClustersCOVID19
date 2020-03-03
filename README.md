@@ -3,7 +3,7 @@
 ## Authors and contact information
 * [Lauren Tindale](https://github.com/ltindale) at tindale13@gmail.com
 * [Michelle Coombe](https://github.com/mkc030) at michelle.coombe.vet@gmail.com
-* [Emma Garlock](https://github.com/esgarlock)
+* [Emma Garlock](https://github.com/esgarlock) at egarlock@sfu.ca
 * [Venus Lau](https://github.com/vlauu) at Venusl@sfu.ca
 * [Jessica Stockdale](https://github.com/jessicastockdale) at jessica_stockdale@sfu.ca
 * [Y. Brian Lee](https://github.com/yxblee) at yblee@sfu.ca
