@@ -4,9 +4,9 @@
 * [Lauren Tindale](https://github.com/ltindale) at tindale13@gmail.com
 * [Michelle Coombe](https://github.com/mkc030) at michelle.coombe.vet@gmail.com
 * [Emma Garlock](https://github.com/esgarlock)
-* [Venus Lau](https://github.com/vlauu)
+* [Venus Lau](https://github.com/vlauu) at Venusl@sfu.ca
 * [Jessica Stockdale](https://github.com/jessicastockdale) at jessica_stockdale@sfu.ca
-* [Y. Brian Lee](https://github.com/yxblee)
+* [Y. Brian Lee](https://github.com/yxblee) at yblee@sfu.ca
 * [Manu Saraswat](https://github.com/saraswatmanu) at msaraswat@cmmt.ubc.ca
 * Louxin Zhang at matzlx@nus.edu.sg
 * Dongxuan Chen at dongxuan_chen@outlook.com
