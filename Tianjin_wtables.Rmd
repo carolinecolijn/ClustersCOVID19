@@ -16,7 +16,7 @@ library(visNetwork)
 library(stringr)
 library(mvtnorm)
 options(digits=3)
-set.seed(1234) 
+set.seed(1235) 
 ```
 
 ## Data 
@@ -31,7 +31,7 @@ Thanks to Dongxuan Chen and Louxin Zhang. These data are from three main sources
 
 
 ```{r}
-tdata=read.csv("Tianjin135casesFeb22.csv",na.strings = "", stringsAsFactors = F)
+tdata=read.csv("~/ClustersCOVID19/data/Tianjin135casesFeb22.csv",na.strings = "", stringsAsFactors = F)
 tdata$symptom_onset=as.Date(tdata$symptom_onset, format = "%d/%m/%Y")
 tdata$start_source=as.Date(tdata$start_source, format = "%d/%m/%Y")
 tdata$end_source=as.Date(tdata$end_source,format = "%d/%m/%Y" )
@@ -121,41 +121,71 @@ getQuantileDF(myfit,myfit_gamma,myfit_lnorm)
 ```
 
 
-(2) Now we want the mean and 95% CIs on this mean. The "myfit" objects contain the estimates and covariance for these. Without wanting to code up the theory, the quick approach is to resample the shape and scale with appropriate covariance and compute the resampled means, then take the 95\% CIs. The functional form is different for the three different distributions. 
+(2) Now we want the mean and 95% CIs on the shape, the scale and the resulting  mean. The "myfit" objects contain the estimates and covariance for these. Without wanting to code up the theory, the quick approach is to resample the shape and scale with appropriate covariance and compute the resampled means, then take the 95\% CIs. The functional form is different for the three different distributions. 
 
 ```{r}
 getMeanCI <- function(statfit, dist = "weibull") {
   if (dist == "weibull") {
   x=exp(rmvnorm(n=10000, mean = statfit$coefficients, sigma=statfit$var))
   mymeans=x[,2]*gamma(1+1/x[,1]) # shape, scale for weibull 
+  par1=exp(statfit$coefficients[1])
+   par2=exp(statfit$coefficients[2])
+  par1range=c(exp(log(par1)-1.96*sqrt(statfit$var[1,1])), exp(log(par1)+1.96*sqrt(myfit$var[1,1])))
+   par2range=c(exp(log(par2)-1.96*sqrt(statfit$var[2,2])), exp(log(par2)+1.96*sqrt(myfit$var[2,2])))
   }
   if (dist == "gamma") {
       x=exp(rmvnorm(n=10000, mean = statfit$coefficients, sigma=statfit$var)) # shape, scale for gamma
       mymeans = x[,1]*x[,2] # gamma: mean  is shape*scale
+  par1=exp(statfit$coefficients[1])
+   par2=exp(statfit$coefficients[2])
+  par1range=c(exp(log(par1)-1.96*sqrt(statfit$var[1,1])), exp(log(par1)+1.96*sqrt(myfit$var[1,1])))
+   par2range=c(exp(log(par2)-1.96*sqrt(statfit$var[2,2])), exp(log(par2)+1.96*sqrt(myfit$var[2,2])))
   }
   if (dist == "lognorm") {
   x=rmvnorm(n=10000, mean = statfit$coefficients, sigma=statfit$var) 
   # these are the log of the mean, and the log of sd? 
   # mean is exp(mu + 0.5 sig^2) 
   mymeans=exp(x[,1]+0.5*exp(x[,2])^2) # i think
+  par1=statfit$coefficients[1]
+   par2=exp(statfit$coefficients[2])
+    par1range=c(par1-1.96*sqrt(statfit$var[1,1]), par1+1.96*sqrt(myfit$var[1,1]))
+   par2range=c(exp(statfit$coefficients[2]-1.96*sqrt(statfit$var[2,2])), exp(statfit$coefficients[2]+1.96*sqrt(statfit$var[2,2])))
   }
-return(list(means=mymeans, qs = quantile(mymeans, probs = c(0.025, 0.5, 0.975)), meanmeans=mean(mymeans), sdmeans=sd(mymeans)))
+return(list(par1=par1,par2=par2, par1range=par1range, par2range=par2range, means=mymeans, qs = quantile(mymeans, probs = c(0.025, 0.5, 0.975)), meanmeans=mean(mymeans), sdmeans=sd(mymeans)))
 }
 ```
 
-Table for unstratified mean incubation period and CI for these fits: 
+Table for parameters and their CIs, and the  mean incubation period and its CI, for unstratified data: 
 
 ```{r}
 getMeanCI_DF = function(myfit,myfit_gamma,myfit_lnorm) {
 out_weib=getMeanCI(statfit = myfit, dist = "weibull")
 out_gamm = getMeanCI(statfit =myfit_gamma, dist = "gamma")
 out_lnorm=getMeanCI(statfit =myfit_lnorm, dist="lognorm")
-return(data.frame(means=c(out_weib$meanmeans, 
+return(data.frame(par1s=c(out_weib$par1, 
+                          out_gamm$par1, 
+                          out_lnorm$par1),
+                   par1lower=c(out_weib$par1range[1], 
+                          out_gamm$par1range[1], 
+                          out_lnorm$par1range[1]),
+                  par1upper=c(out_weib$par1range[2], 
+                          out_gamm$par1range[2], 
+                          out_lnorm$par1range[2]), # there is a better way .. but.
+                  par2s=c(out_weib$par2, 
+                          out_gamm$par2, 
+                          out_lnorm$par2),
+               par2lower=c(out_weib$par2range[1], 
+                          out_gamm$par2range[1], 
+                          out_lnorm$par2range[1]),
+                  par2upper=c(out_weib$par2range[2], 
+                          out_gamm$par2range[2], 
+                          out_lnorm$par2range[2]), # there is a better way .. but.
+                  means=c(out_weib$meanmeans, 
                           out_gamm$meanmeans, 
                           out_lnorm$meanmeans),
-           lowerCI=c(out_weib$qs[1], out_gamm$qs[1],
+           meanlower=c(out_weib$qs[1], out_gamm$qs[1],
                      out_lnorm$qs[1]),
-           upperCI=c(out_weib$qs[3],out_gamm$qs[3],
+           meanupper=c(out_weib$qs[3],out_gamm$qs[3],
                      out_lnorm$qs[3])))
 }
 getMeanCI_DF(myfit,myfit_gamma,myfit_lnorm)
@@ -185,6 +215,7 @@ ggs$plot + geom_line(data = tmp, aes(x = days, y = fitsurv))
 # ggsave(filename = "inc_Tianjin.pdf", width = 8, height = 6)
 ```
 
+### Stratified early and late 
 
 Finally, we want to do this all again but stratifying the data between early occurring cases and late. This is why we used functions in the above, though it was clumsy. 
 
@@ -338,7 +369,11 @@ mm$ordering = c("Onset","Onset","Onset","Onset","LastExposure")
 print(mm[,c(4,3,1,2)]) 
 ```
 
-Bootstrap analysis - have left it set to eval=FALSE in the Rmd because it takes time. 
+The mean SI is `r myest4[1]`. The standard deviation of the serial intervals is `r myest4[2]`.
+
+We need CIs for the mean. For this we use bootstrapping. 
+
+Bootstrap analysis code - have left it set to eval=FALSE in the Rmd because it takes time. Bootstraps computed on March 1 are in the file tianjin_bootstraps.Rdata. 
 
 ```{r, eval=FALSE}
 # bootstrap analysis
@@ -350,12 +385,16 @@ bestimates = rbind(bestimates, serial_mix_est(data=bdata, N=50, startmu=10, star
 }
 ```
 
-```{r,eval=FALSE}
+```{r,eval=TRUE}
+load("tianjin_bootstraps.Rdata")
 mean(bestimates[,1]) # mean of the mean serial intervals
 median(bestimates[,1])
 mean(bestimates[,2]) # sd of the sd serial intervals 
-sd(bestimates[,1]) # sd of the sd serial intervals 
+sd(bestimates[,1]) # sd of the MEAN serial intervals 
 ```
+
+The 95% range for the mean serial interval is (`r myest4[1]-1.96*sd(bestimates[,1])`, `r myest4[1]+1.96*sd(bestimates[,1])`).
+
 
 
 ```{r, eval=FALSE}
@@ -366,6 +405,33 @@ ggplot(bootdf, aes(x=mu, y=sig))+geom_point()
 ggplot(bootdf, aes(x=mu))+geom_histogram()
  ggsave(file = "bootst_SI_tianjin.pdf", width = 6, height = 4)
 ```
+
+### R0 estimation
+
+We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equation $R=\exp{r \mu - 1/2 r^2 \sigma^2}$. To obtain CIs for R, we use our bootstrap estimates of $\mu$ and $\sigma^2$ and simply resample R using this equation. 
+
+Jung et al Scenario 1
+
+```{r,eval=TRUE}
+ load("tianjin_bootstraps.Rdata") # in case in Rmd with above evals set to FALSE 
+myrate=0.15
+
+Rs=0*(1:100) 
+for (n in 1:100) {
+  Rs[n]= exp(myrate*bestimates[n,1] - 0.5*(myrate)^2*bestimates[n,2]^2)
+}
+hist(Rs,breaks = 30)
+mean(Rs)
+sd(Rs)
+hist(Rs)
+quantile(Rs, probs = c(0.025, 0.975))
+```
+
+The mean R is `r mean(Rs)` and the range is (`r mean(Rs)-1.96*sd(Rs)`, `r mean(Rs)+1.96*sd(Rs)`), based on the 1.96 standard deviations from the mean.  This agrees closely with the above quantiles. 
+
+
+
+### Additional (uninteresting, we think) points we explored: 
 
 
 The direct infections from case 34 according to the figure at https://mp.weixin.qq.com/s/x4HBXGFw5vnWU7nXXdyWVg. These were not included in the paper because the links were compiled by volunteers and they differed from the offical reports. 
@@ -382,27 +448,6 @@ mean(as.numeric((SI34s)))# don't actually need all the as.numerics
 sd(SI34s)
 
 ```
-
-
-We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equation $R=\exp{r \mu - 1/2 r^2 \sigma^2}$. To obtain CIs for R, we could use our bootstrap estimates of $\mu$ and $\sigma^2$ and simply resample R using this equation. 
-
-Jung et al Scenario 1
-
-```{r,eval=FALSE}
- load("tianjin_bootstraps.Rdata") # in case in Rmd with above evals set to FALSE 
-myrate=0.15
-
-Rs=0*(1:100) 
-for (n in 1:100) {
-  Rs[n]= exp(myrate*bestimates[n,1] - 0.5*(myrate)^2*bestimates[n,2]^2)
-}
-hist(Rs,breaks = 30)
-mean(Rs)
-sd(Rs)
-hist(Rs)
-quantile(Rs, probs = c(0.025, 0.975))
-```
-
 Scenario 2: leads to  high R values, not in keeping with most analyses to date. 
 
 ```{r,eval=FALSE}

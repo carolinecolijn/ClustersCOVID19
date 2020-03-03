@@ -28,8 +28,7 @@ Thanks to EpiCoronaHack Cluster team. These data are manually entered from posti
 
 
 ```{r}
-#spdata <- read_csv("~/EpiCoronaHack_Cluster/Clustering/data/COVID-19_Singapore.csv")
-spdata <- read_csv("~/Dropbox/Transmission/nCov2019/Singapore/COVID-19_Singapore_feb29_1pm.csv")
+spdata <- read_csv("~/ClustersCOVID19/data/COVID-19_Singapore.csv")
 # Ensure properly imported
 glimpse(spdata)
 colSums(is.na(spdata))
@@ -210,18 +209,30 @@ getMeanCI <- function(statfit, dist = "weibull") {
   if (dist == "weibull") {
   x=exp(rmvnorm(n=10000, mean = statfit$coefficients, sigma=statfit$var))
   mymeans=x[,2]*gamma(1+1/x[,1]) # shape, scale for weibull 
+  par1=exp(statfit$coefficients[1])
+   par2=exp(statfit$coefficients[2])
+  par1range=c(exp(log(par1)-1.96*sqrt(statfit$var[1,1])), exp(log(par1)+1.96*sqrt(myfit$var[1,1])))
+   par2range=c(exp(log(par2)-1.96*sqrt(statfit$var[2,2])), exp(log(par2)+1.96*sqrt(myfit$var[2,2])))
   }
   if (dist == "gamma") {
       x=exp(rmvnorm(n=10000, mean = statfit$coefficients, sigma=statfit$var)) # shape, scale for gamma
       mymeans = x[,1]*x[,2] # gamma: mean  is shape*scale
+  par1=exp(statfit$coefficients[1])
+   par2=exp(statfit$coefficients[2])
+  par1range=c(exp(log(par1)-1.96*sqrt(statfit$var[1,1])), exp(log(par1)+1.96*sqrt(myfit$var[1,1])))
+   par2range=c(exp(log(par2)-1.96*sqrt(statfit$var[2,2])), exp(log(par2)+1.96*sqrt(myfit$var[2,2])))
   }
   if (dist == "lognorm") {
   x=rmvnorm(n=10000, mean = statfit$coefficients, sigma=statfit$var) 
   # these are the log of the mean, and the log of sd? 
   # mean is exp(mu + 0.5 sig^2) 
   mymeans=exp(x[,1]+0.5*exp(x[,2])^2) # i think
+  par1=statfit$coefficients[1]
+   par2=exp(statfit$coefficients[2])
+    par1range=c(par1-1.96*sqrt(statfit$var[1,1]), par1+1.96*sqrt(myfit$var[1,1]))
+   par2range=c(exp(statfit$coefficients[2]-1.96*sqrt(statfit$var[2,2])), exp(statfit$coefficients[2]+1.96*sqrt(statfit$var[2,2])))
   }
-return(list(means=mymeans, qs = quantile(mymeans, probs = c(0.025, 0.5, 0.975)), meanmeans=mean(mymeans), sdmeans=sd(mymeans)))
+return(list(par1=par1,par2=par2, par1range=par1range, par2range=par2range, means=mymeans, qs = quantile(mymeans, probs = c(0.025, 0.5, 0.975)), meanmeans=mean(mymeans), sdmeans=sd(mymeans)))
 }
 ```
 
@@ -232,12 +243,30 @@ getMeanCI_DF = function(myfit,myfit_gamma,myfit_lnorm) {
 out_weib=getMeanCI(statfit = myfit, dist = "weibull")
 out_gamm = getMeanCI(statfit =myfit_gamma, dist = "gamma")
 out_lnorm=getMeanCI(statfit =myfit_lnorm, dist="lognorm")
-return(data.frame(means=c(out_weib$meanmeans, 
+return(data.frame(par1s=c(out_weib$par1, 
+                          out_gamm$par1, 
+                          out_lnorm$par1),
+                   par1lower=c(out_weib$par1range[1], 
+                          out_gamm$par1range[1], 
+                          out_lnorm$par1range[1]),
+                  par1upper=c(out_weib$par1range[2], 
+                          out_gamm$par1range[2], 
+                          out_lnorm$par1range[2]), # there is a better way .. but.
+                  par2s=c(out_weib$par2, 
+                          out_gamm$par2, 
+                          out_lnorm$par2),
+               par2lower=c(out_weib$par2range[1], 
+                          out_gamm$par2range[1], 
+                          out_lnorm$par2range[1]),
+                  par2upper=c(out_weib$par2range[2], 
+                          out_gamm$par2range[2], 
+                          out_lnorm$par2range[2]), # there is a better way .. but.
+                  means=c(out_weib$meanmeans, 
                           out_gamm$meanmeans, 
                           out_lnorm$meanmeans),
-           lowerCI=c(out_weib$qs[1], out_gamm$qs[1],
+           meanlower=c(out_weib$qs[1], out_gamm$qs[1],
                      out_lnorm$qs[1]),
-           upperCI=c(out_weib$qs[3],out_gamm$qs[3],
+           meanupper=c(out_weib$qs[3],out_gamm$qs[3],
                      out_lnorm$qs[3])))
 }
 getMeanCI_DF(myfit,myfit_gamma,myfit_lnorm)
@@ -485,6 +514,10 @@ ggsave(file="sing_serialint.pdf", height = 4, width = 6)
 I note that the serial interval gets longer if we include more cases per cluster (because the mixture of 4 pathways in Vink et al does not include longer transmission chains, which forces the assumption that everyone in the cluster was infected by the initial case, which in turn lengthens the estimated serial interval). We do not know the true infection pathways but it is reasonable not to constrain the model to enforce that most are infected by the first few cases. 
 
 
+The mean SI is `r myest4[1]`. The standard deviation of the serial intervals is `r myest4[2]`.
+
+We need CIs for the mean. For this we use bootstrapping. 
+
 ```{r, eval=FALSE}
 # bootstrap analysis
 Nboot=100
@@ -503,21 +536,34 @@ hist(bestimates[,1],breaks = 30)
 bootdf=data.frame(mu=bestimates[,1], sig=bestimates[,2])
 ggplot(bootdf, aes(x=mu, y=sig))+geom_point()
 ggplot(bootdf, aes(x=mu))+geom_histogram()
- ggsave(file = "bootst_SI_sing.pdf", width = 6, height = 4)
-mean(bestimates[,1]) # higher estimates also have high uncertainty 
+ggsave(file = "bootst_SI_sing.pdf", width = 6, height = 4)
+```
+
+
+```{r,eval=TRUE} 
+load("sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE 
+mean(bestimates[,1]) 
 median(bestimates[,1])
 sd(bestimates[,1])
+
 mean(bestimates[,2])
 sd(bestimates[,2])
-# range for mean serial interval in the paper is 4.49 (result for k=4) plus/min 1.96*sd(bestimates) 
 ```
+
+
+The 95% range for the mean serial interval is (`r myest4[1]-1.96*sd(bestimates[,1])`, `r myest4[1]+1.96*sd(bestimates[,1])`).
+
+## Presymptomatic transmission 
+
+
+## R0 estimation 
 
 We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equation $R=\exp{r \mu - 1/2 r^2 \sigma^2}$. To obtain CIs for R, we could use our bootstrap estimates of $\mu$ and $\sigma^2$ and simply resample R using this equation. 
 
 Jung et al Scenario 1
 
-```{r,eval=FALSE}
-load("sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE 
+```{r,eval=TRUE}
+
 myrate=0.15
 
 Rs=0*(1:100) 
@@ -527,9 +573,17 @@ for (n in 1:100) {
 hist(Rs,breaks = 30)
 mean(Rs)
 sd(Rs)
-hist(Rs)
 quantile(Rs, probs = c(0.025, 0.975))
 ```
+
+
+The mean R is `r mean(Rs)` and the range is (`r mean(Rs)-1.96*sd(Rs)`, `r mean(Rs)+1.96*sd(Rs)`), based on the 1.96 standard deviations from the mean.  This agrees closely with the above quantiles. 
+
+
+
+
+### Additional (uninteresting we think)  - Jung et al Scenario 2 (faster doubling time, higher R values ) 
+
 
 ```{r,eval=FALSE}
 myrate=0.29
