@@ -7,10 +7,7 @@ output:
     keep_md: TRUE
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(ggplot2)
-```
+
 
 ## Pre-symptomatic transmission 
 
@@ -49,7 +46,8 @@ Singapore
 
 * unstratified median 6.55 shape 1.88 (1.47,2.39 ) scale 7.97 (6.84,9.27)
 
-```{r}
+
+```r
 tianjin=list()
 tianjin[[1]]=list(median=6.9, shape=2.73, minshape=2.01, maxshape=3.43, scale=7.85, minscale=6.85, maxscale=8.94)
 tianjin[[2]]=list(median=12.43, shape=3.95, minshape=2.66, maxshape=4.97, scale=13.64, minscale=11.99, maxscale=15.51)
@@ -65,7 +63,8 @@ We will perform 6 experiments: Tianjin early, late, unstratified; Singapore earl
 
 ## Tianjin 
 
-```{r}
+
+```r
 Nsamp=10000
 inctimesE = rweibull(Nsamp, shape = tianjin[[1]]$shape, scale = tianjin[[1]]$scale)
 inctimesL = rweibull(Nsamp, shape = tianjin[[2]]$shape, scale = tianjin[[2]]$scale)
@@ -81,26 +80,57 @@ d3=data.frame(TimeDiff=sertimes-inctimesU, group="Unstratified")
 df=rbind(d1,d2, d3) 
 
 ggplot(data=df, aes(x=TimeDiff, fill=group))+geom_histogram(position="dodge")+theme_bw()+ggtitle("Tianjin")
+```
 
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
+
+![](portion_presympt_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+```r
 ggsave(file="portion_pre_Tianjin.pdf", height=4,width = 6)
+```
+
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
 The portion of transmission that occurs pre-symptoms is estimated (very simply) by the fraction of (incubation - serial interval) that is negative. Note that this assumes independence of symptom onset and incubation time and so may be an overestimate. We report cautiously in the paper for this reason. 
 
-```{r} 
 
+```r
 # portion pre-symptom: early
 sum(d1$TimeDiff<0)/length(d1$TimeDiff)
+```
+
+```
+## [1] 0.8241
+```
+
+```r
 # portion pre-symptom: late
 sum(d2$TimeDiff<0)/length(d2$TimeDiff)
+```
+
+```
+## [1] 0.9906
+```
+
+```r
 # portion pre-symptom: unstratified 
 sum(d3$TimeDiff<0)/length(d3$TimeDiff)
+```
+
+```
+## [1] 0.8663
 ```
 
 
 ## Singapore 
 
-```{r}
+
+```r
 Nsamp=10000
 inctimesE = rweibull(Nsamp, shape = singapore[[1]]$shape, scale = singapore[[1]]$scale)
 inctimesL = rweibull(Nsamp, shape = singapore[[2]]$shape, scale = singapore[[2]]$scale)
@@ -116,8 +146,20 @@ d3=data.frame(TimeDiff=sertimes-inctimesU, group="Unstratified")
 df=rbind(d1,d2, d3) 
 
 ggplot(data=df, aes(x=TimeDiff, fill=group))+geom_histogram(position="dodge")+theme_bw()+ggtitle("Singapore")
+```
 
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
+
+![](portion_presympt_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+```r
 ggsave(file="portion_pre_Singapore.pdf", height=4,width = 6)
+```
+
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
 
@@ -125,21 +167,40 @@ The portion of transmission that occurs pre-symptoms is estimated (very simply) 
 
 
 
-```{r} 
+
+```r
 # portion pre-symptom: early
 sum(d1$TimeDiff<0)/length(d1$TimeDiff)
+```
+
+```
+## [1] 0.6352
+```
+
+```r
 # portion pre-symptom: late
 sum(d2$TimeDiff<0)/length(d2$TimeDiff)
+```
+
+```
+## [1] 0.7509
+```
+
+```r
 # portion pre-symptom: unstratified
 sum(d3$TimeDiff<0)/length(d3$TimeDiff)
+```
 
+```
+## [1] 0.705
 ```
 
 
 
 Now a broader experiment where we sample the shape and scale parameters from the above distribution, assuming they themselves are normal. 
 
-```{r}
+
+```r
 Nsamp=10000
 shapes=rnorm(Nsamp, tianjin[[1]]$shape, (tianjin[[1]]$maxshape-tianjin[[1]]$shape)/1.96)
 scales=rnorm(Nsamp, tianjin[[1]]$scale, (tianjin[[1]]$maxscale-tianjin[[1]]$scale)/1.96)
@@ -150,7 +211,16 @@ sermeans = rnorm(Nsamp, 4.22, serialmeansd)
 sersd=1 # sd in the mean  ... ok 
 sertimes= rnorm(Nsamp, mean =sermeans, sd=sersd)
 hist(sertimes-inctimes,breaks = 30) 
+```
+
+![](portion_presympt_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+
+```r
 sum(sertimes-inctimes < 0)/length(sertimes)
+```
+
+```
+## [1] 0.8042
 ```
 
 This is consistent with the other estimates. 
