@@ -103,12 +103,12 @@ The dataset includes the following information:
 
 * death = date of death
 
-* recorrection
+* recorrection = additional notes on data and cases
 
 * notes = additional notes on data and cases
 
 ## Summary of file locations on repo
-Code for figures, descriptive and statistical analyses are provided in the main repo. PDF versions of the final figures are availble under the folder 'final_figures' [link to final figures](/final_figures). Briefly, this repo contains .rmd files for the following:
+Code for figures, descriptive and statistical analyses are provided in the main repo. PDF versions of the final figures are availble under the folder 'final_figures' [link to final figures](/final_figures). There are three other folders containing graphs generated for Lastly, the remaining files in the main repo folder are the .rmd files (and associated .html and .md files) for the following:
 
 * Fig 1a and 2a - hospitalized case counts and cumulative recovery and mortality incidence (Singapore and Tianjin respectively) 
 
@@ -116,8 +116,14 @@ Code for figures, descriptive and statistical analyses are provided in the main 
 
 * Fig 1c and 2c are static plot versions of the Shiny App heatmap (Singapore and Tianjin respectively) 
 
-* singapore, tianjin, singapore_incubation_analysis, tianjin_incubation_analysis, and tianjin_JS contain the statistical models used to determine serial intervals and incubation period estimates, which were reported in Table 1, Table 2, Table S1, and Figure 3
+* Fig 3 is produced by singapore_incubation_analysis and tianjin_incubation_analysis 
 
 * Fig 4 are network diagrams for Tianjin and Singapore
 
+* Tianjin_wtables, singapore_wtables contain the statistical models used to determine serial intervals and incubation period estimates, which were reported in the manuscript and associated supplementary information. Tianjin and singapore are earlier versions of the respective files.
+
 * portion_presympt contains the statistical models used to estimate the proportion of pre-symptomatic transmission
+
+* tianjin_JS is the incubation analysis of Tianjin, stratified by pre-quarantine and post-quarantine (based on Jan 23 as date of start of quarantine measures in China)
+
+For those new to Git - you can click on the .md file to see the code and associated results without having to download and run it yourself.

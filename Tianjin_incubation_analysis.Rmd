@@ -2,7 +2,9 @@
 title: "Tianjin Cluster Incubation period analysis"
 author: "Jessica Stockdale, Caroline Colijn, Manu Saraswat"
 date: "28/02/2020"
-output: html_document
+output: 
+  html_document:
+    keep_md: TRUE
 ---
 
 ```{r setup, include=FALSE}
@@ -29,7 +31,7 @@ We use the same data as in the un-stratified analysis. Thanks to Dongxuan Chen a
 
 
 ```{r}
-tdata=read.csv("Tianjin135casesFeb22.csv",na.strings = "", stringsAsFactors = F)
+tdata=read.csv("data/Tianjin135casesFeb22.csv",na.strings = "", stringsAsFactors = F)
 tdata$symptom_onset=as.Date(tdata$symptom_onset, format = "%d/%m/%Y")
 tdata$start_source=as.Date(tdata$start_source, format = "%d/%m/%Y")
 tdata$end_source=as.Date(tdata$end_source,format = "%d/%m/%Y" )

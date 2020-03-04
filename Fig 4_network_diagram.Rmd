@@ -3,7 +3,9 @@ title: "Cluster Network Data Preprocessing & Plotting"
 author: "Emma Garlock; Yen-Hsiang (Brian) Lee"
 date: "18/02/2020"
 updated: "23/02/2020"
-output: html_document
+output: 
+  html_document:
+    keep_md: TRUE
 ---
 
 
@@ -24,7 +26,7 @@ library(paletteer)
 
 load up all the links we have (just the first two column of the dataframe expanded)
 ```{r}
-ncov = read.csv("../data/COVID-19_Singapore.csv")
+ncov = read.csv("data/COVID-19_Singapore.csv")
 # ncov=read.csv("../../Data/COVID-19_Singapore.csv")
 ncov_sing = ncov[ncov$country == "Singapore", ]
 names(ncov_sing)[1] <- 'CaseID'
@@ -111,7 +113,7 @@ cov_net = ggplot(n, aes(x = x, y = y, xend = xend, yend = yend)) +
 
  
 cov_net
-ggsave("../final_figures/Fig4a_singapore_static_network.pdf",plot=cov_net,device="pdf",height=8,width=11,units="in")
+ggsave("final_figures/Fig4a_singapore_static_network.pdf",plot=cov_net,device="pdf",height=8,width=11,units="in")
 ```
 ####Tianjin Data####
 
@@ -140,7 +142,7 @@ edges_dist = distinct(edges_dist)
 ```
 get a dataframe with the cleaned up edges, but still some htings need to be cleaned up 
 ```{r}
-tdata_cc=read.csv(here("tianjin_edges_clean.csv"))
+tdata_cc=read.csv(here("data/tianjin_edges_clean.csv"))
 colnames(tdata_cc)[4]="cluster"
 edges_cleaned=tdata_cc
 edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"coworker ","coworker")
@@ -205,7 +207,7 @@ head(edges_unclean2)
 Need to clean up the cluster names (207-209) and make al ist of the known contacts (210) then merge them with the full datatset so that we can include the cleaned cluster names (after this block called infection_source_named)
 
 ```{r}
-tdata_cc=read.csv(here("tianjin_edges_clean.csv"))
+tdata_cc=read.csv(here("data/tianjin_edges_clean.csv"))
 colnames(tdata_cc)[4]="cluster"
 edges_cleaned=tdata_cc
 edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"coworker ","coworker")
