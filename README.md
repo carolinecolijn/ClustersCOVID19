@@ -108,7 +108,7 @@ The dataset includes the following information:
 * notes = additional notes on data and cases
 
 ## Summary of file locations on repo
-Code for figures, descriptive and statistical analyses are provided in the main repo. PDF versions of the final figures are availble under the folder 'final_figures' [link to final figures](/final_figures). There are three other folders containing graphs generated for Lastly, the remaining files in the main repo folder are the .rmd files (and associated .html and .md files) for the following:
+Code for figures, descriptive and statistical analyses are provided in the main repo. PDF versions of the final figures are availble under the folder 'final_figures' [link to final figures](/final_figures). There are three other folders containing graphs generated for supplementary materials. Lastly, the remaining files in the main repo folder are the .rmd files (and associated .html and .md files) for the following:
 
 * Fig 1a and 2a - hospitalized case counts and cumulative recovery and mortality incidence (Singapore and Tianjin respectively) 
 
