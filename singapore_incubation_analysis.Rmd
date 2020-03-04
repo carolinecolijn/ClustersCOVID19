@@ -145,7 +145,7 @@ spdens_gamma=dgamma(spdays, shape = exp(spfit_gamma$coefficients[1]), scale = ex
 spdens_lnorm=dlnorm(spdays, meanlog = spfit_lnorm$coefficients[1], sdlog = exp(spfit_lnorm$coefficients[2]))
 
 ggsp = ggsurvplot(
-fit=survfit(Surv(spfirst$minIncTimes, spfirst$maxIncTimes, type="interval2")~1, data=spfirst), combine = TRUE,
+fit=survfit(Surv(spdata$minIncTimes, spdata$maxIncTimes, type="interval2")~1, data=spdata), combine = TRUE,
 xlab="Days",  ylab = "Overall probability of no symptoms yet",palette = "lancet",legend=c('right'))
 pdata <- data.frame(days=rep(spdays,3),  
             fitsurv=c(1-pweibull(spdays, shape = exp(spfit$coefficients[1]), scale = exp(spfit$coefficients[2])),
