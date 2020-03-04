@@ -1,6 +1,6 @@
 ---
 title: "Singapore"
-author: "Caroline Colijn and Michelle Coombe"
+author: "Caroline Colijn, Michelle Coombe, and Manu Saraswat"
 date: "25/02/2020"
 output: 
   html_document:
@@ -30,7 +30,7 @@ Thanks to EpiCoronaHack Cluster team. These data are manually entered from posti
 
 
 ```{r}
-spdata <- read_csv("~/ClustersCOVID19/data/COVID-19_Singapore.csv")
+spdata <- read_csv("data/COVID-19_Singapore.csv")
 # Ensure properly imported
 glimpse(spdata)
 colSums(is.na(spdata))
@@ -274,8 +274,9 @@ return(data.frame(par1s=c(out_weib$par1,
 getMeanCI_DF(myfit,myfit_gamma,myfit_lnorm)
 ```
 
-Here is a plot of the estimated distribution together with the empirical survival curve from the data. 
+Here is a plot of the estimated distribution together with the empirical survival curve from the data. This is Figure 3a (upper panel) in the manuscript.
 
+### Generating figure 3a above panel for paper
 ```{r}
 spdays <- seq(0,20, by=0.05)
 spdensity <- dweibull(spdays, shape = exp(myfit$coefficients[1]), scale = exp(myfit$coefficients[2]))
@@ -283,16 +284,16 @@ spdens_gamma=dgamma(spdays, shape = exp(myfit_gamma$coefficients[1]), scale = ex
 spdens_lnorm=dlnorm(spdays, meanlog = myfit_lnorm$coefficients[1], sdlog = exp(myfit_lnorm$coefficients[2]))
 
 ggsp = ggsurvplot(
-fit=survfit(Surv(spdata$minIncTimes, spdata$maxIncTimes, type="interval2")~1, data=spdata), 
-xlab="Days",  ylab = "Overall probability of no symptoms yet")
+fit=survfit(Surv(spdata$minIncTimes, spdata$maxIncTimes, type="interval2")~1, data=spdata), combine = TRUE,
+xlab="Days",  ylab = "Overall probability of no symptoms yet",palette = "lancet",legend=c('right'))
 pdata <- data.frame(days=rep(spdays,3),  
             fitsurv=c(1-pweibull(spdays, shape = exp(myfit$coefficients[1]), scale = exp(myfit$coefficients[2])),
         1-pgamma(spdays,  shape = exp(myfit_gamma$coefficients[1]), scale = exp(myfit_gamma$coefficients[2])),
         1-plnorm(spdays,  meanlog = myfit_lnorm$coefficients[1], sdlog = exp(myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(spdays)), rep("Gamma",length(spdays)), rep("Lognorm", length(spdays)) )) 
                                                             
 
-ggsp$plot + geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn))
-  # ggsave(filename = "inc_Sing_firstonly.pdf", width = 8, height = 6)
+ ggsp$plot+geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn))
+  ggsave(filename = "inc_Sing_all.pdf", width = 8, height = 6)
 ```
 
 Finally, we want to do this all again but stratifying the data between early occurring cases and late. 
@@ -335,8 +336,41 @@ LATE: how variable are these point estimates? Look at mean and 95\% CI
 getMeanCI_DF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
 ```
 
+### Generating Fig 3a below panel for the paper; 
+```{r}
+#generating figure 3 below panel from the paper
+spdays <- seq(0,20, by=0.05)
+spdensity <- dweibull(spdays, shape = exp(Eallthree$myfit$coefficients[1]), scale = exp(Eallthree$myfit$coefficients[2]))
+spdens_gamma=dgamma(spdays, shape = exp(Eallthree$myfit_gamma$coefficients[1]), scale = exp(Eallthree$myfit_gamma$coefficients[2]))
+spdens_lnorm=dlnorm(spdays, meanlog = Eallthree$myfit_lnorm$coefficients[1], sdlog = exp(Eallthree$myfit_lnorm$coefficients[2]))
+
+spdensity_late <- dweibull(spdays, shape = exp(Lallthree$myfit$coefficients[1]), scale = exp(Lallthree$myfit$coefficients[2]))
+spdens_gamma_late=dgamma(spdays, shape = exp(Lallthree$myfit_gamma$coefficients[1]), scale = exp(Lallthree$myfit_gamma$coefficients[2]))
+spdens_lnorm_late=dlnorm(spdays, meanlog = Lallthree$myfit_lnorm$coefficients[1], sdlog = exp(Lallthree$myfit_lnorm$coefficients[2]))
 
 
+fit1<-survfit(Surv(earlydata$minIncTimes, earlydata$maxIncTimes, type="interval2")~1, data=earlydata)
+fit2<-survfit(Surv(latedata$minIncTimes, latedata$maxIncTimes, type="interval2")~1, data=latedata)
+
+fit <- list(early = fit1, late = fit2)
+ggsp2=ggsurvplot(fit, data = spcopy, combine = TRUE, # Combine curves
+             # Clean risk table
+           xlab="Days",  ylab = "Overall probability of no symptoms yet", palette = "lancet",legend.labs=c("Stratum:Early","Stratum:Late"),legend=c('right'))
+
+
+pdata <- data.frame(days=rep(spdays,3),  
+            fitsurv=c(1-pweibull(spdays, shape = exp(Eallthree$myfit$coefficients[1]), scale = exp(Eallthree$myfit$coefficients[2])),
+        1-pgamma(spdays,  shape = exp(Eallthree$myfit_gamma$coefficients[1]), scale = exp(Eallthree$myfit_gamma$coefficients[2])),
+        1-plnorm(spdays,  meanlog = Eallthree$myfit_lnorm$coefficients[1], sdlog = exp(Eallthree$myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(spdays)), rep("Gamma",length(spdays)), rep("Lognorm", length(spdays)) )) 
+                                                            
+pdata1 <- data.frame(days=rep(spdays,3),  
+            fitsurv=c(1-pweibull(spdays, shape = exp(Lallthree$myfit$coefficients[1]), scale = exp(Lallthree$myfit$coefficients[2])),
+        1-pgamma(spdays,  shape = exp(Lallthree$myfit_gamma$coefficients[1]), scale = exp(Lallthree$myfit_gamma$coefficients[2])),
+        1-plnorm(spdays,  meanlog = Lallthree$myfit_lnorm$coefficients[1], sdlog = exp(Lallthree$myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(spdays)), rep("Gamma",length(spdays)), rep("Lognorm", length(spdays)) )) 
+                                                            
+ggsp2$plot + geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn)) +geom_line(data = pdata1, aes(x = days, y = fitsurv,color=distn)) 
+  ggsave(filename = "inc_Sing_strata.pdf", width = 8, height = 6)
+```
 
 
 

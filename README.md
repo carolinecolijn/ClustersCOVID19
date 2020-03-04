@@ -116,14 +116,12 @@ Code for figures, descriptive and statistical analyses are provided in the main 
 
 * Fig 1c and 2c are static plot versions of the Shiny App heatmap (Singapore and Tianjin respectively) 
 
-* Fig 3 is produced by singapore_incubation_analysis and tianjin_incubation_analysis 
+* Fig 3 is produced by Tianjin_wtables and singapore_wtables (older figure versions are in singapore_incubation_analysis and Tianjin_incubation_analysis, located in the 'old_code' folder)
 
 * Fig 4 are network diagrams for Tianjin and Singapore
 
-* Tianjin_wtables, singapore_wtables contain the statistical models used to determine serial intervals and incubation period estimates, which were reported in the manuscript and associated supplementary information. Tianjin and singapore are earlier versions of the respective files.
+* Tianjin_wtables, singapore_wtables contain the statistical models used to determine serial intervals and incubation period estimates, which were reported in the manuscript and associated supplementary information. (Tianjin, tianjin_JS, and singapore are earlier versions of the respective files and are located in the 'old_code' folder).
 
 * portion_presympt contains the statistical models used to estimate the proportion of pre-symptomatic transmission
-
-* tianjin_JS is the incubation analysis of Tianjin, stratified by pre-quarantine and post-quarantine (based on Jan 23 as date of start of quarantine measures in China)
 
 For those new to Git - you can click on the .md file to see the code and associated results without having to download and run it yourself.

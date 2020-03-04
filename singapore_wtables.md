@@ -1,6 +1,6 @@
 ---
 title: "Singapore"
-author: "Caroline Colijn and Michelle Coombe"
+author: "Caroline Colijn, Michelle Coombe, and Manu Saraswat"
 date: "25/02/2020"
 output: 
   html_document:
@@ -18,7 +18,7 @@ Thanks to EpiCoronaHack Cluster team. These data are manually entered from posti
 
 
 ```r
-spdata <- read_csv("~/ClustersCOVID19/data/COVID-19_Singapore.csv")
+spdata <- read_csv("data/COVID-19_Singapore.csv")
 ```
 
 ```
@@ -42,29 +42,29 @@ glimpse(spdata)
 ```
 ## Observations: 93
 ## Variables: 23
-## $ CaseID                 <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13…
-## $ `Related cases`        <chr> "2,3", "1,3", "1,2", "11", NA, NA, NA, "9…
-## $ `Cluster links`        <chr> NA, NA, NA, NA, NA, NA, NA, "9,31,33,38,8…
-## $ `Relationship notes`   <chr> NA, NA, "Son of 1", NA, NA, NA, NA, "Marr…
-## $ Case                   <chr> "Case 1, 66M, Wuhan", "Case 2, 53F, Wuhan…
-## $ age                    <dbl> 66, 53, 37, 36, 56, 56, 35, 56, 56, 56, 3…
-## $ sex                    <chr> "M", "F", "M", "M", "F", "M", "M", "F", "…
-## $ country                <chr> "Singapore", "Singapore", "Singapore", "S…
-## $ hospital               <chr> "Singapore General Hospital", "National C…
-## $ presumed_infected_date <chr> "20/01/2020", "20/01/2020", "20/01/2020",…
-## $ presumed_reason        <chr> "Arrived from Wuhan", "Arrived from Wuhan…
-## $ last_poss_exposure     <chr> "20/01/2020", "20/01/2020", "20/01/2020",…
-## $ symp_presumed_infector <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ date_onset_symptoms    <chr> "20/01/2020", "21/01/2020", "23/01/2020",…
-## $ date_quarantine        <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, "…
-## $ date_hospital          <chr> "22/01/2020", "22/01/2020", "23/01/2020",…
-## $ date_confirmation      <chr> "23/01/2020", "24/01/2020", "24/01/2020",…
-## $ outcome                <chr> "Discharged", "Discharged", "Discharged",…
-## $ date_discharge         <chr> "19/02/2020", "07/02/2020", "21/02/2020",…
-## $ travel_history         <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wuha…
-## $ additional_information <chr> "Travelled with Case 3 (son) and M1 (wife…
-## $ cluster                <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wuha…
-## $ citizenship            <chr> "China", "China", "China", "China", "Chin…
+## $ CaseID                 <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,…
+## $ `Related cases`        <chr> "2,3", "1,3", "1,2", "11", NA, NA, NA, "9", "8…
+## $ `Cluster links`        <chr> NA, NA, NA, NA, NA, NA, NA, "9,31,33,38,83, 90…
+## $ `Relationship notes`   <chr> NA, NA, "Son of 1", NA, NA, NA, NA, "Married t…
+## $ Case                   <chr> "Case 1, 66M, Wuhan", "Case 2, 53F, Wuhan", "C…
+## $ age                    <dbl> 66, 53, 37, 36, 56, 56, 35, 56, 56, 56, 31, 37…
+## $ sex                    <chr> "M", "F", "M", "M", "F", "M", "M", "F", "M", "…
+## $ country                <chr> "Singapore", "Singapore", "Singapore", "Singap…
+## $ hospital               <chr> "Singapore General Hospital", "National Centre…
+## $ presumed_infected_date <chr> "20/01/2020", "20/01/2020", "20/01/2020", "22/…
+## $ presumed_reason        <chr> "Arrived from Wuhan", "Arrived from Wuhan", "A…
+## $ last_poss_exposure     <chr> "20/01/2020", "20/01/2020", "20/01/2020", "22/…
+## $ symp_presumed_infector <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+## $ date_onset_symptoms    <chr> "20/01/2020", "21/01/2020", "23/01/2020", "23/…
+## $ date_quarantine        <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, "26/01…
+## $ date_hospital          <chr> "22/01/2020", "22/01/2020", "23/01/2020", "24/…
+## $ date_confirmation      <chr> "23/01/2020", "24/01/2020", "24/01/2020", "25/…
+## $ outcome                <chr> "Discharged", "Discharged", "Discharged", "Dis…
+## $ date_discharge         <chr> "19/02/2020", "07/02/2020", "21/02/2020", "12/…
+## $ travel_history         <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wuhan", "…
+## $ additional_information <chr> "Travelled with Case 3 (son) and M1 (wife) ;MO…
+## $ cluster                <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wuhan", "…
+## $ citizenship            <chr> "China", "China", "China", "China", "China", "…
 ```
 
 ```r
@@ -443,18 +443,15 @@ getMeanCI_DF(myfit,myfit_gamma,myfit_lnorm)
 ```
 
 ```
-##   par1s par1lower par1upper par2s par2lower par2upper means meanlower
-## 1  1.88      1.47      2.39 7.968     6.848     9.272  7.11      6.13
-## 2  3.36      2.09      4.28 2.114     1.315     2.459  7.12      6.14
-## 3  1.83      1.67      2.07 0.529     0.413     0.678  7.20      6.18
-##   meanupper
-## 1      8.25
-## 2      8.20
-## 3      8.31
+##   par1s par1lower par1upper par2s par2lower par2upper means meanlower meanupper
+## 1  1.88      1.47      2.39 7.968     6.848     9.272  7.11      6.13      8.25
+## 2  3.36      2.09      4.28 2.114     1.315     2.459  7.12      6.14      8.20
+## 3  1.83      1.67      2.07 0.529     0.413     0.678  7.20      6.18      8.31
 ```
 
-Here is a plot of the estimated distribution together with the empirical survival curve from the data. 
+Here is a plot of the estimated distribution together with the empirical survival curve from the data. This is Figure 3a (upper panel) in the manuscript.
 
+### Generating figure 3a above panel for paper
 
 ```r
 spdays <- seq(0,20, by=0.05)
@@ -463,21 +460,21 @@ spdens_gamma=dgamma(spdays, shape = exp(myfit_gamma$coefficients[1]), scale = ex
 spdens_lnorm=dlnorm(spdays, meanlog = myfit_lnorm$coefficients[1], sdlog = exp(myfit_lnorm$coefficients[2]))
 
 ggsp = ggsurvplot(
-fit=survfit(Surv(spdata$minIncTimes, spdata$maxIncTimes, type="interval2")~1, data=spdata), 
-xlab="Days",  ylab = "Overall probability of no symptoms yet")
+fit=survfit(Surv(spdata$minIncTimes, spdata$maxIncTimes, type="interval2")~1, data=spdata), combine = TRUE,
+xlab="Days",  ylab = "Overall probability of no symptoms yet",palette = "lancet",legend=c('right'))
 pdata <- data.frame(days=rep(spdays,3),  
             fitsurv=c(1-pweibull(spdays, shape = exp(myfit$coefficients[1]), scale = exp(myfit$coefficients[2])),
         1-pgamma(spdays,  shape = exp(myfit_gamma$coefficients[1]), scale = exp(myfit_gamma$coefficients[2])),
         1-plnorm(spdays,  meanlog = myfit_lnorm$coefficients[1], sdlog = exp(myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(spdays)), rep("Gamma",length(spdays)), rep("Lognorm", length(spdays)) )) 
                                                             
 
-ggsp$plot + geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn))
+ ggsp$plot+geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn))
 ```
 
 ![](singapore_wtables_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 ```r
-  # ggsave(filename = "inc_Sing_firstonly.pdf", width = 8, height = 6)
+  ggsave(filename = "inc_Sing_all.pdf", width = 8, height = 6)
 ```
 
 Finally, we want to do this all again but stratifying the data between early occurring cases and late. 
@@ -534,14 +531,10 @@ getMeanCI_DF(Eallthree[[1]],Eallthree[[2]], Eallthree[[3]])
 ```
 
 ```
-##   par1s par1lower par1upper par2s par2lower par2upper means meanlower
-## 1  2.35      1.50      3.00 6.385     5.144     7.430  5.71      4.55
-## 2  4.64      1.94      5.92 1.224     0.513     1.424  5.72      4.54
-## 3  1.64      1.41      1.89 0.457     0.286     0.729  5.86      4.65
-##   meanupper
-## 1      7.06
-## 2      7.10
-## 3      7.39
+##   par1s par1lower par1upper par2s par2lower par2upper means meanlower meanupper
+## 1  2.35      1.50      3.00 6.385     5.144     7.430  5.71      4.55      7.06
+## 2  4.64      1.94      5.92 1.224     0.513     1.424  5.72      4.54      7.10
+## 3  1.64      1.41      1.89 0.457     0.286     0.729  5.86      4.65      7.39
 ```
 
 LATE: how variable are these point estimates? Look at mean and 95\% CI
@@ -552,18 +545,53 @@ getMeanCI_DF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
 ```
 
 ```
-##   par1s par1lower par1upper par2s par2lower par2upper means meanlower
-## 1  1.93      1.43      2.46 8.791     7.353    10.229  7.86      6.57
-## 2  3.57      1.96      4.56 2.189     1.219     2.547  7.85      6.60
-## 3  1.94      1.75      2.18 0.504     0.372     0.684  7.95      6.68
-##   meanupper
-## 1      9.38
-## 2      9.25
-## 3      9.38
+##   par1s par1lower par1upper par2s par2lower par2upper means meanlower meanupper
+## 1  1.93      1.43      2.46 8.791     7.353    10.229  7.86      6.57      9.38
+## 2  3.57      1.96      4.56 2.189     1.219     2.547  7.85      6.60      9.25
+## 3  1.94      1.75      2.18 0.504     0.372     0.684  7.95      6.68      9.38
 ```
 
+### Generating Fig 3a below panel for the paper; 
+
+```r
+#generating figure 3 below panel from the paper
+spdays <- seq(0,20, by=0.05)
+spdensity <- dweibull(spdays, shape = exp(Eallthree$myfit$coefficients[1]), scale = exp(Eallthree$myfit$coefficients[2]))
+spdens_gamma=dgamma(spdays, shape = exp(Eallthree$myfit_gamma$coefficients[1]), scale = exp(Eallthree$myfit_gamma$coefficients[2]))
+spdens_lnorm=dlnorm(spdays, meanlog = Eallthree$myfit_lnorm$coefficients[1], sdlog = exp(Eallthree$myfit_lnorm$coefficients[2]))
+
+spdensity_late <- dweibull(spdays, shape = exp(Lallthree$myfit$coefficients[1]), scale = exp(Lallthree$myfit$coefficients[2]))
+spdens_gamma_late=dgamma(spdays, shape = exp(Lallthree$myfit_gamma$coefficients[1]), scale = exp(Lallthree$myfit_gamma$coefficients[2]))
+spdens_lnorm_late=dlnorm(spdays, meanlog = Lallthree$myfit_lnorm$coefficients[1], sdlog = exp(Lallthree$myfit_lnorm$coefficients[2]))
 
 
+fit1<-survfit(Surv(earlydata$minIncTimes, earlydata$maxIncTimes, type="interval2")~1, data=earlydata)
+fit2<-survfit(Surv(latedata$minIncTimes, latedata$maxIncTimes, type="interval2")~1, data=latedata)
+
+fit <- list(early = fit1, late = fit2)
+ggsp2=ggsurvplot(fit, data = spcopy, combine = TRUE, # Combine curves
+             # Clean risk table
+           xlab="Days",  ylab = "Overall probability of no symptoms yet", palette = "lancet",legend.labs=c("Stratum:Early","Stratum:Late"),legend=c('right'))
+
+
+pdata <- data.frame(days=rep(spdays,3),  
+            fitsurv=c(1-pweibull(spdays, shape = exp(Eallthree$myfit$coefficients[1]), scale = exp(Eallthree$myfit$coefficients[2])),
+        1-pgamma(spdays,  shape = exp(Eallthree$myfit_gamma$coefficients[1]), scale = exp(Eallthree$myfit_gamma$coefficients[2])),
+        1-plnorm(spdays,  meanlog = Eallthree$myfit_lnorm$coefficients[1], sdlog = exp(Eallthree$myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(spdays)), rep("Gamma",length(spdays)), rep("Lognorm", length(spdays)) )) 
+                                                            
+pdata1 <- data.frame(days=rep(spdays,3),  
+            fitsurv=c(1-pweibull(spdays, shape = exp(Lallthree$myfit$coefficients[1]), scale = exp(Lallthree$myfit$coefficients[2])),
+        1-pgamma(spdays,  shape = exp(Lallthree$myfit_gamma$coefficients[1]), scale = exp(Lallthree$myfit_gamma$coefficients[2])),
+        1-plnorm(spdays,  meanlog = Lallthree$myfit_lnorm$coefficients[1], sdlog = exp(Lallthree$myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(spdays)), rep("Gamma",length(spdays)), rep("Lognorm", length(spdays)) )) 
+                                                            
+ggsp2$plot + geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn)) +geom_line(data = pdata1, aes(x = days, y = fitsurv,color=distn)) 
+```
+
+![](singapore_wtables_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
+
+```r
+  ggsave(filename = "inc_Sing_strata.pdf", width = 8, height = 6)
+```
 
 
 
@@ -608,47 +636,33 @@ spdata$related_cases #7 max within one cell
 ```
 
 ```
-##  [1] "2,3"                    "1,3"                   
-##  [3] "1,2"                    "11"                    
-##  [5] NA                       NA                      
-##  [7] NA                       "9"                     
-##  [9] "8"                      NA                      
-## [11] "4"                      "18"                    
-## [13] "26, 2"                  NA                      
-## [15] NA                       NA                      
-## [17] "12"                     "20,21,24,27,28,34,40"  
-## [19] "24,19"                  "19"                    
-## [21] "19,20,25"               "24"                    
-## [23] "28,19"                  NA                      
-## [25] NA                       NA                      
-## [27] NA                       NA                      
-## [29] "19,20"                  NA                      
-## [31] "30,39"                  NA                      
-## [33] NA                       NA                      
-## [35] "19,20"                  NA                      
-## [37] NA                       NA                      
-## [39] "13,26"                  NA                      
-## [41] NA                       NA                      
-## [43] NA                       "55,65,77"              
-## [45] NA                       NA                      
-## [47] "\n"                     "57,58"                 
-## [49] "50"                     NA                      
-## [51] "54,58"                  "54,57"                 
-## [53] "72,79"                  NA                      
-## [55] "67"                     NA                      
-## [57] NA                       NA                      
-## [59] "68, 70, 71, 80, 83, 91" "61"                    
-## [61] "66, 70, 71, 80"         "42,47,52,56"           
-## [63] "66, 68, 71, 80"         "66, 68, 70, 71, 80"    
-## [65] "59, 79"                 "51"                    
-## [67] NA                       "50"                    
-## [69] NA                       "72"                    
-## [71] "66"                     NA                      
-## [73] "86"                     NA                      
-## [75] "66"                     NA                      
-## [77] "82"                     "66"                    
-## [79] NA                       NA                      
-## [81] "66"
+##  [1] "2,3"                    "1,3"                    "1,2"                   
+##  [4] "11"                     NA                       NA                      
+##  [7] NA                       "9"                      "8"                     
+## [10] NA                       "4"                      "18"                    
+## [13] "26, 2"                  NA                       NA                      
+## [16] NA                       "12"                     "20,21,24,27,28,34,40"  
+## [19] "24,19"                  "19"                     "19,20,25"              
+## [22] "24"                     "28,19"                  NA                      
+## [25] NA                       NA                       NA                      
+## [28] NA                       "19,20"                  NA                      
+## [31] "30,39"                  NA                       NA                      
+## [34] NA                       "19,20"                  NA                      
+## [37] NA                       NA                       "13,26"                 
+## [40] NA                       NA                       NA                      
+## [43] NA                       "55,65,77"               NA                      
+## [46] NA                       "\n"                     "57,58"                 
+## [49] "50"                     NA                       "54,58"                 
+## [52] "54,57"                  "72,79"                  NA                      
+## [55] "67"                     NA                       NA                      
+## [58] NA                       "68, 70, 71, 80, 83, 91" "61"                    
+## [61] "66, 70, 71, 80"         "42,47,52,56"            "66, 68, 71, 80"        
+## [64] "66, 68, 70, 71, 80"     "59, 79"                 "51"                    
+## [67] NA                       "50"                     NA                      
+## [70] "72"                     "66"                     NA                      
+## [73] "86"                     NA                       "66"                    
+## [76] NA                       "82"                     "66"                    
+## [79] NA                       NA                       "66"
 ```
 
 ```r
@@ -763,12 +777,10 @@ table(spdata$presumed_reason_group)
 
 ```
 ## 
-##     Grace Assembly of God     Grand Hyatt Singapore 
-##                        22                         3 
-##        Known relationship               Life Church 
-##                         6                         6 
-## Seletar Aerospace Heights                   Unknown 
-##                         5                        14 
+##     Grace Assembly of God     Grand Hyatt Singapore        Known relationship 
+##                        22                         3                         6 
+##               Life Church Seletar Aerospace Heights                   Unknown 
+##                         6                         5                        14 
 ##              Wuhan travel            Yong Thai Hang 
 ##                        17                         8
 ```
@@ -782,9 +794,9 @@ glimpse(nodes.df)
 ```
 ## Observations: 81
 ## Variables: 3
-## $ id    <fct> case1, case2, case3, case4, case5, case6, case7, case8, ca…
-## $ label <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18,…
-## $ group <fct> Wuhan travel, Wuhan travel, Wuhan travel, Wuhan travel, Wu…
+## $ id    <fct> case1, case2, case3, case4, case5, case6, case7, case8, case9, …
+## $ label <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, …
+## $ group <fct> Wuhan travel, Wuhan travel, Wuhan travel, Wuhan travel, Wuhan t…
 ```
 
 ```r
@@ -1258,7 +1270,7 @@ for (n in 1:100) {
 hist(Rs,breaks = 30)
 ```
 
-![](singapore_wtables_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+![](singapore_wtables_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
 
 ```r
 mean(Rs)
