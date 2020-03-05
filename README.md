@@ -1,5 +1,15 @@
 # Analysis of novel Coronavirus Disease (COVID-19) Singapore and Tianjin outbreak clusters
 
+## Transmission interval estimates suggest pre-symptomatic spread of COVID-19
+
+This repo contains data and code for estimates of incubation period and serial interval in each of two transmission clusters: Tianjin, China and Singapore. [link to manuscript draft](COVID_19_Singapore_Tianjin_analysisSUPP-joined.pdf). We also estimate R0 and the portino of transmission that is pre-symptomatic. This work is currently under screening at medrxiv.org and has been submitted to a journal. 
+
+**Abstract**: 
+**Background**: As the COVID-19 epidemic is spreading, incoming data allows us to quantify values of key variables that determine the transmission and the effort required to control the epidemic. We determine the incubation period and serial interval distribution for transmission clusters in Singapore and in Tianjin. We infer the basic reproduction number and identify the extent of pre-symptomatic transmission.
+**Methods**: We collected outbreak information from Singapore and Tianjin, China, reported from Jan.19-Feb.26 and Jan.21-Feb.22, respectively. We estimated incubation periods and serial intervals in both populations.
+**Results**: The mean incubation period was 7.1 (6.13, 8.25) days for Singapore and 9 (7.92, 10.2) days for Tianjin. Both datasets had shorter incubation periods for earlier-occurring cases. The mean serial interval was 4.56 (2.69, 6.42) days for Singapore and 4.22 (3.43, 5.01) for Tianjin. We inferred that early in the outbreaks, infection was transmitted on average 2.55 and 2.89 days before symptom onset (Singapore, Tianjin). The estimated basic reproduction number for Singapore was 1.97 (1.45, 2.48) secondary cases per infective; for Tianjin it was 1.87 (1.65, 2.09) secondary cases per infective.
+**Conclusions**: Estimated serial intervals are shorter than incubation periods in both Singapore and Tianjin, suggesting that pre-symptomatic transmission is occurring. Shorter serial intervals lead to lower estimates of R0, which suggest that half of all secondary infections should be prevented to control spread.
+
 ## Authors and contact information
 * [Lauren Tindale](https://github.com/ltindale) at tindale13@gmail.com
 * [Michelle Coombe](https://github.com/mkc030) at michelle.coombe.vet@gmail.com
@@ -16,7 +26,7 @@
 ## Summary of work
 The novel Coronavirus Disease, COVID-19, was first identified in Wuhan, Hubei Province, China in December 2019 and has since spread around the globe. It is crucial to identify accurate estimates of parameters that describe the SARS-CoV-2 virus' transmission patterns to understand and control this new pathogen. New, distinct outbreak clusters that report detailed case information (e.g. exposure contact networks and timing of symptom onset) are ideal for understanding how COVID-19 can spread through a population with no prior exposure to the virus. In our analysis we estimate the serial interval (i.e. the time between symptom onset in a primary case to symptom onset in a successive case in the chain of transmission) and incubation period (i.e. the time between infection and symptom onset) from two COVID-19 outbreak locations: Singapore and Tianjin, China. Using these parameters we are able to infer the basic reproductive number (R0) and identify the extent of the pre-symptomatic transmission (i.e. transmission that occurs prior to a patient displaying clinical symptoms). Our analysis suggest that there is substantial pre-symptomatic transmission, as the serial interval is shorter than incubation period by 2-4 days, and that stopping half the transmission events may be sufficient to control outbreaks, as R0 is approximately 2 in both populations.
 
-This analysis originated from work begun at EpiCoronaHack which took place at Simon Fraser University, BC, Canada on Feb 18-19, 2020. The work began by compiling data on Singapore and Tianjin COVID-19 cases into a matrix, and has resulted in a Shiny App ([go to Shiny App folder](/Shiny)), which uses a heatmap to visualize the disease progression timeline of cases in each population, as well as a manuscript detailing results of statistical analyses.  *MANUSCRIPT LINK TO GO HERE*
+This analysis originated from work begun at EpiCoronaHack which took place at Simon Fraser University, BC, Canada on Feb 18-19, 2020. The work began by compiling data on Singapore and Tianjin COVID-19 cases into a matrix, and has resulted in a Shiny App ([go to Shiny App folder](/Shiny)), which uses a heatmap to visualize the disease progression timeline of cases in each population, as well as a manuscript detailing results of statistical analyses. 
 
 
 ## Summary of data sources
