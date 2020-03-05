@@ -1,6 +1,6 @@
 ---
 title: "Tianjin"
-author: "Caroline Colijn"
+author: "Caroline Colijn, Manu Saraswat, Michelle Coombe"
 date: "25/02/2020"
 output: 
   html_document:
@@ -22,7 +22,7 @@ Thanks to Dongxuan Chen and Louxin Zhang. These data are from three main sources
 
 
 ```r
-tdata=read.csv("~/ClustersCOVID19/data/Tianjin135casesFeb22.csv",na.strings = "", stringsAsFactors = F)
+tdata=read.csv("data/Tianjin135casesFeb22.csv",na.strings = "", stringsAsFactors = F)
 tdata$symptom_onset=as.Date(tdata$symptom_onset, format = "%d/%m/%Y")
 tdata$start_source=as.Date(tdata$start_source, format = "%d/%m/%Y")
 tdata$end_source=as.Date(tdata$end_source,format = "%d/%m/%Y" )
@@ -69,14 +69,14 @@ tdata$maxIncTimes
 
 ```
 ## Time differences in days
-##   [1]   9  48  44  44  45  49  54   4  54   6  53  54  50  55  55  51  56
-##  [18]   7   4  56  56  56  54  53  57  57 -23  49  11   9   5  53  60   8
-##  [35]  60  58   9  NA   7  11  11  57   3  60  55  NA  53   6  15  11   7
-##  [52]   7  61  57  62   8   9   6  63  20   9  60  62  62  14  11   6   9
-##  [69]  64  52   6  62   3   6  63  12  57   3  11  10  61  64  64  65  57
-##  [86]  61  13  58  65  63  66   7  64  67  62  68  70  62  NA  61  NA  NA
-## [103]  16  NA  71  11  66  63  71  63   3  11  72  19  16  71  17  67  11
-## [120]  73  72   6  NA  19  70  66  NA  11  NA  67  16  80  65  74  NA
+##   [1]   9  48  44  44  45  49  54   4  54   6  53  54  50  55  55  51  56   7
+##  [19]   4  56  56  56  54  53  57  57 -23  49  11   9   5  53  60   8  60  58
+##  [37]   9  NA   7  11  11  57   3  60  55  NA  53   6  15  11   7   7  61  57
+##  [55]  62   8   9   6  63  20   9  60  62  62  14  11   6   9  64  52   6  62
+##  [73]   3   6  63  12  57   3  11  10  61  64  64  65  57  61  13  58  65  63
+##  [91]  66   7  64  67  62  68  70  62  NA  61  NA  NA  16  NA  71  11  66  63
+## [109]  71  63   3  11  72  19  16  71  17  67  11  73  72   6  NA  19  70  66
+## [127]  NA  11  NA  67  16  80  65  74  NA
 ```
 
 ```r
@@ -85,12 +85,12 @@ tdata$minIncTimes
 
 ```
 ## Time differences in days
-##   [1]  0  0  0  0  0  0  1  1  7  4  0  0  0  6  2  0  7  7  4  7  9  3  3
-##  [24] 12  8  5  0  0  7  5  2  3  6  0  4  3  8 NA  1  5  5  0  0  4  1 NA
-##  [47]  5  6  9 11  7  0  8  3  0  8  9  6 14  0  0  0  0  0  0  8  0  9  0
-##  [70]  0  6  0  3  6  0  1  0  3 11 10  0  0  0  0  0  0 13  0 12  0  0  7
-##  [93]  0  0  0  0  0  0 NA  0 NA NA 14 NA  0  4  0  0  0  0  3 11  0  3  0
-## [116]  0 17  0  4  0  0  6 NA 19  0  0 NA 11 NA  6 16 11  0  2 NA
+##   [1]  0  0  0  0  0  0  1  1  7  4  0  0  0  6  2  0  7  7  4  7  9  3  3 12  8
+##  [26]  5  0  0  7  5  2  3  6  0  4  3  8 NA  1  5  5  0  0  4  1 NA  5  6  9 11
+##  [51]  7  0  8  3  0  8  9  6 14  0  0  0  0  0  0  8  0  9  0  0  6  0  3  6  0
+##  [76]  1  0  3 11 10  0  0  0  0  0  0 13  0 12  0  0  7  0  0  0  0  0  0 NA  0
+## [101] NA NA 14 NA  0  4  0  0  0  0  3 11  0  3  0  0 17  0  4  0  0  6 NA 19  0
+## [126]  0 NA 11 NA  6 16 11  0  2 NA
 ```
 
 ```r
@@ -259,32 +259,51 @@ Plot a fit and the KM curve together.
 
 
 ```r
-days=seq(0,20,by=0.05)
-density=dweibull(days, shape = exp(myfit$coefficients[1]), scale = exp(myfit$coefficients[2]))
-
-ggs = ggsurvplot(
-  fit=survfit(Surv(tdata$minIncTimes, tdata$maxIncTimes, type="interval2")~1, data=tdata), 
-  xlab="Days",  ylab = "Overall probability of no symptoms yet")
-
-pdata <- data.frame(days=rep(days,3),  
-            fitsurv=c(1-pweibull(days, shape = exp(myfit$coefficients[1]), scale = exp(myfit$coefficients[2])),
-        1-pgamma(days,  shape = exp(myfit_gamma$coefficients[1]), scale = exp(myfit_gamma$coefficients[2])),
-        1-plnorm(days,  meanlog = myfit_lnorm$coefficients[1], sdlog = exp(myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(days)), rep("Gamma",length(days)), rep("Lognorm", length(days)) ))  # i know, i know... 
-
-
-tmp=data.frame(days=days,  fitsurv=1-pweibull(days, shape = exp(myfit$coefficients[1]),
-                      scale = exp(myfit$coefficients[2])))
-ggs$plot + geom_line(data = tmp, aes(x = days, y = fitsurv))
-```
-
-![](Tianjin_wtables_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
-
-```r
+# days=seq(0,20,by=0.05)
+# density=dweibull(days, shape = exp(myfit$coefficients[1]), scale = exp(myfit$coefficients[2]))
+# 
+# ggs = ggsurvplot(
+#   fit=survfit(Surv(tdata$minIncTimes, tdata$maxIncTimes, type="interval2")~1, data=tdata), 
+#   xlab="Days",  ylab = "Overall probability of no symptoms yet")
+# 
+# pdata <- data.frame(days=rep(days,3),  
+#             fitsurv=c(1-pweibull(days, shape = exp(myfit$coefficients[1]), scale = exp(myfit$coefficients[2])),
+#         1-pgamma(days,  shape = exp(myfit_gamma$coefficients[1]), scale = exp(myfit_gamma$coefficients[2])),
+#         1-plnorm(days,  meanlog = myfit_lnorm$coefficients[1], sdlog = exp(myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(days)), rep("Gamma",length(days)), rep("Lognorm", length(days)) ))  # i know, i know... 
+# 
+# 
+# tmp=data.frame(days=days,  fitsurv=1-pweibull(days, shape = exp(myfit$coefficients[1]),
+#                       scale = exp(myfit$coefficients[2])))
+# ggs$plot + geom_line(data = tmp, aes(x = days, y = fitsurv))
 # ggsave(filename = "inc_Tianjin.pdf", width = 8, height = 6)
 ```
 
-### Stratified early and late 
+### Make Figure 3b upper panel (non-stratified) for the manuscript
+This is to plot the Kaplan-Meier survival curve and estimated probability distribution of days post-infection for a case not to be showing symptoms yet (using three possible distributions: weibull, gamma, and log-normal).
 
+```r
+days=seq(0,20,by=0.05)
+
+ggs = ggsurvplot(
+  fit=survfit(Surv(tdata$minIncTimes, tdata$maxIncTimes, type="interval2")~1, data=tdata),
+  xlab="Days",  ylab = "Overall probability of no symptoms yet",palette = 'lancet',legend=c('right'))
+
+pdata <- data.frame(days=rep(days,3),  
+            fitsurv=c(1-pweibull(days, shape = exp(allthree$myfit$coefficients[1]), scale = exp(allthree$myfit$coefficients[2])),
+        1-pgamma(days,  shape = exp(allthree$myfit_gamma$coefficients[1]), scale = exp(allthree$myfit_gamma$coefficients[2])),
+        1-plnorm(days,  meanlog = allthree$myfit_lnorm$coefficients[1], sdlog = exp(allthree$myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(days)), rep("Gamma",length(days)), rep("Lognorm", length(days)) ))  # i know, i know... 
+
+ggs$plot +geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn))
+```
+
+![](Tianjin_wtables_files/figure-html/unnamed-chunk-9-1.png)<!-- -->
+
+```r
+ ggsave(filename = "final_figures/Fig3b_inc_Tianjin_all.pdf", width = 8, height = 6)
+```
+
+
+### Stratified early and late 
 Finally, we want to do this all again but stratifying the data between early occurring cases and late. This is why we used functions in the above, though it was clumsy. 
 
 
@@ -337,14 +356,10 @@ getMeanCI_DF(Eallthree[[1]],Eallthree[[2]], Eallthree[[3]])
 ```
 
 ```
-##   par1s par1lower par1upper par2s par2lower par2upper means meanlower
-## 1  2.73      2.00      3.43 7.849     6.848      8.94  7.01      6.09
-## 2  5.42      3.13      6.82 1.307     0.716      1.49  7.11      6.08
-## 3  1.87      1.72      2.10 0.463     0.346      0.62  7.30      6.09
-##   meanupper
-## 1      8.04
-## 2      8.24
-## 3      8.75
+##   par1s par1lower par1upper par2s par2lower par2upper means meanlower meanupper
+## 1  2.73      2.00      3.43 7.849     6.848      8.94  7.01      6.09      8.04
+## 2  5.42      3.13      6.82 1.307     0.716      1.49  7.11      6.08      8.24
+## 3  1.87      1.72      2.10 0.463     0.346      0.62  7.30      6.09      8.75
 ```
 
 LATE: how variable are these point estimates? Look at mean and 95\% CI
@@ -365,17 +380,40 @@ getMeanCI_DF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
 ## 3      14.2
 ```
 
+### Generating Figure 3b (lower panel) for manuscript
+This is to plot the Kaplan-Meier survival curves and estimated probability distribution of days post-infection for a case not to be showing symptoms yet, when stratifying the data pre and post quarantine procedures in China. As per tables above, the symptom onset date of on or before Jan 31, 2020 is the cut-off for what defines an "early" case. 
 
+```r
+#Generating Figure 3 for the paper
+tdays=seq(0,20,by=0.05)
 
+fit1<-survfit(Surv(earlydata$minIncTimes, earlydata$maxIncTimes, type="interval2")~1, data=earlydata)
+fit2<-survfit(Surv(latedata$minIncTimes, latedata$maxIncTimes, type="interval2")~1, data=latedata)
 
+fit <- list(early = fit1, late = fit2)
+ggsp2=ggsurvplot(fit, data = tdata, combine = TRUE, # Combine curves
+             # Clean risk table
+           palette = "lancet",legend.labs=c("Pre-quarantine","Post-quarantine"),legend=c('right'))
 
+pdata <- data.frame(days=rep(tdays,3),  
+            fitsurv=c(1-pweibull(tdays, shape = exp(Eallthree$myfit$coefficients[1]), scale = exp(Eallthree$myfit$coefficients[2])),
+        1-pgamma(tdays, shape = exp(Eallthree$myfit_gamma$coefficients[1]), scale = exp(Eallthree$myfit_gamma$coefficients[2])),
+        1-plnorm(tdays,  meanlog = Eallthree$myfit_lnorm$coefficients[1], sdlog = exp(Eallthree$myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(tdays)), rep("Gamma",length(tdays)), rep("Lognorm", length(tdays)) )) 
+                                                            
+pdata1 <- data.frame(days=rep(tdays,3),  
+            fitsurv=c(1-pweibull(tdays, shape = exp(Lallthree$myfit$coefficients[1]), scale = exp(Lallthree$myfit$coefficients[2])),
+        1-pgamma(tdays,  shape = exp(Lallthree$myfit_gamma$coefficients[1]), scale = exp(Lallthree$myfit_gamma$coefficients[2])),
+        1-plnorm(tdays,  meanlog = Lallthree$myfit_lnorm$coefficients[1], sdlog = exp(Lallthree$myfit_lnorm$coefficients[2]))), distn=c(rep("Weibull", length(tdays)), rep("Gamma",length(tdays)), rep("Lognorm", length(tdays)) )) 
+                                                            
+ggsp2$plot + geom_line(data = pdata, aes(x = days, y = fitsurv, color=distn)) +geom_line(data = pdata1, aes(x = days, y = fitsurv, color=distn)) 
+```
 
+![](Tianjin_wtables_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
-
-
-
-
-
+```r
+ggsave(filename = "final_figures/Fig3b_inc_Tianjin_strata.pdf", width = 8, height = 6)
+#ggsave(filename = "inc_Tianjin_strata.png", width = 8, height = 6)
+```
 
 
 ## Serial interval 
@@ -1093,7 +1131,7 @@ sd(bestimates[,1]) # sd of the MEAN serial intervals
 The 95% range for the mean serial interval is (3.434, 5.01).
 
 
-
+Note, you need to run and save the following figure (part of Figure S1) manually (vs using knitr) for some reason:
 
 ```r
 hist(bestimates[,1],breaks = 10)
@@ -1101,7 +1139,7 @@ bootdf=data.frame(mu=bestimates[,1], sig=bestimates[,2])
 ggplot(bootdf, aes(x=mu, y=sig))+geom_point()
 
 ggplot(bootdf, aes(x=mu))+geom_histogram()
- ggsave(file = "bootst_SI_tianjin.pdf", width = 6, height = 4)
+ ggsave(file = "final_figures/FigS1_bootst_SI_tianjin.pdf", width = 6, height = 4)
 ```
 
 ### R0 estimation
@@ -1122,7 +1160,7 @@ for (n in 1:100) {
 hist(Rs,breaks = 30)
 ```
 
-![](Tianjin_wtables_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
+![](Tianjin_wtables_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
 
 ```r
 mean(Rs)
@@ -1144,7 +1182,7 @@ sd(Rs)
 hist(Rs)
 ```
 
-![](Tianjin_wtables_files/figure-html/unnamed-chunk-24-2.png)<!-- -->
+![](Tianjin_wtables_files/figure-html/unnamed-chunk-26-2.png)<!-- -->
 
 ```r
 quantile(Rs, probs = c(0.025, 0.975))

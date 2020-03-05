@@ -1,6 +1,6 @@
 ---
 title: "Tianjin"
-author: "Caroline Colijn"
+author: "Caroline Colijn, Manu Saraswat, Michelle Coombe"
 date: "25/02/2020"
 output: 
   html_document:
@@ -33,7 +33,7 @@ Thanks to Dongxuan Chen and Louxin Zhang. These data are from three main sources
 
 
 ```{r}
-tdata=read.csv("~/ClustersCOVID19/data/Tianjin135casesFeb22.csv",na.strings = "", stringsAsFactors = F)
+tdata=read.csv("data/Tianjin135casesFeb22.csv",na.strings = "", stringsAsFactors = F)
 tdata$symptom_onset=as.Date(tdata$symptom_onset, format = "%d/%m/%Y")
 tdata$start_source=as.Date(tdata$start_source, format = "%d/%m/%Y")
 tdata$end_source=as.Date(tdata$end_source,format = "%d/%m/%Y" )
@@ -198,27 +198,45 @@ getMeanCI_DF(myfit,myfit_gamma,myfit_lnorm)
 Plot a fit and the KM curve together. 
 
 ```{r}
-days=seq(0,20,by=0.05)
-density=dweibull(days, shape = exp(myfit$coefficients[1]), scale = exp(myfit$coefficients[2]))
-
-ggs = ggsurvplot(
-  fit=survfit(Surv(tdata$minIncTimes, tdata$maxIncTimes, type="interval2")~1, data=tdata), 
-  xlab="Days",  ylab = "Overall probability of no symptoms yet")
-
-pdata <- data.frame(days=rep(days,3),  
-            fitsurv=c(1-pweibull(days, shape = exp(myfit$coefficients[1]), scale = exp(myfit$coefficients[2])),
-        1-pgamma(days,  shape = exp(myfit_gamma$coefficients[1]), scale = exp(myfit_gamma$coefficients[2])),
-        1-plnorm(days,  meanlog = myfit_lnorm$coefficients[1], sdlog = exp(myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(days)), rep("Gamma",length(days)), rep("Lognorm", length(days)) ))  # i know, i know... 
-
-
-tmp=data.frame(days=days,  fitsurv=1-pweibull(days, shape = exp(myfit$coefficients[1]),
-                      scale = exp(myfit$coefficients[2])))
-ggs$plot + geom_line(data = tmp, aes(x = days, y = fitsurv))
+# days=seq(0,20,by=0.05)
+# density=dweibull(days, shape = exp(myfit$coefficients[1]), scale = exp(myfit$coefficients[2]))
+# 
+# ggs = ggsurvplot(
+#   fit=survfit(Surv(tdata$minIncTimes, tdata$maxIncTimes, type="interval2")~1, data=tdata), 
+#   xlab="Days",  ylab = "Overall probability of no symptoms yet")
+# 
+# pdata <- data.frame(days=rep(days,3),  
+#             fitsurv=c(1-pweibull(days, shape = exp(myfit$coefficients[1]), scale = exp(myfit$coefficients[2])),
+#         1-pgamma(days,  shape = exp(myfit_gamma$coefficients[1]), scale = exp(myfit_gamma$coefficients[2])),
+#         1-plnorm(days,  meanlog = myfit_lnorm$coefficients[1], sdlog = exp(myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(days)), rep("Gamma",length(days)), rep("Lognorm", length(days)) ))  # i know, i know... 
+# 
+# 
+# tmp=data.frame(days=days,  fitsurv=1-pweibull(days, shape = exp(myfit$coefficients[1]),
+#                       scale = exp(myfit$coefficients[2])))
+# ggs$plot + geom_line(data = tmp, aes(x = days, y = fitsurv))
 # ggsave(filename = "inc_Tianjin.pdf", width = 8, height = 6)
 ```
 
-### Stratified early and late 
+### Make Figure 3b upper panel (non-stratified) for the manuscript
+This is to plot the Kaplan-Meier survival curve and estimated probability distribution of days post-infection for a case not to be showing symptoms yet (using three possible distributions: weibull, gamma, and log-normal).
+```{r}
+days=seq(0,20,by=0.05)
 
+ggs = ggsurvplot(
+  fit=survfit(Surv(tdata$minIncTimes, tdata$maxIncTimes, type="interval2")~1, data=tdata),
+  xlab="Days",  ylab = "Overall probability of no symptoms yet",palette = 'lancet',legend=c('right'))
+
+pdata <- data.frame(days=rep(days,3),  
+            fitsurv=c(1-pweibull(days, shape = exp(allthree$myfit$coefficients[1]), scale = exp(allthree$myfit$coefficients[2])),
+        1-pgamma(days,  shape = exp(allthree$myfit_gamma$coefficients[1]), scale = exp(allthree$myfit_gamma$coefficients[2])),
+        1-plnorm(days,  meanlog = allthree$myfit_lnorm$coefficients[1], sdlog = exp(allthree$myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(days)), rep("Gamma",length(days)), rep("Lognorm", length(days)) ))  # i know, i know... 
+
+ggs$plot +geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn))
+ ggsave(filename = "final_figures/Fig3b_inc_Tianjin_all.pdf", width = 8, height = 6)
+```
+
+
+### Stratified early and late 
 Finally, we want to do this all again but stratifying the data between early occurring cases and late. This is why we used functions in the above, though it was clumsy. 
 
 ```{r}
@@ -257,17 +275,35 @@ LATE: how variable are these point estimates? Look at mean and 95\% CI
 getMeanCI_DF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
 ```
 
+### Generating Figure 3b (lower panel) for manuscript
+This is to plot the Kaplan-Meier survival curves and estimated probability distribution of days post-infection for a case not to be showing symptoms yet, when stratifying the data pre and post quarantine procedures in China. As per tables above, the symptom onset date of on or before Jan 31, 2020 is the cut-off for what defines an "early" case. 
+```{r}
+#Generating Figure 3 for the paper
+tdays=seq(0,20,by=0.05)
 
+fit1<-survfit(Surv(earlydata$minIncTimes, earlydata$maxIncTimes, type="interval2")~1, data=earlydata)
+fit2<-survfit(Surv(latedata$minIncTimes, latedata$maxIncTimes, type="interval2")~1, data=latedata)
 
+fit <- list(early = fit1, late = fit2)
+ggsp2=ggsurvplot(fit, data = tdata, combine = TRUE, # Combine curves
+             # Clean risk table
+           palette = "lancet",legend.labs=c("Pre-quarantine","Post-quarantine"),legend=c('right'))
 
+pdata <- data.frame(days=rep(tdays,3),  
+            fitsurv=c(1-pweibull(tdays, shape = exp(Eallthree$myfit$coefficients[1]), scale = exp(Eallthree$myfit$coefficients[2])),
+        1-pgamma(tdays, shape = exp(Eallthree$myfit_gamma$coefficients[1]), scale = exp(Eallthree$myfit_gamma$coefficients[2])),
+        1-plnorm(tdays,  meanlog = Eallthree$myfit_lnorm$coefficients[1], sdlog = exp(Eallthree$myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(tdays)), rep("Gamma",length(tdays)), rep("Lognorm", length(tdays)) )) 
+                                                            
+pdata1 <- data.frame(days=rep(tdays,3),  
+            fitsurv=c(1-pweibull(tdays, shape = exp(Lallthree$myfit$coefficients[1]), scale = exp(Lallthree$myfit$coefficients[2])),
+        1-pgamma(tdays,  shape = exp(Lallthree$myfit_gamma$coefficients[1]), scale = exp(Lallthree$myfit_gamma$coefficients[2])),
+        1-plnorm(tdays,  meanlog = Lallthree$myfit_lnorm$coefficients[1], sdlog = exp(Lallthree$myfit_lnorm$coefficients[2]))), distn=c(rep("Weibull", length(tdays)), rep("Gamma",length(tdays)), rep("Lognorm", length(tdays)) )) 
+                                                            
+ggsp2$plot + geom_line(data = pdata, aes(x = days, y = fitsurv, color=distn)) +geom_line(data = pdata1, aes(x = days, y = fitsurv, color=distn)) 
 
-
-
-
-
-
-
-
+ggsave(filename = "final_figures/Fig3b_inc_Tianjin_strata.pdf", width = 8, height = 6)
+#ggsave(filename = "inc_Tianjin_strata.png", width = 8, height = 6)
+```
 
 
 ## Serial interval 
@@ -398,14 +434,14 @@ sd(bestimates[,1]) # sd of the MEAN serial intervals
 The 95% range for the mean serial interval is (`r myest4[1]-1.96*sd(bestimates[,1])`, `r myest4[1]+1.96*sd(bestimates[,1])`).
 
 
-
+Note, you need to run and save the following figure (part of Figure S1) manually (vs using knitr) for some reason:
 ```{r, eval=FALSE}
 hist(bestimates[,1],breaks = 10)
 bootdf=data.frame(mu=bestimates[,1], sig=bestimates[,2])
 ggplot(bootdf, aes(x=mu, y=sig))+geom_point()
 
 ggplot(bootdf, aes(x=mu))+geom_histogram()
- ggsave(file = "bootst_SI_tianjin.pdf", width = 6, height = 4)
+ ggsave(file = "final_figures/FigS1_bootst_SI_tianjin.pdf", width = 6, height = 4)
 ```
 
 ### R0 estimation

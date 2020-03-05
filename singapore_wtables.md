@@ -452,29 +452,27 @@ getMeanCI_DF(myfit,myfit_gamma,myfit_lnorm)
 Here is a plot of the estimated distribution together with the empirical survival curve from the data. This is Figure 3a (upper panel) in the manuscript.
 
 ### Generating figure 3a above panel for paper
+This is to plot the Kaplan-Meier survival curve and estimated probability distribution of days post-infection for a case not to be showing symptoms yet (using three possible distributions: weibull, gamma, and log-normal).
 
 ```r
 spdays <- seq(0,20, by=0.05)
-spdensity <- dweibull(spdays, shape = exp(myfit$coefficients[1]), scale = exp(myfit$coefficients[2]))
-spdens_gamma=dgamma(spdays, shape = exp(myfit_gamma$coefficients[1]), scale = exp(myfit_gamma$coefficients[2]))
-spdens_lnorm=dlnorm(spdays, meanlog = myfit_lnorm$coefficients[1], sdlog = exp(myfit_lnorm$coefficients[2]))
 
 ggsp = ggsurvplot(
 fit=survfit(Surv(spdata$minIncTimes, spdata$maxIncTimes, type="interval2")~1, data=spdata), combine = TRUE,
-xlab="Days",  ylab = "Overall probability of no symptoms yet",palette = "lancet",legend=c('right'))
+xlab="Days",  ylab = "Overall probability of no symptoms yet", palette = "lancet",legend=c('right'))
+
 pdata <- data.frame(days=rep(spdays,3),  
             fitsurv=c(1-pweibull(spdays, shape = exp(myfit$coefficients[1]), scale = exp(myfit$coefficients[2])),
         1-pgamma(spdays,  shape = exp(myfit_gamma$coefficients[1]), scale = exp(myfit_gamma$coefficients[2])),
         1-plnorm(spdays,  meanlog = myfit_lnorm$coefficients[1], sdlog = exp(myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(spdays)), rep("Gamma",length(spdays)), rep("Lognorm", length(spdays)) )) 
                                                             
-
- ggsp$plot+geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn))
+ggsp$plot+geom_line(data = pdata, aes(x = days, y = fitsurv, color=distn))
 ```
 
 ![](singapore_wtables_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 ```r
-  ggsave(filename = "inc_Sing_all.pdf", width = 8, height = 6)
+  ggsave(filename = "final_figures/Fig3_inc_Sing_all.pdf", width = 8, height = 6)
 ```
 
 Finally, we want to do this all again but stratifying the data between early occurring cases and late. 
@@ -551,19 +549,12 @@ getMeanCI_DF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
 ## 3  1.94      1.75      2.18 0.504     0.372     0.684  7.95      6.68      9.38
 ```
 
-### Generating Fig 3a below panel for the paper; 
+### Generating Fig 3a below panel for the paper
+This is to plot the Kaplan-Meier survival curves and estimated probability distribution of days post-infection for a case not to be showing symptoms yet, when stratifying the data pre and post quarantine procedures in China. As per tables above, having a specified last possible exposure date (which are all on or before Jan 30, 2020) is the cut-off for what defines an "early" case. 
 
 ```r
 #generating figure 3 below panel from the paper
 spdays <- seq(0,20, by=0.05)
-spdensity <- dweibull(spdays, shape = exp(Eallthree$myfit$coefficients[1]), scale = exp(Eallthree$myfit$coefficients[2]))
-spdens_gamma=dgamma(spdays, shape = exp(Eallthree$myfit_gamma$coefficients[1]), scale = exp(Eallthree$myfit_gamma$coefficients[2]))
-spdens_lnorm=dlnorm(spdays, meanlog = Eallthree$myfit_lnorm$coefficients[1], sdlog = exp(Eallthree$myfit_lnorm$coefficients[2]))
-
-spdensity_late <- dweibull(spdays, shape = exp(Lallthree$myfit$coefficients[1]), scale = exp(Lallthree$myfit$coefficients[2]))
-spdens_gamma_late=dgamma(spdays, shape = exp(Lallthree$myfit_gamma$coefficients[1]), scale = exp(Lallthree$myfit_gamma$coefficients[2]))
-spdens_lnorm_late=dlnorm(spdays, meanlog = Lallthree$myfit_lnorm$coefficients[1], sdlog = exp(Lallthree$myfit_lnorm$coefficients[2]))
-
 
 fit1<-survfit(Surv(earlydata$minIncTimes, earlydata$maxIncTimes, type="interval2")~1, data=earlydata)
 fit2<-survfit(Surv(latedata$minIncTimes, latedata$maxIncTimes, type="interval2")~1, data=latedata)
@@ -590,14 +581,8 @@ ggsp2$plot + geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn)) +ge
 ![](singapore_wtables_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
 
 ```r
-  ggsave(filename = "inc_Sing_strata.pdf", width = 8, height = 6)
+  ggsave(filename = "final_figures/Fig3_inc_Sing_strata.pdf", width = 8, height = 6)
 ```
-
-
-
-
-
-
 
 
 ## Serial interval 
@@ -1170,9 +1155,9 @@ print(mm[,c(4,3,1,2)])
 
 ```r
 days = seq(from=0, to=10, by=0.1) 
- density= dnorm(days, mean = myestimate[1], sd = myestimate[2])
-ggplot(data=data.frame(days=days, density=density), aes(x=days,y=density)) + geom_line() + ggtitle("ICC estimate of the Singapore cluster serial interval")
-ggsave(file="sing_serialint.pdf", height = 4, width = 6)
+ sp.density= dnorm(days, mean = myest4[1], sd = myest4[2])
+ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) + geom_line() + ggtitle("ICC estimate of the Singapore cluster serial interval")
+#ggsave(file="final_figures/sing_serialint.pdf", height = 4, width = 6)
 ```
 
 I note that the serial interval gets longer if we include more cases per cluster (because the mixture of 4 pathways in Vink et al does not include longer transmission chains, which forces the assumption that everyone in the cluster was infected by the initial case, which in turn lengthens the estimated serial interval). We do not know the true infection pathways but it is reasonable not to constrain the model to enforce that most are infected by the first few cases. 
@@ -1197,17 +1182,41 @@ bestimates = rbind(bestimates, serial_mix_est(data=bdata, N=50, startmu=10, star
 
 
 ```r
+load("sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE 
 hist(bestimates[,1],breaks = 30)
+```
+
+![](singapore_wtables_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
+
+```r
 bootdf=data.frame(mu=bestimates[,1], sig=bestimates[,2])
 ggplot(bootdf, aes(x=mu, y=sig))+geom_point()
+```
+
+![](singapore_wtables_files/figure-html/unnamed-chunk-30-2.png)<!-- -->
+
+```r
 ggplot(bootdf, aes(x=mu))+geom_histogram()
-ggsave(file = "bootst_SI_sing.pdf", width = 6, height = 4)
+```
+
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
+
+![](singapore_wtables_files/figure-html/unnamed-chunk-30-3.png)<!-- -->
+
+```r
+ggsave(file = "final_figures/FigS1_bootst_SI_sing.pdf", width = 6, height = 4)
+```
+
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
 
 
 ```r
-load("sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE 
+#load("sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE 
 mean(bestimates[,1]) 
 ```
 
