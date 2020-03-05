@@ -1,7 +1,9 @@
 ---
 title: "Singapore figures"
 author: "Venus Lau; Lauren Tindale"
-output: html_documenton
+output: 
+  html_document:
+    keep_md: TRUE
 ---
 
 ```{r setup, include=FALSE}
@@ -14,7 +16,7 @@ library(plotly)
 library(scales)
 
 
-data <- read.csv("../data/COVID-19_Singapore.csv", na.strings=c("","NA"))
+data <- read.csv("data/COVID-19_Singapore.csv", na.strings=c("","NA"))
 
 data$date_hospital <- as.Date(data$date_hospital, "%d/%m/%Y")
 data$date_discharge <- as.Date(data$date_discharge, "%d/%m/%Y")
@@ -70,7 +72,7 @@ ggplot() +
   annotate(geom="text", x=as.Date("2020-02-27"), y=62, label="62") 
   
 
-ggsave("Fig1a_case_count_singapore.pdf",plot=p, device="pdf",width = 10,height = 7.4,units="in")
+#ggsave("final_figures/Fig1a_case_count_singapore.pdf",plot=p, device="pdf",width = 10,height = 7.4,units="in")
 
 
 ```

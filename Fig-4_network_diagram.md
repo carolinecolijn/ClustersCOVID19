@@ -1,0 +1,334 @@
+---
+title: "Cluster Network Data Preprocessing & Plotting"
+author: "Emma Garlock; Yen-Hsiang (Brian) Lee"
+date: "18/02/2020"
+updated: "23/02/2020"
+output: 
+  html_document:
+    keep_md: TRUE
+---
+
+
+You can go through this to see how we got the data ready to plot, or skip to line 91 where you can just upload the final dataset and plot it. 
+
+Load all the libraries we will need 
+
+```r
+# getwd()
+library(ggplot2)
+library(tidyverse)
+```
+
+```
+## ── Attaching packages ──────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+```
+
+```
+## ✓ tibble  2.1.3     ✓ dplyr   0.8.3
+## ✓ tidyr   1.0.2     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.4.0
+## ✓ purrr   0.3.3
+```
+
+```
+## ── Conflicts ─────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+```
+
+```r
+library(ggnetwork)
+library(OneR)
+library(igraph)
+```
+
+```
+## 
+## Attaching package: 'igraph'
+```
+
+```
+## The following objects are masked from 'package:dplyr':
+## 
+##     as_data_frame, groups, union
+```
+
+```
+## The following objects are masked from 'package:purrr':
+## 
+##     compose, simplify
+```
+
+```
+## The following object is masked from 'package:tidyr':
+## 
+##     crossing
+```
+
+```
+## The following object is masked from 'package:tibble':
+## 
+##     as_data_frame
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     decompose, spectrum
+```
+
+```
+## The following object is masked from 'package:base':
+## 
+##     union
+```
+
+```r
+library(here)
+```
+
+```
+## here() starts at /Users/Michelle/Documents/R projects for laptop/ClustersCOVID19
+```
+
+```r
+library(viridis)
+```
+
+```
+## Loading required package: viridisLite
+```
+
+```r
+library(paletteer)
+```
+
+## Singapore
+load up all the links we have (just the first two column of the dataframe expanded)
+
+```r
+ncov = read.csv("data/COVID-19_Singapore.csv")
+ncov_sing = ncov[ncov$country == "Singapore", ]
+names(ncov_sing)[1] <- 'CaseID'
+```
+
+
+
+```r
+links_two = ncov_sing[, c(1:2)]
+#links_condense = gather(links_two, key="linktype", value="relations", Related.cases:Cluster.links)
+```
+
+
+```r
+links_exp = separate(links_two, 'Related.cases', paste("relations", 1:7, sep=""), sep=",", extra="drop")
+```
+
+```
+## Warning: Expected 7 pieces. Missing pieces filled with `NA` in 92 rows [1, 2, 3,
+## 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, ...].
+```
+
+```r
+edges = gather(links_exp, rel, link, relations1:relations7) %>% select("CaseID", "link")
+# write.csv(edges,("../data/links_long.csv"))
+```
+make it clear that those links are the edges we will be using. Also omit any of the cases that don't have  links to others in the dataset 
+
+```r
+names(edges) = c("from", "to")
+edges$from = as.character(edges$from)
+edges$from = as.integer(edges$from)
+edges$to = as.character(edges$to)
+edges$to = as.integer(edges$to)
+edges_reduced = edges[!(is.na(edges$to) | edges$to == "" | edges$to == " "), ]
+```
+use this chunk to get rid of duplicate links...somehow
+
+```r
+edges_reduced[1:2] <- t(apply(edges_reduced[1:2], 1, sort))
+edges_dist = select(edges_reduced, from, to)
+edges_dist = distinct(edges_dist)
+```
+
+Load the node info. This basically just supplies the metadata about each of the nodes in the edges df. 
+
+```r
+nodes_sing = ncov_sing
+```
+This chunk does not always have to be run, only if you need to generate a new set of coordinates for the network diagram. If you skip to the chunk below there is a step where you can load n, a df that already has the coordinates you will need 
+
+```r
+cov_net = graph_from_data_frame(edges_dist, vertices = nodes_sing, directed = FALSE)
+n = ggnetwork(cov_net)
+# write.csv(n, "../data/cov_net.csv")
+# saveRDS(n, "../data/cov_net.rds")
+```
+
+Load the dataset that has the coordinates mapped out, also convert the age coumn to an intger so that we can bin it for nice plotting.
+
+```r
+# n = read.csv("../data/cov_net.csv")
+n$age = as.character(n$age)
+n$age = as.integer(n$age)
+n$age_bin = bin(n$age, nbins = 5)
+#write.csv(n, "../data/COVID-19_Singapore_Network_plot.csv")
+```
+Make the plot! 
+We can subset by 
+
+ * age (binned)
+ * cluster 
+ * hospital 
+ * outcomes 
+ * travel_history_location 
+
+```r
+#n=read.csv("data/COVID-19_Singapore_Network_plot.csv")
+cov_net = ggplot(n, aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_edges(aes(), subset(n, Related.cases != ""), linetype="solid") +
+  geom_nodes(aes(color=cluster),size=8) +
+  geom_text(aes(label=name),check_overlap = TRUE) +
+  geom_text(aes(label=name),subset(n, cluster == "Grace Assembly of God"),colour="white",check_overlap = TRUE) +
+  guides(colour = guide_legend(title.position="top", title.hjust = 0.5, override.aes = list(size=3))) +
+  scale_colour_viridis_d(na.value="lightgrey") +
+  labs(color="Cluster")+
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) + #centre main title
+  theme(panel.grid = element_blank(),
+        axis.title = element_blank(),
+        axis.line = element_blank(),
+        axis.text=element_blank(),
+        axis.ticks = element_blank(),
+        panel.border = element_blank(),
+        legend.position = "bottom",
+        legend.direction = "horizontal")
+
+ 
+cov_net
+```
+
+![](Fig-4_network_diagram_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
+
+```r
+#ggsave("final_figures/Fig4a_singapore_static_network.pdf",plot=cov_net,device="pdf",height=8,width=11,units="in")
+```
+
+## Tianjin Data
+
+Using the edges from the Tianjin.Rmd cluster-load the data from that script. 
+
+You can go through this to see how we got the data ready to plot, or skip to line 164 where you can just upload the final dataset and plot it. 
+
+
+```r
+tdata <- read_csv("data/Tianjin135casesFeb22.csv")
+```
+
+```
+## Parsed with column specification:
+## cols(
+##   case_id = col_character(),
+##   gender = col_character(),
+##   age = col_double(),
+##   symptom_onset = col_character(),
+##   symptom_type = col_character(),
+##   confirm_date = col_character(),
+##   Infection_source = col_character(),
+##   start_source = col_character(),
+##   end_source = col_character(),
+##   severity = col_character(),
+##   death = col_character(),
+##   recorrection = col_character(),
+##   notes = col_character()
+## )
+```
+
+```r
+mynodes = tdata$case_id
+edges = data.frame(from=mynodes[9],to=mynodes[21],stringsAsFactors = F ) # i read this one manually 
+for (id in 1:nrow(tdata)) {
+tonode=tdata$case_id[id]
+fromnodes=str_extract_all(tdata$Infection_source[id], "TJ\\d+", simplify = T)
+  if (length(fromnodes)>0) {
+    for (k in 1:length(fromnodes)) {
+      edges=rbind(edges, c(fromnodes[k], tonode))
+    }
+  }
+}
+head(edges)
+```
+
+```
+##   from   to
+## 1  TJ9 TJ21
+## 2  TJ6 TJ11
+## 3  TJ5 TJ12
+## 4  TJ5 TJ13
+## 5  TJ5 TJ16
+## 6  TJ5 TJ17
+```
+
+```r
+edges=edges[-1,]
+edges=edges[-which(is.na(edges[,1])),]
+edges[1:2] <- t(apply(edges[1:2], 1, sort))
+edges_dist = select(edges, from, to)
+edges_dist = distinct(edges_dist)
+```
+get a dataframe with the cleaned up edges, but still some htings need to be cleaned up 
+
+```r
+tdata_cc=read.csv(here("data/tianjin_edges_clean.csv"))
+colnames(tdata_cc)[4]="cluster"
+edges_cleaned=tdata_cc
+edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"coworker ","coworker")
+edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"confirmed patient","unknown")
+edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"not specified","unknown")
+edges_cleaned$edge_list=paste(paste(edges_cleaned$edge1,edges_cleaned$edge2,edges_cleaned$edge3,edges_cleaned$edge4,sep=","))
+```
+
+Make the dataset for plotting , and make a new column that is just the number without the "TJ" to make for better node label 
+
+```r
+tj_net=graph_from_data_frame(edges_dist,vertices = tdata,directed = FALSE)
+ntj=ggnetwork(tj_net)
+edges_cleaned <- rename(edges_cleaned, name = case_id)
+
+ntj_clean=merge(ntj,edges_cleaned,by="name")
+ntj_clean$case_num=as.character(str_extract_all(ntj_clean$name,"\\(?[0-9,.]+\\)?"))
+#write.csv(ntj_clean,here("network_diagram/tianjin_cluster_known_edges.csv"))
+```
+Make the plot 
+
+```r
+#Upload the tianjin_cluster_known_edges.csv for this plot 
+#ntj_clean=read.csv(here("network_diagram/tianjin_cluster_known_edges.csv"))
+tj_cov_net = ggplot(ntj_clean, aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_edges(aes(),linetype="solid",colour="black") +
+  geom_nodes(aes(color=cluster),size=8) +
+  geom_text(aes(label=case_num), check_overlap = TRUE)+
+  geom_text(aes(label=case_num),subset(ntj_clean,cluster==" close contact "),colour="white",check_overlap = TRUE)+
+  scale_color_viridis_d()+
+  labs(color="Cluster")+
+  guides(colour = guide_legend(title.position="top", title.hjust = 0.5, override.aes = list(size=3))) +
+  #ggtitle("Clusters of COVID-19 cases in Tianjin, China")+
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.grid = element_blank(),
+        axis.title = element_blank(),
+        axis.line = element_blank(),
+        axis.text=element_blank(),
+        axis.ticks = element_blank(),
+        panel.border = element_blank(),
+        legend.position = "bottom",
+        legend.direction = "horizontal")
+
+tj_cov_net
+```
+
+![](Fig-4_network_diagram_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+
+```r
+#ggsave("final_figures/Fig4b_tj_static_network.pdf",plot=tj_cov_net,device="pdf",path=here("network_diagram"),height=8,width=11,units="in")
+```

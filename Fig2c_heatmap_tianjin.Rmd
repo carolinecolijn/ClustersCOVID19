@@ -3,6 +3,9 @@
  author: "Venus Lau; Yen-Hsiang (Brian) Lee"
  date: "19/02/2020"
  updated: "23/02/2020"
+ output: 
+  html_document:
+    keep_md: TRUE
  ---
 
 #Preprocessing: formatting table for heatmap
@@ -10,7 +13,7 @@
 ```{r setup, include=FALSE}
 library(tidyverse)
 
-data<-read.table("../data/COVID-19_Tianjin_Heatmap-table.csv", header = TRUE, sep = ",")
+data<-read.table("data/COVID-19_Tianjin_Heatmap-table.csv", header = TRUE, sep = ",")
 
 #data_long <- data %>% gather(key=date, value=status, X1.18.2020:X2.21.2020)
 data_long <- data %>% gather(key=date, value=status, starts_with("X"))
@@ -22,7 +25,7 @@ data_long$date <- gsub('\\.', '\\/', data_long$date)
 data_long$date <- as.Date(data_long$date, "%m/%d/%Y")
 
 
-write.csv(data_long, "../data/tianjin_heatmap_long.csv", row.names=FALSE)
+#write.csv(data_long, "data/tianjin_heatmap_long.csv", row.names=FALSE)
 
 ```
 
@@ -33,7 +36,7 @@ library(ggplot2)
 library(viridis)
 library(plotly)
 
-data <- read.csv("../data/tianjin_heatmap_long.csv")
+data <- read.csv("data/tianjin_heatmap_long.csv")
 data$date <- factor(data$date, levels=unique(data$date))
 data$case <- factor(data$case, levels=unique(data$case))
 
@@ -42,7 +45,7 @@ data$status_word=ifelse(data$status == 0,"Unexposed",
                                 ifelse(data$status == 2,"Symptomatic",
                                        ifelse(data$status == 3,"Confirmed","Dead"))))
 
-write.csv(data, "../data/COVID-19_Tianjin_Heatmap_plot.csv")
+#write.csv(data, "data/COVID-19_Tianjin_Heatmap_plot.csv")
 ```
 
 ```{r }
@@ -105,7 +108,7 @@ p_static=ggplot(
 
 p_static
 
-ggsave("../final_figures/Fig2c_heatmap_tianjin.pdf",plot=p_static, device="pdf",width = 10,height = 11,units="in")
+#ggsave("final_figures/Fig2c_heatmap_tianjin.pdf",plot=p_static, device="pdf",width = 10,height = 11,units="in")
 
 ```
  
