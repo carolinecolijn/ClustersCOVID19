@@ -2,8 +2,9 @@
 
 ## Transmission interval estimates suggest pre-symptomatic spread of COVID-19
 
-This repo contains data and code for estimates of incubation period and serial interval in each of two transmission clusters: Tianjin, China and Singapore. We also estimate R0 and the portino of transmission that is pre-symptomatic. This work is currently under screening at medrxiv.org and has been submitted to a journal. 
+This repo contains data and code for estimates of incubation period and serial interval in each of two transmission clusters: Tianjin, China and Singapore. We also estimate R0 and the portino of transmission that is pre-symptomatic. This work is currently available as a pre-print at medrxiv.org and has been submitted to a journal. 
 
+[Link to preprint](https://medrxiv.org/cgi/content/short/2020.03.03.20029983v1)
 [Link to manuscript draft](COVID_19_Singapore_Tianjin_analysisSUPP-joined.pdf). 
 
 **Abstract**: 
@@ -31,6 +32,8 @@ This repo contains data and code for estimates of incubation period and serial i
 
 ## Summary of work
 The novel Coronavirus Disease, COVID-19, was first identified in Wuhan, Hubei Province, China in December 2019 and has since spread around the globe. It is crucial to identify accurate estimates of parameters that describe the SARS-CoV-2 virus' transmission patterns to understand and control this new pathogen. New, distinct outbreak clusters that report detailed case information (e.g. exposure contact networks and timing of symptom onset) are ideal for understanding how COVID-19 can spread through a population with no prior exposure to the virus. In our analysis we estimate the serial interval (i.e. the time between symptom onset in a primary case to symptom onset in a successive case in the chain of transmission) and incubation period (i.e. the time between infection and symptom onset) from two COVID-19 outbreak locations: Singapore and Tianjin, China. Using these parameters we are able to infer the basic reproductive number (R0) and identify the extent of the pre-symptomatic transmission (i.e. transmission that occurs prior to a patient displaying clinical symptoms). Our analysis suggest that there is substantial pre-symptomatic transmission, as the serial interval is shorter than incubation period by 2-4 days, and that stopping half the transmission events may be sufficient to control outbreaks, as R0 is approximately 2 in both populations.
+
+It is also important to note that the true source of infection is often unknowable, and that the relationships used between cases in infection clusters are "best guesses". How changing these relationship estimates affects the epidemiological parameters is a topic the team aims to investigate further in the future.
 
 This analysis originated from work begun at EpiCoronaHack which took place at Simon Fraser University, BC, Canada on Feb 18-19, 2020. The work began by compiling data on Singapore and Tianjin COVID-19 cases into a matrix, and has resulted in a Shiny App ([go to Shiny App folder](/Shiny)), which uses a heatmap to visualize the disease progression timeline of cases in each population, as well as a manuscript detailing results of statistical analyses. 
 
