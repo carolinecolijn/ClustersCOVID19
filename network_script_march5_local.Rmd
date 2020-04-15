@@ -1,0 +1,363 @@
+---
+title: "Cluster Network Data Preprocessing & Plotting"
+author: "Emma Garlock; Yen-Hsiang (Brian) Lee"
+date: "18/02/2020"
+updated: "23/02/2020"
+output: html_document
+---
+
+
+You can go through this to see how we got the data ready to plot, or skip to line 91 where you can just upload the final dataset and plot it. 
+
+Load all the libraries we will need 
+```{r}
+# getwd()
+library(ggplot2)
+library(tidyverse)
+library(ggnetwork)
+library(OneR)
+library(igraph)
+library(here)
+library(viridis)
+library(paletteer)
+```
+
+load up all the links we have (just the first two column of the dataframe expanded)
+```{r}
+#ncov = read.csv("../data/COVID-19_Singapore.csv")
+ncov=read.csv(file.choose())#just using this for the one time on March5th, 2020
+# ncov=read.csv("../../Data/COVID-19_Singapore.csv")
+ncov_sing = ncov[ncov$country == "Singapore", ]
+names(ncov_sing)[1] <- 'CaseID'
+```
+
+
+```{r}
+links_two = ncov_sing[, c(1:2)]
+#links_condense = gather(links_two, key="linktype", value="relations", Related.cases:Cluster.links)
+
+```
+
+```{r}
+links_exp = separate(links_two, 'Related.cases', paste("relations", 1:7, sep=""), sep=",", extra="drop")
+edges = gather(links_exp, rel, link, relations1:relations7) %>% select("CaseID", "link")
+# write.csv(edges,("../data/links_long.csv"))
+```
+make it clear that those links are the edges we will be using. Also omit any of the cases that don't have  links to others in the dataset 
+```{r}
+names(edges) = c("from", "to")
+edges$from = as.character(edges$from)
+edges$from = as.integer(edges$from)
+edges$to = as.character(edges$to)
+edges$to = as.integer(edges$to)
+edges_reduced = edges[!(is.na(edges$to) | edges$to == "" | edges$to == " "), ]
+
+```
+use this chunk to get rid of duplicate links...somehow
+```{r}
+edges_reduced[1:2] <- t(apply(edges_reduced[1:2], 1, sort))
+edges_dist = select(edges_reduced, from, to)
+edges_dist = distinct(edges_dist)
+
+```
+
+
+
+
+Load the node info. This basically just supplies the metadata about each of the nodes in the edges df. 
+```{r}
+nodes_sing = ncov_sing
+```
+This chunk does not always have to be run, only if you need to generate a new set of coordinates for the network diagram. If you skip to the chunk below there is a step where you can load n, a df that already has the coordinates you will need 
+```{r}
+cov_net = graph_from_data_frame(edges_dist, vertices = nodes_sing, directed = FALSE)
+n = ggnetwork(cov_net)
+# write.csv(n, "../data/cov_net.csv")
+# saveRDS(n, "../data/cov_net.rds")
+```
+
+Load the dataset that has the coordinates mapped out, also convert the age coumn to an intger so that we can bin it for nice plotting.
+```{r}
+# n = read.csv("../data/cov_net.csv")
+n$age = as.character(n$age)
+n$age = as.integer(n$age)
+n$age_bin = bin(n$age, nbins = 5)
+#write.csv(n, "../data/COVID-19_Singapore_Network_plot.csv")
+```
+Make the plot! 
+We can subset by 
+
+ * age (binned)
+ * cluster 
+ * hospital 
+ * outcomes 
+ * travel_history_location 
+```{r}
+#n=read.csv("../data/COVID-19_Singapore_Network_plot.csv")
+cov_net = ggplot(n, aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_edges(aes(), linetype="solid") +
+  geom_nodes(aes(color=cluster),size=8) +
+  geom_text(aes(label=name),check_overlap = TRUE) +
+  geom_text(aes(label=name),subset(n, cluster == "Grace Assembly of God"),colour="white",check_overlap = TRUE) +
+  guides(colour = guide_legend(title.position="top", title.hjust = 0.5, override.aes = list(size=3))) +
+  scale_colour_viridis_d(na.value="lightgrey") +
+  labs(color="Cluster")+
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) + #centre main title
+  theme(panel.grid = element_blank(),
+        axis.title = element_blank(),
+        axis.line = element_blank(),
+        axis.text=element_blank(),
+        axis.ticks = element_blank(),
+        panel.border = element_blank(),
+        legend.position = "bottom",
+        legend.direction = "horizontal")
+
+ 
+cov_net
+#ggsave("../final_figures/Fig4a_singapore_static_network.pdf",plot=cov_net,device="pdf",height=8,width=11,units="in")
+```
+## You can use the sript below to create a weighted network plot. This allows us to have everything arranged spatially but only maintain the links in the `Related Cases` column when rendering the visualization. 
+Trying to make weighted edges 
+
+or you can go down to line 150 and upload the appropriate data 
+```{r}
+w_edge=ncov[,c(1:3)]
+names(w_edge)=c("CaseID","2","1")
+w_edge[w_edge==""] <- NA
+w_edge_long=pivot_longer(w_edge,cols=c("2","1"),names_to="weight")%>% 
+  separate( 'value', paste("relations", 1:22, sep=""), sep=",", extra="drop")%>%
+  pivot_longer(cols=relations1:relations22,names_to="relation")%>%
+  select(CaseID,value,weight)%>%
+  filter(value !=" " | !is.na(value) |value !="")
+
+names(w_edge_long)=c("from","to","weight")
+w_edge_long$to=gsub("^\\s+|\\s+$", "",w_edge_long$to)
+w_edge_long=w_edge_long[w_edge_long$from !="53",]
+
+
+```
+
+
+```{r}
+cov_weighted=graph_from_data_frame(w_edge_long, vertices = nodes_sing, directed = FALSE)
+cov_net_weight=ggnetwork(cov_weighted)
+#write.csv(cov_net_weight,here("singapore_weighted_network.csv"))
+```
+
+
+```{r}
+cov_net_weight=read.csv(here("singapore_weighted_network.csv"))
+cov_net_w = ggplot(cov_net_weight, aes(x = x, y = y, xend = xend, yend = yend)) +
+  geom_edges(aes(), subset(cov_net_weight,weight==2),linetype="solid") +
+  geom_nodes(aes(color=cluster),size=8) +
+  geom_text(aes(label=name),check_overlap = TRUE) +
+  geom_text(aes(label=name),subset(cov_net_weight, cluster == "Grace Assembly of God"),colour="white",check_overlap = TRUE) +
+  guides(colour = guide_legend(title.position="top", title.hjust = 0.5, override.aes = list(size=3))) +
+  scale_colour_viridis_d(na.value="lightgrey") +
+  labs(color="Cluster")+
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) + #centre main title
+  theme(panel.grid = element_blank(),
+        axis.title = element_blank(),
+        axis.line = element_blank(),
+        axis.text=element_blank(),
+        axis.ticks = element_blank(),
+        panel.border = element_blank(),
+        legend.position = "bottom",
+        legend.direction = "horizontal")
+cov_net_w
+
+```
+
+
+####Tianjin Data####
+
+Using the edges from the Tianjin.Rmd cluster-load the data from that script. 
+
+You can go through this to see how we got the data ready to plot, or skip to line 164 where you can just upload the final dataset and plot it. 
+
+```{r}
+mynodes = tdata$case_id
+edges = data.frame(from=mynodes[9],to=mynodes[21],stringsAsFactors = F ) # i read this one manually 
+for (id in 1:nrow(tdata)) {
+tonode=tdata$case_id[id]
+fromnodes=str_extract_all(tdata$Infection_source[id], "TJ\\d+", simplify = T)
+  if (length(fromnodes)>0) {
+    for (k in 1:length(fromnodes)) {
+      edges=rbind(edges, c(fromnodes[k], tonode))
+    }
+  }
+}
+head(edges)
+edges=edges[-1,]
+edges=edges[-which(is.na(edges[,1])),]
+edges[1:2] <- t(apply(edges[1:2], 1, sort))
+edges_dist = select(edges, from, to)
+edges_dist = distinct(edges_dist)
+```
+get a dataframe with the cleaned up edges, but still some htings need to be cleaned up 
+```{r}
+tdata_cc=read.csv(here("tianjin_edges_clean.csv"))
+colnames(tdata_cc)[4]="cluster"
+edges_cleaned=tdata_cc
+edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"coworker ","coworker")
+edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"confirmed patient","unknown")
+edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"not specified","unknown")
+edges_cleaned$edge_list=paste(paste(edges_cleaned$edge1,edges_cleaned$edge2,edges_cleaned$edge3,edges_cleaned$edge4,sep=","))
+
+```
+
+Make the dataset for plotting , and make a new column that is just the number without the "TJ" to make for better node label 
+```{r}
+tj_net=graph_from_data_frame(edges_dist,vertices = tdata,directed = FALSE)
+ntj=ggnetwork(tj_net)
+
+ntj_clean=merge(ntj,edges_cleaned,by="name")
+ntj_clean$case_num=as.character(str_extract_all(ntj_clean$name,"\\(?[0-9,.]+\\)?"))
+#write.csv(ntj_clean,here("network_diagram/tianjin_cluster_known_edges.csv"))
+
+```
+Make the plot 
+```{r}
+#Upload the tianjin_cluster_known_edges.csv for this plot 
+#ntj_clean=read.csv(here("network_diagram/tianjin_cluster_known_edges.csv"))
+tj_cov_net = ggplot(ntj_clean, aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_edges(aes(),linetype="solid",colour="black") +
+  geom_nodes(aes(color=cluster),size=8) +
+  geom_text(aes(label=case_num), check_overlap = TRUE)+
+  geom_text(aes(label=case_num),subset(ntj_clean,cluster==" close contact "),colour="white",check_overlap = TRUE)+
+  scale_color_viridis_d()+
+  labs(color="Cluster")+
+  guides(colour = guide_legend(title.position="top", title.hjust = 0.5, override.aes = list(size=3))) +
+  #ggtitle("Clusters of COVID-19 cases in Tianjin, China")+
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.grid = element_blank(),
+        axis.title = element_blank(),
+        axis.line = element_blank(),
+        axis.text=element_blank(),
+        axis.ticks = element_blank(),
+        panel.border = element_blank(),
+        legend.position = "bottom",
+        legend.direction = "horizontal")
+
+tj_cov_net
+
+#ggsave("../final_figures/Fig4b_tj_static_network.pdf",plot=tj_cov_net,device="pdf",path=here("network_diagram"),height=8,width=11,units="in")
+```
+Ideally I can get the network diagram to cluster accoring to the broader clusters and not jsut based on the known conncections. It doesn't change the information, just shows it in a much nicer way. So we won't use the list of edges generated above, but we will use that list to confirm the accuracy of the new diagram. 
+
+Extract the known contacts from the large dataset-same procedure used above. Need to clean up some of the cells, removing white spaces and such (196)
+```{r}
+#tj=read.csv(here("Clustering/Tianjin135casesFeb22.csv"))
+edges_unclean2=tdata
+edges_unclean2$close_conn=str_extract_all(edges_unclean2$Infection_source, regex("TJ\\d+"))
+edges_unclean2$close_conn=ifelse(edges_unclean2$close_conn=="character(0","NA",as.character(edges_unclean2$close_conn))
+edges_unclean2$close_conn=gsub("^c\\(|\\)$", "", edges_unclean2$close_conn)
+
+head(edges_unclean2)
+#write.csv(edges_unclean,here("Clustering/tianjin_edges.csv"))
+```
+
+Need to clean up the cluster names (207-209) and make al ist of the known contacts (210) then merge them with the full datatset so that we can include the cleaned cluster names (after this block called infection_source_named)
+
+```{r}
+tdata_cc=read.csv(here("tianjin_edges_clean.csv"))
+colnames(tdata_cc)[4]="cluster"
+edges_cleaned=tdata_cc
+edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"coworker ","coworker")
+edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"confirmed patient","unknown")
+edges_cleaned$cluster=str_replace(edges_cleaned$cluster,"not specified","unknown")
+edges_cleaned$edge_list=paste(paste(edges_cleaned$edge1,edges_cleaned$edge2,edges_cleaned$edge3,edges_cleaned$edge4,sep=","))
+
+
+edges_full_df=merge(edges_cleaned,edges_unclean2,by="case_id")
+edges_full=edges_full_df[,c(1,4,22)]
+colnames(edges_full)[2]="infection_source_named"
+
+
+```
+
+make a list of all the fifferent clusters and make a bunch of lists of all the different cases located within those clusters 
+```{r}
+cluster_list=(unique(edges_cleaned$cluster))
+for (c in cluster_list){
+  assign(paste0("list",c),edges_cleaned[edges_cleaned$cluster==c,2])
+}
+
+
+```
+assign a cluster list (made above) to each row based on what cluster they belong to 
+```{r}
+
+edges_full$cluster_list=ifelse(edges_full$infection_source_named=="Wuhan",list(as.character(listWuhan)),
+                            ifelse(edges_full$infection_source_named=="Wuhan; train import",list(as.character(`listWuhan; train import`)),
+                            ifelse(edges_full$infection_source_named=="unkown","NA",
+                            ifelse(edges_full$infection_source_named=="travel",list(as.character(`listtravel `)),
+                            ifelse(edges_full$infection_source_named=="train",list(as.character(listtrain)),
+                            ifelse(edges_full$infection_source_named=="mall",list(as.character(listmall)),
+                            ifelse(edges_full$infection_source_named=="Hubei",list(as.character(listHubei)), 
+                            ifelse(edges_full$infection_source_named=="coworker",list(as.character(listcoworker)),
+                            ifelse(edges_full$infection_source_named==" close contact ","NA","NA")))))))))
+                                
+```
+Clean up the lists since they have brackets and quotation marks and other strange characters or things that will mess up the analysis 
+```{r}
+
+edges_reduced=edges_full
+names(edges_reduced)=c("case_id","infection_source_named","edge_list","cluster_list")
+edges_reduced$cluster_list=ifelse(edges_reduced$cluster_list=="NA",as.character(edges_reduced$edge_list),as.character(edges_reduced$cluster_list))
+edges_reduced$cluster_list=as.character(edges_reduced$cluster_list)
+edges_reduced$cluster_list=gsub("^c\\(|\\)$", "", edges_reduced$cluster_list)
+edges_reduced$cluster_list=gsub('"', "", edges_reduced$cluster_list)
+```
+separate each list so that we can convert it to long format, then replace the character(0 that has been hanging around 
+```{r}
+edges_long=separate(edges_reduced, 'cluster_list', paste("relations", 1:31, sep=""),sep=",",extra="drop")%>%select(-edge_list)
+edges_exp_long_na=gather(edges_long, rel, link, relations1:relations31)%>%select(-rel)
+edges_exp_long_na$link=ifelse(edges_exp_long_na$link=="character(0","NA",as.character(edges_exp_long_na$link))
+```
+Remove the NAs, blaks and character "NA,  subset to get the edge list, remove white spaces, and remove and duplicate edges 
+```{r}
+edges_exp_long = edges_exp_long_na[!(is.na(edges_exp_long_na$link) | edges_exp_long_na$link == "NA" | edges_exp_long_na$link == ""),]
+edges_exp_long=edges_exp_long[,c(1,3)]
+names(edges_exp_long)=c("from","to")
+edges_exp_long=as.data.frame(apply(edges_exp_long,2,function(x)gsub('\\s+', '',x)))
+edges_exp_long[1:2] <- t(apply(edges_exp_long[1:2], 1, sort))
+edges_dist_full = distinct(edges_exp_long)
+
+```
+            
+make the dataset for network plotting, but remove the first column because that is just an index column. also make a new coumn that is just the case number without the "TJ" so that it plots better as a node label        
+```{r}
+tdata_cc=tdata_cc[,-1]
+tj_net_ic=graph_from_data_frame(edges_dist_full,vertices = edges_full_df,directed = FALSE)
+ntj_ic=ggnetwork(tj_net_ic)
+
+ntj_ic$case_num=str_extract_all(ntj_ic$name,"\\(?[0-9,.]+\\)?")
+ntj_ic$edge1 <- gsub('\\s+', '', ntj_ic$edge1)
+
+
+#write.csv(ntj_ic,here("Clustering/network_diagram/tianjin_cluster_all_edges.csv"))
+
+```
+Make the plot, try and have only the edges that are known connections showing. 
+```{r}
+#upload tianjin_cluster_all_edges.csv for this plot
+tj_cov_net_ic = ggplot(ntj_ic, aes(x = x, y = y, xend = xend, yend = yend))+
+  geom_edges(aes(),subset(ntj_ic,edge_list!=",,,"),linetype="solid",colour="black") +
+  geom_nodes(aes(color=cluster),size=8) +
+  geom_text(aes(label=case_num))+
+  geom_text(aes(label=case_num), subset(ntj_ic,cluster==" close contact "),colour="white")+
+  scale_color_viridis_d()+
+  ggtitle("Clusters of COVID-19 cases in Tianjin, China")+
+  theme_blank()
+
+tj_cov_net_ic
+
+#ggsave("tianjin_cluster_feb28v1.png",plot=tj_cov_net_ic,device="png",path=here("Clustering/network_diagram"))
+```
+
+This is not wokring yet, when double checking wiht the egdes_dist list from above, we are still not having some show up and the network is not being made properly 
+
