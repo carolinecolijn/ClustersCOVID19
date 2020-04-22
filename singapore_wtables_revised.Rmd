@@ -84,7 +84,7 @@ Then, if no other end time for the exposure is given or if the end of the exposu
 
 ```{r}
 spdata$end_source = spdata$last_poss_exposure # 1 above 
-(method1 <- sum(!is.na(spdata$end_source))) #20 cases can have date of last possible exposure estimated by this method
+(method1 <- sum(!is.na(spdata$end_source))) #20 cases can have date of last possible exposure provided by known end of exposure window
 
 eps=4
 hasPresInf = which(is.na(spdata$last_poss_exposure) & !(is.na(spdata$symp_presumed_infector))) # 2 above 
@@ -304,7 +304,7 @@ Finally, we want to do this all again but stratifying the data between early occ
 
 ```{r}
 earlydata = spcopy[which(spcopy$has_last ==TRUE),]
-range(earlydata$last_poss_exposure, na.rm = T)  #Dates range from 
+range(earlydata$last_poss_exposure, na.rm = T)  #Dates range from "2020-01-18" to "2020-01-30"
 
 latedata=spcopy[which(spcopy$has_last==FALSE),]
 range(latedata$last_poss_exposure, na.rm = T) #These cases do not have a date of last possible exposure
@@ -468,7 +468,6 @@ Now we estimate the serial interval using the ICC method; for this we first cons
 
 
 ```{r}
-
 sgraph = graph_from_edgelist(as.matrix(fedges[,1:2]), directed = FALSE)
 ccs=components(sgraph)
 
@@ -591,16 +590,51 @@ This section is to determine what impact dividing the dataset based on "early" c
 #Date range of Singapore dataset
 range(earlydata$last_poss_exposure, na.rm = T) #All before Jan 31st, as with Tianjin dataset
 range(latedata$last_poss_exposure, na.rm = T) #Not applicable, as these cases don't have this info
-range(earlydata$date_onset_symptoms, na.rm = T)
+range(earlydata$date_onset_symptoms, na.rm = T) 
 range(latedata$date_onset_symptoms, na.rm = T)
   #Hmm...that's interesting that there is overlap between the two groups
 
-# earlynew <- filter(spdata, date_onset_symptoms <= as.Date("2020-01-31")) #38 cases
-# latenew <- filter(spdata, date_onset_symptoms > as.Date("2020-01-31")) #43 cases
+# earlynew <- filter(spcopy, date_onset_symptoms <= as.Date("2020-01-31")) #38 cases
+# range(earlynew$date_onset_symptoms) #"2020-01-20" "2020-01-31"
+# latenew <- filter(spcopy, date_onset_symptoms > as.Date("2020-01-31")) #43 cases
+# range(latenew$date_onset_symptoms) #"2020-02-01" "2020-02-16"
+
+#If we want to try the following code with the new split based on date of symptom onset
+# earlyprev <- earlydata
+# lateprev <- latedata
+# earlydata <- earlynew
+# latedata <- latenew
+
+#Can do dotplots to explore the distribution of disease progression dates in our dataset
+sp.dotplot <- spdata %>% 
+                  select(c("CaseID", "date_onset_symptoms", "presumed_infected_date", "last_poss_exposure")) %>% 
+                  pivot_longer(cols = c("date_onset_symptoms", "presumed_infected_date", "last_poss_exposure"),
+                               names_to = "disease.progression",
+                               values_to = "dates") %>% 
+                  mutate(CaseID = as.factor(CaseID),
+                         disease.progression = as.factor(disease.progression))
+
+dotplot.key <- data.frame(dz.prog = c("date_onset_symptoms", "last_poss_exposure", "presumed_infected_date"),
+                          dz.cols = c("darkred", "snow4", "steelblue"),
+                          dz.shapes = c(1, 0, 4))
+
+ggplot(sp.dotplot, aes(x = dates, y = CaseID)) +
+  geom_point(aes(shape = disease.progression, color = disease.progression), size = 2) +
+  geom_vline(xintercept = ymd("2020-01-31"), color = "steelblue") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1),
+        #axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_line(color = "grey90", linetype = "dashed")) +
+  scale_x_date(date_breaks = "1 day") +
+  scale_color_manual(values = dotplot.key$dz.cols) +
+  scale_shape_manual(values = dotplot.key$dz.shapes)
+
 
 #But as these are different ways of defining early and late, let's just continue with our 
   #prior definition of "early" and "late" for Singapore for now
-
 ```
 
 Determine relationships between infectees and putative infectors by defining 'nodes' (= individuals; indicated by the CaseID of that row) and 'edges' (= relationships; indicate by the related_cases column in that lists the cases who are known possible sources of infection for that node) in both the early and late datasets.
