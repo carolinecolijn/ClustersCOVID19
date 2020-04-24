@@ -1,5 +1,9 @@
+#Ignore R Studio files that can overwrite on multiple users computers
 *.DS_Store
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+
+#Ignore output and files used for trouble-shooting coding
+**/Testing

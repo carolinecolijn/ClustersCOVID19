@@ -16,7 +16,6 @@ library(lubridate)
 library(icenReg)
 library(igraph)
 library(visNetwork)
-library(stringr)
 library(mvtnorm)
 options(digits=3)
 set.seed(3456)
@@ -61,7 +60,7 @@ range(spdata$date_discharge, na.rm = T)
 spdata$symp_presumed_infector[spdata$CaseID == 79] <- ymd("2020-02-10")
 # Change symp_presumed_infector to Feb 10, 2020 (date of symptom onset from caseID 72, the presumed infector)
 
-#TODO: TRY SOME IMPUTATION METHODS HERE AND SEE HOW IT AFFECTS RESULTS
+#TODO: Make a new script with imputed data for all those that do not have info on data of symptom onset
 spdata <- filter(spdata, !is.na(date_onset_symptoms)) #Remove all the cases that do not have info on date of symptom onset 
 # NOTE NOTE 12 of these, but they have a date of confiramation and dates of presumed infection - COULD FIX 
 ```
@@ -296,22 +295,102 @@ pdata <- data.frame(days=rep(spdays,3),
         1-plnorm(spdays,  meanlog = myfit_lnorm$coefficients[1], sdlog = exp(myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(spdays)), rep("Gamma",length(spdays)), rep("Lognorm", length(spdays)) )) 
                                                             
 ggsp$plot+geom_line(data = pdata, aes(x = days, y = fitsurv, color=distn))
-  ggsave(filename = "final_figures/Fig3_inc_Sing_all.pdf", width = 8, height = 6)
+#  ggsave(filename = "final_figures/Fig3_inc_Sing_all.pdf", width = 8, height = 6)
 ```
 
-Finally, we want to do this all again but stratifying the data between early occurring cases and late. 
-
+### Finally, we want to do this all again but stratifying the data between early occurring cases and late. 
 
 ```{r}
-earlydata = spcopy[which(spcopy$has_last ==TRUE),]
-range(earlydata$last_poss_exposure, na.rm = T)  #Dates range from "2020-01-18" to "2020-01-30"
+### Stratifying based on "early" = has a date of last exposure vs. "late" = does not have a date of last exposure
+# earlydata = spcopy[which(spcopy$has_last ==TRUE),]
+# range(earlydata$last_poss_exposure, na.rm = T)  #Dates range from "2020-01-18" to "2020-01-30"
 
-latedata=spcopy[which(spcopy$has_last==FALSE),]
-range(latedata$last_poss_exposure, na.rm = T) #These cases do not have a date of last possible exposure
+# latedata=spcopy[which(spcopy$has_last==FALSE),]
+# range(latedata$last_poss_exposure, na.rm = T) #These cases do not have a date of last possible exposure
+
+#Date range of Singapore dataset
+# range(earlydata$last_poss_exposure, na.rm = T) #All before Jan 31st, as with Tianjin dataset
+# range(latedata$last_poss_exposure, na.rm = T) #Not applicable, as these cases don't have this info
+# range(earlydata$date_onset_symptoms, na.rm = T) 
+# range(latedata$date_onset_symptoms, na.rm = T)
+    #Hmm...that's interesting that there is overlap between the two groups
+
+### Stratifying based on "early" = has date_onset_symptoms on or before Jan 31, 2020 vs. "late" = has date_onset_symptoms after Jan 31, 2020
+# earlydos <- filter(spcopy, date_onset_symptoms <= as.Date("2020-01-31")) #38 cases
+# range(earlynew$date_onset_symptoms) #"2020-01-20" "2020-01-31"
+# latedos <- filter(spcopy, date_onset_symptoms > as.Date("2020-01-31")) #43 cases
+# range(latenew$date_onset_symptoms) #"2020-02-01" "2020-02-16"
+
+#If we want to try the following code with the new split based on date of symptom onset
+# earlyprev <- earlydata
+# lateprev <- latedata
+# earlydata <- earlydos
+# latedata <- latedos
+
+###Can do dotplots to explore the distribution of disease progression dates in our dataset
+sp.dotplot <- spdata %>% 
+                  select(c("CaseID", "date_onset_symptoms", "presumed_infected_date", "last_poss_exposure")) %>% 
+                  pivot_longer(cols = c("date_onset_symptoms", "presumed_infected_date", "last_poss_exposure"),
+                               names_to = "disease.progression",
+                               values_to = "dates") %>% 
+                  mutate(CaseID = as.factor(CaseID),
+                         disease.progression = as.factor(disease.progression))
+
+dotplot.key <- data.frame(dz.prog = c("date_onset_symptoms", "last_poss_exposure", "presumed_infected_date"),
+                          dz.cols = c("darkred", "snow4", "steelblue"),
+                          dz.shapes = c(1, 0, 4))
+
+ggplot(sp.dotplot, aes(x = dates, y = CaseID)) +
+  geom_point(aes(shape = disease.progression, color = disease.progression), size = 2) +
+  geom_vline(xintercept = ymd("2020-01-31"), color = "steelblue") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1),
+        #axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_line(color = "grey90", linetype = "dashed")) +
+  scale_x_date(date_breaks = "1 day") +
+  scale_color_manual(values = dotplot.key$dz.cols) +
+  scale_shape_manual(values = dotplot.key$dz.shapes)
+    #The 75 missing values are from the 'last_poss_exposure' column
+```
+
+Hmmm; when do data exploration with dotplot above and visNetwork graphs below, it seems that splitting up the data by date of symptom onset on/before Jan 31 greatly affects the serial interval estimates, likely because it is splitting up the contact path through the largest cluster (Life Church and Grace Assembly groups) between the datasets and thus underestimating possible range of date of symptom onset between infector and infectee. Perhaps a more accurate way to capture differences between "early" and "late" cases in Singapore is through presumed reason for infection: travel from Wuhan (which would have occurred prior to implementation of more strict isolation and distancing procedures) and those from other sources (i.e. known contact with another confirmed COVID-19 case, or association with a group gathering). **Note that the "late" dataset isn't actually later in the timing of the outbreak as the range of date of symptom onset is from Jan 21 to Feb 16, 2020.** However, the epidemiological factors influencing serial interval could differ in Wuhan vs. Singapore, so seems like a more meaningful split.
+
+However, this split is also not without its own possible biases. For instance, we only have the date of the last possible exposure (vs. earliest possible exposure) and the potential for missclassification in the presumed source of infection (i.e. as there maybe other cases that traveled to Wuhan but were presumed to be infected through a gathering at a church or through contact with another known case). It also means that there are far more cases in the "late" dataset that includes all social relationships vs. the "early" dataset that includes only known Wuhan travel.  
+
+```{r}
+### Need to group based on presumed source of infection
+# Turn 'presumed_reason' into lower case and get trim any whitespace so don't have issues with case sensitivity, etc
+spcopy$presumed_reason <- str_to_lower(spcopy$presumed_reason)
+spcopy$presumed_reason <- str_trim(spcopy$presumed_reason)
+table(spcopy$presumed_reason)
+sum(is.na(spcopy$presumed_reason)) #14 NAs
+# Make a new column where we group the 'presumed_reason' under a label (known relationship, gathering, wuhan travel) for each of the above three groups
+spcopy <- mutate(spcopy, presumed_reason_group = case_when(!is.na(str_match(presumed_reason, "symptom onset|via")) ~ "Known relationship",
+                                                           !is.na(str_match(presumed_reason, "grace")) ~ "Grace Assembly of God",
+                                                           !is.na(str_match(presumed_reason, "grand")) ~ "Grand Hyatt Singapore",
+                                                           !is.na(str_match(presumed_reason, "life")) ~ "Life Church",
+                                                           !is.na(str_match(presumed_reason, "seletar")) ~ "Seletar Aerospace Heights",
+                                                           !is.na(str_match(presumed_reason, "yong")) ~ "Yong Thai Hang",
+                                                           !is.na(str_match(presumed_reason, "wuhan|airport")) ~ "Wuhan travel", #'airport' case (CaseID 17) does not have 'wuhan' in reason but does have it under 'Case' column that they are from Wuhan
+                                                           is.na(presumed_reason) ~ "Unknown",
+                                                           TRUE ~ "other")) #should not be any other, so is just a double check this has run correctly, especially as dataset grows
+table(spcopy$presumed_reason_group)
+
+
+### Now split into "early" and "late" datasets 
+  #based on presumed reason for infection being Wuhan travel ("early") vs. non-Wuhan or travel related ("late")
+earlydata <- filter(spcopy, presumed_reason_group == "Wuhan travel") #17 cases
+range(earlydata$date_onset_symptoms) #"2020-01-20" "2020-01-30"
+
+latedata <- filter(spcopy, presumed_reason_group != "Wuhan travel") #64 cases
+range(latedata$date_onset_symptoms) #"2020-01-21" "2020-02-16"
 ```
 
 
-Fit to the three distributions: 
+Fit early and late data to the three distributions:
 
 ```{r}
 Eallthree=getthreefits(earlydata)
@@ -368,7 +447,7 @@ pdata1 <- data.frame(days=rep(spdays,3),
         1-plnorm(spdays,  meanlog = Lallthree$myfit_lnorm$coefficients[1], sdlog = exp(Lallthree$myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(spdays)), rep("Gamma",length(spdays)), rep("Lognorm", length(spdays)) )) 
                                                             
 ggsp2$plot + geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn)) +geom_line(data = pdata1, aes(x = days, y = fitsurv,color=distn)) 
-  ggsave(filename = "final_figures/Fig3_inc_Sing_strata.pdf", width = 8, height = 6)
+#  ggsave(filename = "final_figures/Fig3_inc_Sing_strata.pdf", width = 8, height = 6)
 ```
 
 
@@ -390,24 +469,29 @@ The dataset has several instances where a putative infector or contact is known.
 
 ```{r}
 spnodes <- spdata$CaseID
+
 ## How to extract caseIDs from related_cases column - there are multiple values in some cells, separated by commas
 spdata$related_cases #7 max within one cell
+
 # Split into separate columns
 spdata <- separate(spdata,
-col = related_cases,
-into = paste("contactID", 1:7, sep = "_"),
-fill = "right")
+                      col = related_cases,
+                      into = paste("contactID", 1:7, sep = "_"),
+                      fill = "right")
+
 # Turn into numeric values
 spdata <- mutate(spdata, 
-contactID_1 = as.numeric(contactID_1),
-contactID_2 = as.numeric(contactID_2),
-contactID_3 = as.numeric(contactID_3),
-contactID_4 = as.numeric(contactID_4),
-contactID_5 = as.numeric(contactID_5),
-contactID_6 = as.numeric(contactID_6),
-contactID_7 = as.numeric(contactID_7))
+                    contactID_1 = as.numeric(contactID_1),
+                    contactID_2 = as.numeric(contactID_2),
+                    contactID_3 = as.numeric(contactID_3),
+                    contactID_4 = as.numeric(contactID_4),
+                    contactID_5 = as.numeric(contactID_5),
+                    contactID_6 = as.numeric(contactID_6),
+                    contactID_7 = as.numeric(contactID_7))
+
 # Select down to columns of interest
 spedges <- select(spdata, c(CaseID, starts_with("contactID")))
+
 # Remove rows with NAs for at least one contact
 spedges <- filter(spedges, !is.na(spedges$contactID_1)) #43 CasesIDs with 1 or more possible contacts
 ```
@@ -550,22 +634,24 @@ We need CIs for the mean. For this we use bootstrapping.
 # bootstrap analysis
 Nboot=100
 bestimates=myest4 # NOTE this loop had errors a few times; I just restarted it. 
-for (kk in 1:Nboot) {
+for (kk in 51:Nboot) {
 bdata = sample(x=icc4, size = length(icc4), replace = T)
 bestimates = rbind(bestimates, serial_mix_est(data=bdata, N=50, startmu=10, startsig =4))
 }
+
+# save(bestimates, file = "data/sing_boots_100.Rdata")
 
 #The mean of the mean serial intervals is`r mean(bestimates[,1])` days and the standard deviation of these means is `r sd(bestimates[,1])`. 
 
 ```
 
 ```{r, eval=TRUE}
-load("sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE 
+load("data/sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE 
 hist(bestimates[,1],breaks = 30)
 bootdf=data.frame(mu=bestimates[,1], sig=bestimates[,2])
 ggplot(bootdf, aes(x=mu, y=sig))+geom_point()
 ggplot(bootdf, aes(x=mu))+geom_histogram()
-ggsave(file = "final_figures/FigS1_bootst_SI_sing.pdf", width = 6, height = 4)
+# ggsave(file = "final_figures/FigS1_bootst_SI_sing.pdf", width = 6, height = 4)
 ```
 
 
@@ -585,61 +671,12 @@ The 95% range for the mean serial interval is (`r myest4[1]-1.96*sd(bestimates[,
 
 
 #### Serial interval estimation based on early and late datasets
-This section is to determine what impact dividing the dataset based on "early" cases (for Singapore data, "early" is defined as cases with a specificied last exposure, which all occurred on or prior to Jan 30th, 2020) vs "late" cases (for Singapore data, "late" is defined as cases without a specified date of last exposure)
-```{r}
-#Date range of Singapore dataset
-range(earlydata$last_poss_exposure, na.rm = T) #All before Jan 31st, as with Tianjin dataset
-range(latedata$last_poss_exposure, na.rm = T) #Not applicable, as these cases don't have this info
-range(earlydata$date_onset_symptoms, na.rm = T) 
-range(latedata$date_onset_symptoms, na.rm = T)
-  #Hmm...that's interesting that there is overlap between the two groups
+This section is to determine what impact dividing the dataset based on "early" cases (for Singapore data, "early" is defined as cases where the presumed source of infection is travel from Wuhan) vs "late" cases (for Singapore data, "late" is defined as cases where the presumed source of infection is not from travel or Wuhan).
 
-# earlynew <- filter(spcopy, date_onset_symptoms <= as.Date("2020-01-31")) #38 cases
-# range(earlynew$date_onset_symptoms) #"2020-01-20" "2020-01-31"
-# latenew <- filter(spcopy, date_onset_symptoms > as.Date("2020-01-31")) #43 cases
-# range(latenew$date_onset_symptoms) #"2020-02-01" "2020-02-16"
+We will repeat the same steps as with the full dataset, on both the early and the late datasets. First step is to determine relationships between infectees and putative infectors by defining 'nodes' (= individuals; indicated by the CaseID of that row) and 'edges' (= relationships; indicate by the related_cases column in that lists the cases who are known possible sources of infection for that node) in both the early and late datasets.
 
-#If we want to try the following code with the new split based on date of symptom onset
-# earlyprev <- earlydata
-# lateprev <- latedata
-# earlydata <- earlynew
-# latedata <- latenew
+**Early: nodes and edges**
 
-#Can do dotplots to explore the distribution of disease progression dates in our dataset
-sp.dotplot <- spdata %>% 
-                  select(c("CaseID", "date_onset_symptoms", "presumed_infected_date", "last_poss_exposure")) %>% 
-                  pivot_longer(cols = c("date_onset_symptoms", "presumed_infected_date", "last_poss_exposure"),
-                               names_to = "disease.progression",
-                               values_to = "dates") %>% 
-                  mutate(CaseID = as.factor(CaseID),
-                         disease.progression = as.factor(disease.progression))
-
-dotplot.key <- data.frame(dz.prog = c("date_onset_symptoms", "last_poss_exposure", "presumed_infected_date"),
-                          dz.cols = c("darkred", "snow4", "steelblue"),
-                          dz.shapes = c(1, 0, 4))
-
-ggplot(sp.dotplot, aes(x = dates, y = CaseID)) +
-  geom_point(aes(shape = disease.progression, color = disease.progression), size = 2) +
-  geom_vline(xintercept = ymd("2020-01-31"), color = "steelblue") +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 60, hjust = 1),
-        #axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor.y = element_blank(),
-        panel.grid.major.y = element_line(color = "grey90", linetype = "dashed")) +
-  scale_x_date(date_breaks = "1 day") +
-  scale_color_manual(values = dotplot.key$dz.cols) +
-  scale_shape_manual(values = dotplot.key$dz.shapes)
-
-
-#But as these are different ways of defining early and late, let's just continue with our 
-  #prior definition of "early" and "late" for Singapore for now
-```
-
-Determine relationships between infectees and putative infectors by defining 'nodes' (= individuals; indicated by the CaseID of that row) and 'edges' (= relationships; indicate by the related_cases column in that lists the cases who are known possible sources of infection for that node) in both the early and late datasets.
-
-Early: nodes and edges
 ```{r}
 nodes_early <- earlydata$CaseID
 ## How to extract caseIDs from related_cases column - there are multiple values in some cells, separated by commas
@@ -689,23 +726,6 @@ e_edges = data.frame(from = paste("case", undir_early[ ,1], sep = ""),
 
 Early: visNetwork graph with color 'group' based on presumed source of infection.
 ```{r}
-# Turn 'presumed_reason' into lower case and get trim any whitespace so don't have issues with case sensitivity, etc
-earlydata$presumed_reason <- str_to_lower(earlydata$presumed_reason)
-earlydata$presumed_reason <- str_trim(earlydata$presumed_reason)
-table(earlydata$presumed_reason)
-sum(is.na(earlydata$presumed_reason)) #0 NAs
-# Make a new column where we group the 'presumed_reason' under a label (known relationship, gathering, wuhan travel) for each of the above three groups
-earlydata <- mutate(earlydata, presumed_reason_group = case_when(!is.na(str_match(presumed_reason, "symptom onset|via")) ~ "Known relationship",
-                                                           !is.na(str_match(presumed_reason, "grace")) ~ "Grace Assembly of God",
-                                                           !is.na(str_match(presumed_reason, "grand")) ~ "Grand Hyatt Singapore",
-                                                           !is.na(str_match(presumed_reason, "life")) ~ "Life Church",
-                                                           !is.na(str_match(presumed_reason, "seletar")) ~ "Seletar Aerospace Heights",
-                                                           !is.na(str_match(presumed_reason, "yong")) ~ "Yong Thai Hang",
-                                                           !is.na(str_match(presumed_reason, "wuhan|airport")) ~ "Wuhan travel", #'airport' case (CaseID 17) does not have 'wuhan' in reason but does have it under 'Case' column that they are from Wuhan
-                                                           is.na(presumed_reason) ~ "Unknown",
-                                                           TRUE ~ "other")) #should not be any other, so is just a double check this has run correctly, especially as dataset grows
-table(earlydata$presumed_reason_group)
-
 nodes_dfearly <- data.frame(id = paste("case", earlydata$CaseID, sep=""), 
                             label = earlydata$CaseID, 
                             group = earlydata$presumed_reason_group)
@@ -759,12 +779,53 @@ ggplot(data=data.frame(days=days, density=early.density), aes(x=days,y=density))
 The mean SI for the early Singapore dataset is `r myest4_e[1]`. The standard deviation of the serial intervals for the early Singapore dataset is `r myest4_e[2]`. These estimates are constrained by the same restrictions as mentioned with the whole Singapore dataset SI estimates.
 
 
-**NEED TO COMPLETE REMAINING BOOTSTRAPPING CODE FOR 95% CIs HERE**
+We need CIs for the mean. For this we use bootstrapping. 
+
+```{r, eval=FALSE}
+# bootstrap analysis
+Nboot=100
+bestimates_e = myest4_e 
+
+#This loop still stops A LOT with early data due to NA and NaN errors and needs to be restarted at the following iteration many times
+for (kk in 1:Nboot) {
+  bdata_e = sample(x = icc4_e, 
+                   size = length(icc4_e), 
+                   replace = T)
+  bestimates_e = rbind(bestimates_e, serial_mix_est(data=bdata_e, N=50, startmu=10, startsig =4))
+  print(paste("loop iteration #", kk, sep = ": "))
+}
+
+# save(bestimates_e, file = "Testing/sing_boots_100_early_wuhan.Rdata")
+
+#The mean of the mean serial intervals is`r mean(bestimates[,1])` days and the standard deviation of these means is `r sd(bestimates[,1])`. 
+
+```
+
+```{r, eval=TRUE}
+load("Testing/sing_boots_100_early_wuhan.Rdata") # in case in Rmd with above evals set to FALSE ...currently this file does NOT exist
+hist(bestimates_e[,1],breaks = 30)
+bootdf_e = data.frame(mu=bestimates_e[,1], 
+                      sig=bestimates_e[,2])
+ggplot(bootdf_e, aes(x=mu, y=sig)) + geom_point()
+ggplot(bootdf_e, aes(x=mu)) + geom_histogram()
+#ggsave(file = "final_figures/FigS1_bootst_SI_early_wuhan_sing.pdf", width = 6, height = 4)
+```
 
 
+```{r,eval=TRUE} 
+#load("sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE 
+mean(bestimates_e[,1]) 
+median(bestimates_e[,1])
+sd(bestimates_e[,1])
+
+mean(bestimates_e[,2])
+sd(bestimates_e[,2])
+```
+
+The 95% range for the mean serial interval is (`r myest4_e[1]-1.96*sd(bestimates_e[ ,1])`, `r myest4_e[1]+1.96*sd(bestimates_e[ ,1])`).
 
 
-Late: nodes and edges
+**Late: nodes and edges**
 ```{r}
 # Late
 nodes_late <- latedata$CaseID
@@ -814,23 +875,6 @@ l_edges = data.frame(from = paste("case", undir_late[ ,1], sep = ""),
 
 Late: visNetwork graph with color 'group' based on presumed source of infection.
 ```{r}
-# Turn 'presumed_reason' into lower case and get trim any whitespace so don't have issues with case sensitivity, etc
-latedata$presumed_reason <- str_to_lower(latedata$presumed_reason)
-latedata$presumed_reason <- str_trim(latedata$presumed_reason)
-table(latedata$presumed_reason)
-sum(is.na(latedata$presumed_reason)) #14 NAs
-# Make a new column where we group the 'presumed_reason' under a label (known relationship, gathering, wuhan travel) for each of the above three groups
-latedata <- mutate(latedata, presumed_reason_group = case_when(!is.na(str_match(presumed_reason, "symptom onset|via")) ~ "Known relationship",
-                                                           !is.na(str_match(presumed_reason, "grace")) ~ "Grace Assembly of God",
-                                                           !is.na(str_match(presumed_reason, "grand")) ~ "Grand Hyatt Singapore",
-                                                           !is.na(str_match(presumed_reason, "life")) ~ "Life Church",
-                                                           !is.na(str_match(presumed_reason, "seletar")) ~ "Seletar Aerospace Heights",
-                                                           !is.na(str_match(presumed_reason, "yong")) ~ "Yong Thai Hang",
-                                                           !is.na(str_match(presumed_reason, "wuhan|airport")) ~ "Wuhan travel", #'airport' case (CaseID 17) does not have 'wuhan' in reason but does have it under 'Case' column that they are from Wuhan
-                                                           is.na(presumed_reason) ~ "Unknown",
-                                                           TRUE ~ "other")) #should not be any other, so is just a double check this has run correctly, especially as dataset grows
-table(latedata$presumed_reason_group)
-
 nodes_dflate <- data.frame(id = paste("case", latedata$CaseID, sep=""), 
                             label = latedata$CaseID, 
                             group = latedata$presumed_reason_group)
@@ -884,13 +928,54 @@ ggplot(data=data.frame(days=days, density=late.density), aes(x=days,y=density)) 
 The mean SI for the late Singapore dataset is `r myest4_l[1]`. The standard deviation of the serial intervals for the late Singapore dataset is `r myest4_l[2]`. These estimates are constrained by the same restrictions as mentioned with the whole Singapore dataset SI estimates.
 
 
-**NEED TO COMPLETE REMAINING BOOTSTRAPPING CODE HERE**
+```{r, eval=FALSE}
+# bootstrap analysis
+Nboot=100
+bestimates_l = myest4_l 
+
+#This loop still stops due to NaN errors and needs to be restarted at the following iteration multiple times
+for (kk in 90:Nboot) {     
+  bdata_l = sample(x = icc4_l, 
+                   size = length(icc4_l), 
+                   replace = T)
+  bestimates_l = rbind(bestimates_l, serial_mix_est(data=bdata_l, N=50, startmu=10, startsig =4))
+  print(paste("loop iteration #", kk, sep = ": "))
+}
+
+# save(bestimates_l, file = "Testing/sing_boots_100_LATE_notwuhan.Rdata")
+
+#The mean of the mean serial intervals is`r mean(bestimates[,1])` days and the standard deviation of these means is `r sd(bestimates[,1])`. 
+
+```
+
+```{r, eval=TRUE}
+load("Testing/sing_boots_100_LATE_notwuhan.Rdata") # in case in Rmd with above evals set to FALSE ...currently this file does NOT exist
+hist(bestimates_l[,1],breaks = 30)
+bootdf_l = data.frame(mu=bestimates_l[,1], 
+                      sig=bestimates_l[,2])
+ggplot(bootdf_l, aes(x=mu, y=sig)) + geom_point()
+ggplot(bootdf_l, aes(x=mu)) + geom_histogram()
+#ggsave(file = "final_figures/FigS1_bootst_SI_early_sing.pdf", width = 6, height = 4)
+```
+
+
+```{r,eval=TRUE} 
+#load("sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE 
+mean(bestimates_l[,1]) 
+median(bestimates_l[,1])
+sd(bestimates_l[,1])
+
+mean(bestimates_l[,2])
+sd(bestimates_l[,2])
+```
+
+The 95% range for the mean serial interval is (`r myest4_l[1]-1.96*sd(bestimates_l[ ,1])`, `r myest4_l[1]+1.96*sd(bestimates_l[ ,1])`).
 
 
 ## Presymptomatic transmission 
 
 
-## R0 estimation 
+### R0 estimation 
 
 We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equation $R=\exp{r \mu - 1/2 r^2 \sigma^2}$. To obtain CIs for R, we could use our bootstrap estimates of $\mu$ and $\sigma^2$ and simply resample R using this equation. 
 
@@ -906,7 +991,7 @@ for (n in 1:100) {
 }
 hist(Rs,breaks = 30)
 mean(Rs)
-sd(Rs)
+Latsd(Rs)
 quantile(Rs, probs = c(0.025, 0.975))
 ```
 

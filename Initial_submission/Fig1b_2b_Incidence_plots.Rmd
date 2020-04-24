@@ -117,13 +117,14 @@ table(t.data$Infection_source)
 sum(is.na(t.data$Infection_source)) #3 NAs
 
 #Note that the order the data are selected in is VERY important to which case goes into which source_group category
-  #For those that meet multiple criteria (e.g. wuhan; tj1), the str_match which is highest in the case_when call (i.e. "tj|coworker|patient|partner") will have priority over those matching later 
-  #so that the 'source' column contain "wuhan; tj1" would be labelled as infection from a "known relationship" rather than from a "wuhan" origin 
+  #For those that meet multiple criteria (e.g. wuhan; tj1), the str_match which is highest in the case_when call (i.e. "wuhan" or "hubei") will have priority over those matching later 
+  #so that the 'source' column contain "wuhan; tj1" would be labelled as infection from a "wuhan" rather than from a "known relationship" origin 
+  #TODO: change this order in the MANUSCRIPT METHODS
 
-t.data <- mutate(t.data, source_group = case_when(!is.na(str_match(Infection_source, "tj|coworker|patient|partner")) ~ "Known relationship", #placing this first means that an individual that has another case listed as source,regardless if there is another reason (i.e. wuhan; tj1) will have 'known relationship' as their source_group reason
-                                                  !is.na(str_match(Infection_source, "wuhan")) ~ "Wuhan origin",
-                                                  !is.na(str_match(Infection_source, "hubei|hebei|dalian")) ~ "Other China travel",
+t.data <- mutate(t.data, source_group = case_when(!is.na(str_match(Infection_source, "wuhan|hubei")) ~ "Wuhan origin",
+                                                  !is.na(str_match(Infection_source, "hebei|dalian")) ~ "Other China travel",
                                                   !is.na(str_match(Infection_source, "train|travel")) ~ "Location unclear travel",
+                                                  !is.na(str_match(Infection_source, "tj|coworker|patient|partner")) ~ "Known relationship",
                                                   !is.na(str_match(Infection_source, "mall|store|shopper")) ~ "Mall",
                                                   !is.na(str_match(Infection_source, "unknown|unclear")) ~ "Unknown",
                                                   is.na(Infection_source) ~ "Unknown",
