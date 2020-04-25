@@ -1,7 +1,7 @@
 ---
 title: "Singapore"
 author: "Caroline Colijn, Michelle Coombe, and Manu Saraswat"
-date: "25/02/2020"
+date: "`r Sys.Date()`"
 output: 
   html_document:
     keep_md: TRUE
@@ -45,6 +45,7 @@ spdata <- mutate(spdata, presumed_infected_date = dmy(presumed_infected_date),
                  date_hospital = dmy(date_hospital),
                  date_confirmation = dmy(date_confirmation),
                  date_discharge = dmy(date_discharge))
+
 # make sure dates parsed properly
 range(spdata$presumed_infected_date, na.rm = T)
 range(spdata$last_poss_exposure, na.rm = T)
@@ -542,6 +543,7 @@ table(spdata$presumed_reason_group)
 ```
 
 ```{r}
+fedges$arrows <- "to" #try this to put in arrows!
 nodes.df <- data.frame(id=paste("case",spdata$CaseID,sep=""), label=spdata$CaseID, group=spdata$presumed_reason_group)
 glimpse(nodes.df)
 spdata$graphID = paste("case",spdata$CaseID,sep="")
@@ -600,6 +602,7 @@ icc_expose = getICCs(spdata, ccs, 4, orderby ="exposure")
 
 ```{r}
 source("TianjinSI_VinkWallinga_CC.R")
+#TODO: re-run with N = 100 to match Tianjin script?
 myest3 = serial_mix_est(data=icc3, N=50, startmu=10, startsig =4)
 myest4 = serial_mix_est(data=icc4, N=50, startmu=10, startsig =4)
 myest5 = serial_mix_est(data=icc5, N=50, startmu=10, startsig =4)
@@ -675,7 +678,7 @@ This section is to determine what impact dividing the dataset based on "early" c
 
 We will repeat the same steps as with the full dataset, on both the early and the late datasets. First step is to determine relationships between infectees and putative infectors by defining 'nodes' (= individuals; indicated by the CaseID of that row) and 'edges' (= relationships; indicate by the related_cases column in that lists the cases who are known possible sources of infection for that node) in both the early and late datasets.
 
-**Early: nodes and edges**
+**Early**: nodes and edges
 
 ```{r}
 nodes_early <- earlydata$CaseID
@@ -726,6 +729,7 @@ e_edges = data.frame(from = paste("case", undir_early[ ,1], sep = ""),
 
 Early: visNetwork graph with color 'group' based on presumed source of infection.
 ```{r}
+e_edges$arrows <- "to" #try this to put in arrows!
 nodes_dfearly <- data.frame(id = paste("case", earlydata$CaseID, sep=""), 
                             label = earlydata$CaseID, 
                             group = earlydata$presumed_reason_group)
@@ -754,6 +758,7 @@ icc6_e = getICCs(earlydata, ccs_e, 6)
 icc_expose_e = getICCs(earlydata, ccs_e, 4, orderby ="exposure")
 
 # 3. Use the serial_mix_est function from the file ("TianjinSI_VinkWallinga_CC.R") sourced earlier
+#TODO: re-run with N = 100 to match Tianjin script?
 myest3_e = serial_mix_est(data=icc3_e, N=50, startmu=10, startsig =4)
 myest4_e = serial_mix_est(data=icc4_e, N=50, startmu=10, startsig =4)
 myest5_e = serial_mix_est(data=icc5_e, N=50, startmu=10, startsig =4)
@@ -808,7 +813,7 @@ bootdf_e = data.frame(mu=bestimates_e[,1],
                       sig=bestimates_e[,2])
 ggplot(bootdf_e, aes(x=mu, y=sig)) + geom_point()
 ggplot(bootdf_e, aes(x=mu)) + geom_histogram()
-#ggsave(file = "final_figures/FigS1_bootst_SI_early_wuhan_sing.pdf", width = 6, height = 4)
+#ggsave(file = "final_figures/bootst_SI_early_wuhan_sing.pdf", width = 6, height = 4)
 ```
 
 
@@ -825,7 +830,7 @@ sd(bestimates_e[,2])
 The 95% range for the mean serial interval is (`r myest4_e[1]-1.96*sd(bestimates_e[ ,1])`, `r myest4_e[1]+1.96*sd(bestimates_e[ ,1])`).
 
 
-**Late: nodes and edges**
+**Late**: nodes and edges
 ```{r}
 # Late
 nodes_late <- latedata$CaseID
@@ -875,6 +880,7 @@ l_edges = data.frame(from = paste("case", undir_late[ ,1], sep = ""),
 
 Late: visNetwork graph with color 'group' based on presumed source of infection.
 ```{r}
+l_edges$arrows <- "to" #try this to put in arrows!
 nodes_dflate <- data.frame(id = paste("case", latedata$CaseID, sep=""), 
                             label = latedata$CaseID, 
                             group = latedata$presumed_reason_group)
@@ -903,6 +909,7 @@ icc6_l = getICCs(latedata, ccs_l, 6)
 icc_expose_l = getICCs(latedata, ccs_l, 4, orderby ="exposure")
 
 # 3. Use the serial_mix_est function from the file ("TianjinSI_VinkWallinga_CC.R") sourced earlier
+#TODO: re-run with N = 100 to match Tianjin script?
 myest3_l = serial_mix_est(data=icc3_l, N=50, startmu=10, startsig =4)
 myest4_l = serial_mix_est(data=icc4_l, N=50, startmu=10, startsig =4)
 myest5_l = serial_mix_est(data=icc5_l, N=50, startmu=10, startsig =4)
@@ -922,7 +929,7 @@ print(mm_l[,c(4,3,1,2)])
 days = seq(from=0, to=10, by=0.1) 
 late.density = dnorm(days, mean = myest4_l[1], sd = myest4_l[2])
 ggplot(data=data.frame(days=days, density=late.density), aes(x=days,y=density)) + geom_line() + ggtitle("ICC estimate of the late Singapore cluster serial interval")
-#ggsave(file="final_figures/sing_early_serialint.pdf", height = 4, width = 6)
+#ggsave(file="final_figures/sing_late_serialint.pdf", height = 4, width = 6)
 ```
 
 The mean SI for the late Singapore dataset is `r myest4_l[1]`. The standard deviation of the serial intervals for the late Singapore dataset is `r myest4_l[2]`. These estimates are constrained by the same restrictions as mentioned with the whole Singapore dataset SI estimates.
@@ -955,7 +962,7 @@ bootdf_l = data.frame(mu=bestimates_l[,1],
                       sig=bestimates_l[,2])
 ggplot(bootdf_l, aes(x=mu, y=sig)) + geom_point()
 ggplot(bootdf_l, aes(x=mu)) + geom_histogram()
-#ggsave(file = "final_figures/FigS1_bootst_SI_early_sing.pdf", width = 6, height = 4)
+#ggsave(file = "final_figures/bootst_SI_late_sing.pdf", width = 6, height = 4)
 ```
 
 

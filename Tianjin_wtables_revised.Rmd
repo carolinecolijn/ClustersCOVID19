@@ -1,7 +1,7 @@
 ---
 title: "Tianjin"
 author: "Caroline Colijn, Manu Saraswat, Michelle Coombe"
-date: "25/02/2020"
+date: "`r Sys.Date()`"
 output: 
   html_document:
     keep_md: TRUE
@@ -11,7 +11,8 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 library(survminer)
 library(survival)
-library(ggplot2)
+library(tidyverse)
+library(lubridate)
 library(icenReg)
 library(igraph)
 library(visNetwork)
@@ -37,7 +38,7 @@ tdata$symptom_onset=as.Date(tdata$symptom_onset, format = "%d/%m/%Y")
 tdata$start_source=as.Date(tdata$start_source, format = "%d/%m/%Y")
 tdata$end_source=as.Date(tdata$end_source,format = "%d/%m/%Y" )
 tdata$confirm_date=as.Date(tdata$confirm_date,format = "%d/%m/%Y" )
-str(tdata)
+glimpse(tdata)
 ```
 
 
@@ -47,7 +48,8 @@ str(tdata)
 The incubation period is the time between exposure and the onset of symptoms. We estimate this directly from the stated start and end times for cases' exposure windows. Because it is explicitly about the symptom onset, we remove those who don't have symptom onset defined. These are a small minority of cases and the alternative would be to impute their symptom onset time using the others' delay to confirmation time.  For now, we remove them.  Then,  if no other end time for the exposure is given or  if the end of the exposure time is after the time of symptom onset, set the last exposure time to the symptom onset time. This is because they must have been exposed before symptom onset.  If no other start time is given, they must have been exposed since the start of the outbreak (Dec 1, 2019). These give us  the maximum and minimun incubation times. 
 
 ```{r}
-goodii=which(!is.na(tdata$symptom_onset))
+#goodii=which(!is.na(tdata$symptom_onset))
+which(is.na(tdata$symptom_onset)) #10 cases without date of symptom onset, and primarily later cases 
 
 tdata$end_source[which(is.na(tdata$end_source))]=tdata$symptom_onset[which(is.na(tdata$end_source))]  # if no end exposure: set to symptom onset 
 tdata$end_source = pmin(tdata$end_source, tdata$symptom_onset) # if end exposure after onset, set to onset 
@@ -239,37 +241,6 @@ ggs$plot +geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn))
 Finally, we want to do this all again but stratifying the data between early occurring cases and late. This is why we used functions in the above, though it was clumsy. *Early and late date of symptom onset seems to make sense in Tianjin dataset, but let's see if source of infection (Wuhan/travel vs. not) is more reasonable, just like in Singapore. HOWEVER, unlike Singapore, the epidemiology of Wuhan vs. Tianjin is unlikely to be that different, so maybe it makes more sense to continue to split based on the date of symptom onset.
 
 ```{r}
-### Can make a dotplot to explore the distribution of disease progression dates in our dataset
-t.dotplot <- tdata %>% 
-                  select(c("case_id", "symptom_onset", "end_source", "start_source")) %>% 
-                  pivot_longer(cols = c("symptom_onset", "end_source", "start_source"),
-                               names_to = "disease.progression",
-                               values_to = "dates") %>% 
-                  mutate(case_id = as.factor(case_id),
-                         disease.progression = factor(disease.progression,
-                                                      levels = c("symptom_onset", "end_source", "start_source")))
-
-dotplot.key <- data.frame(dz.prog = c("symptom_onset", "end_source", "start_source"),
-                          dz.cols = c("black", "green", "purple"),
-                          dz.shapes = c(1, 0, 3))
-
-ggplot(t.dotplot, aes(x = dates, y = case_id)) +
-  geom_point(aes(shape = disease.progression, color = disease.progression), size = 2) +
-  geom_vline(xintercept = ymd("2020-01-31"), color = "steelblue") +
-  theme_bw() +
-  theme(axis.text.x = element_text(angle = 60, hjust = 1),
-        #axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor.y = element_blank(),
-        panel.grid.major.y = element_line(color = "grey90", linetype = "dashed")) +
-  scale_x_date(date_breaks = "1 day") +
-  scale_color_manual(values = dotplot.key$dz.cols) +
-  scale_shape_manual(values = dotplot.key$dz.shapes)
-
-```
-
-```{r}
 ### Stratifying based on "early" = has symptom_onset on or before Jan 31, 2020 vs. "late" = has symptom_onset after Jan 31, 2020
 # earlydata=tdata[which(!is.na(tdata$minIncTimes) & tdata$symptom_onset <= as.Date("2020-01-31")),]
 # latedata=tdata[which(!is.na(tdata$minIncTimes) & tdata$symptom_onset > as.Date("2020-01-31")),]
@@ -284,52 +255,77 @@ table(tdata$Infection_source)
 sum(is.na(tdata$Infection_source)) #3 NAs
 
 #Note that the order the data are selected in is VERY important to which case goes into which source_group category
-  #For those that meet multiple criteria (e.g. wuhan; tj1), the str_match which is highest in the case_when call (i.e. "tj|coworker|patient|partner") will have priority over those matching later 
-  #so that the 'source' column contain "wuhan; tj1" would be labelled as infection from a "known relationship" rather than from a "wuhan" origin 
+  #For those that meet multiple criteria (e.g. wuhan; tj1), the str_match which is highest in the case_when call (i.e. "wuhan|hubei") will have priority over those matching later 
+  #so that the 'source' column contain "wuhan; tj1" would be labelled as infection from a "wuhan" rather than from a "known relationship" origin 
 
-#tdata <- mutate(tdata, source_group = case_when(!is.na(str_match(Infection_source, "tj|coworker|patient|partner")) ~ "Known relationship", 
-#                                                  !is.na(str_match(Infection_source, "wuhan|hubei")) ~ "Wuhan origin",
-#                                                  !is.na(str_match(Infection_source, "hebei|dalian")) ~ "Other China travel",
-#                                                  !is.na(str_match(Infection_source, "train|travel")) ~ "Location unclear travel",
-#                                                  !is.na(str_match(Infection_source, "mall|store|shopper")) ~ "Mall",
-#                                                  !is.na(str_match(Infection_source, "unknown|unclear")) ~ "Unknown",
-#                                                  is.na(Infection_source) ~ "Unknown",
-#                                                  T ~ "other")) #there should be none of these, so this is just a sanity check!  
-#table(tdata$source_group)
+#Decision rule applied to cluster naming classification:
+  #Highest priority: 1) Known outbreak cluster locations (e.g. Wuhan/Hubei, mall, or church)
+  #                  2) Known close relationship to another case (i. family; ii. work; iii. other known direct contact)
+  #                  3) Known travel history to non-outbreak locations or unclear destinations
+  #                  4) Any other listed associations (e.g. being part of a particular at-risk group such as airport worker)
+  #Lowest priority:  5) No known source of possible viral exposure
 
 #See what happens when we emphasize the wuhan and travel cases over known relationships
   #This seems more logical, given that the epicenter of the outbreak was Wuhan
-tdata <- mutate(tdata, source_group_w = case_when(!is.na(str_match(Infection_source, "wuhan|hubei")) ~ "Wuhan origin",  
-                                                  !is.na(str_match(Infection_source, "hebei|dalian")) ~ "Other China travel",
-                                                  !is.na(str_match(Infection_source, "train|travel")) ~ "Location unclear travel",
-                                                  !is.na(str_match(Infection_source, "tj|coworker|patient|partner")) ~ "Known relationship",
-                                                  !is.na(str_match(Infection_source, "mall|store|shopper")) ~ "Mall",
-                                                  !is.na(str_match(Infection_source, "unknown|unclear")) ~ "Unknown",
-                                                  is.na(Infection_source) ~ "Unknown",
+tdata <- mutate(tdata, source_group = case_when(!is.na(str_match(Infection_source, "wuhan|hubei")) ~ "Wuhan and Hubei", #Priority 1
+                                                  !is.na(str_match(Infection_source, "mall|store|shopper")) ~ "Mall", #Priority 1
+                                                  !is.na(str_match(Infection_source, "family|relative|wife|mother|son|sister|husband")) ~ "Relative", #Priority 2
+                                                  !is.na(str_match(Infection_source, "coworker|business|workplace|colleague")) ~ "Coworker", #Priority 2
+                                                  !is.na(str_match(Infection_source, "tj|patient")) ~ "Known relationship", #Priority 2
+                                                  !is.na(str_match(Infection_source, "train|travel|trip|hebei|dalian")) ~ "Other travel", #Priority 3
+                                                  !is.na(str_match(Infection_source, "unknown|unclear")) ~ "Unknown", #Priority 5
+                                                  is.na(Infection_source) ~ "Unknown", #Priority 5
                                                   T ~ "other")) #there should be none of these, so this is just a sanity check!  
-table(tdata$source_group_w) 
+table(tdata$source_group) 
   #4 cases switch from being source "known relationship" to either "wuhan" (3 cases) or "location unclear travel" (1 case)
 
 
 #Filter tiajin data into early vs. late (based on wuhan origin vs. not wuhan as probable infection sources)
-earlydata <- filter(tdata, source_group_w %in% c("Wuhan origin"))
-earlyids <- earlydata$case_id
-latedata  <- tdata[-which(tdata$case_id == earlyids), ]
+earlydata <- filter(tdata, source_group %in% c("Wuhan and Hubei")) #26 observations
+latedata  <- filter(tdata, source_group != "Wuhan and Hubei") #109 observations
 
-#Date range of symptom onset for "Wuhan origin" = "2020-01-14" "2020-02-02"
-#Date range of symptom onset for "Location unclear travel" = "2020-01-15" "2020-02-08"
-#Date range of symptom onset for "Other China travel" = "2020-01-28" "2020-02-03"
-#Date range of symptom onset for "Known relationship" = has 8 NAs; "2020-01-20" "2020-02-19" 
-#Date range of symptom onset for "Mall" = has 1 NA; "2020-01-23" "2020-02-09"
-#Date range of symptom onset for "Unknown" = has 1 NA; "2020-01-22" "2020-02-02"
-
+range(earlydata$symptom_onset, na.rm = T) # "2020-01-14" to  "2020-02-02"
+range(latedata$symptom_onset, na.rm = T)  # "2020-01-15" to  "2020-02-19"
+  #Hmm...not really much difference between "early" and "late" timing...
 ```
+
+Make a dotplot to explore disease progression across different groups; to understand disease progression might be changing between different infection sources, and how that relates to our "early" vs. "late" datasets. 
+```{r}
+### Can make a dotplot to explore the distribution of disease progression dates in our dataset
+t.dotplot <- tdata %>% 
+                  select(c("case_id", "source_group", "symptom_onset", "end_source", "start_source")) %>% 
+                  pivot_longer(cols = c("symptom_onset", "end_source", "start_source"),
+                               names_to = "disease.progression",
+                               values_to = "dates") %>% 
+                  mutate(case_id = as.factor(case_id),
+                         disease.progression = factor(disease.progression,
+                                                      levels = c("symptom_onset", "end_source", "start_source")))
+
+dotplot.key <- data.frame(dz.prog = c("symptom_onset", "end_source", "start_source"),
+                          dz.shapes = c(1, 2, 3))
+
+ggplot(t.dotplot, aes(x = dates, y = case_id)) +
+  geom_point(aes(shape = disease.progression, color = source_group), size = 2) +
+  geom_vline(xintercept = ymd("2020-01-31"), color = "steelblue") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1),
+        #axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_line(color = "grey90", linetype = "dashed")) +
+  scale_x_date(date_breaks = "1 day") +
+  scale_shape_manual(values = dotplot.key$dz.shapes)
+```
+
 
 Fit to the three distributions: 
 
 ```{r}
 Eallthree=getthreefits(earlydata)
-Lallthree=getthreefits(latedata)
+Lallthree=getthreefits(latedata)  
+  #TODO: fix this with latedata as "non-Wuhan"...
+  #The error is "Error in yMat[exact, 2] <- yMat[exact, 1] : NAs are not allowed in subscripted assignments"
 ```
 
 EARLY: parameter point estimates and the quantiles
@@ -388,18 +384,20 @@ ggsave(filename = "final_figures/Fig3b_inc_Tianjin_strata.pdf", width = 8, heigh
 
 
 ## Serial interval 
-
-
 We will estimate the serial interval using the 'interval case to case' approach given in Vink et al (https://academic.oup.com/aje/article/180/9/865/2739204). 
 
 The dataset has quite a few instances where a putative infector or contact is known. These are listed in the 'Infection_source' column. We first make a graph in which nodes are individuals and edges are present from cases listed as possible sources, to the cases for whom they are possible sources. 
 
 ```{r}
 mynodes = tdata$case_id
+mynodes <- str_to_lower(mynodes) #to keep consistent with infection source column
+tdata$case_id <- str_to_lower(tdata$case_id)
+
 edges = data.frame(from=mynodes[9],to=mynodes[21],stringsAsFactors = F ) # i read this one manually 
+
 for (id in 1:nrow(tdata)) {
 tonode=tdata$case_id[id]
-fromnodes=str_extract_all(tdata$Infection_source[id], "TJ\\d+", simplify = T)
+fromnodes=str_extract_all(tdata$Infection_source[id], "tj\\d+", simplify = T) #in lower case due to above early/late split on infection source
   if (length(fromnodes)>0) {
     for (k in 1:length(fromnodes)) {
       edges=rbind(edges, c(fromnodes[k], tonode))
@@ -411,13 +409,14 @@ edges=edges[-1,]
 edges=edges[-which(is.na(edges[,1])),] # NAs arose from a few empty entries for Infection_source 
 ```
 
-From this edge list we can use visNetwork to visualise the graph. Colours are from the infection source column (but we should have a better colour scheme, like date of symptom onset). 
+From this edge list we can use visNetwork to visualise the graph. Colours are from the infection source group column (but we should have a better colour scheme, like date of symptom onset). 
 
 ```{r}
 edges$arrows="to"
-nodes = data.frame(id=tdata$case_id, label=tdata$case_id,
-                   group=tdata$Infection_source)
-visNetwork(nodes,edges)
+nodes = data.frame(id=tdata$case_id, 
+                   label=tdata$case_id,
+                   group=tdata$source_group)
+visNetwork(nodes,edges) %>% visLegend()
 ```
 
 The interval case to case (ICC) data are the times between the (presumed) index case for a small cluster and the other cases in the cluster. The Vink et al approach allows these intervals to be one of 4 types, and estimates the serial interval and the probability of each type. To extract ICC intervals, we let the clusters be the components of the graph, and we let the presumed index case be the first to develop symptoms. For each cluster, we subtract the index cases' symptom time from the symtom times of the rest of the cluster (or just the first few; it turns out that the estimate is not sensitive to this). This results in a list of time intervals between symptom onset in presumed index cases and symptom onset in other cases in the same cluster (graph component). 
@@ -444,23 +443,23 @@ Extract ICC interval data: a function
 ```{r}
  getICCs <- function(thisdata, ccs, K, orderby= "onset" ) {
   iccs=1
-for (n in 1:max(ccs$membership)) {
-  mycases  = which(thisdata$component==n)
-  if (orderby == "onset")
-  {  myonsets = sort(thisdata$symptom_onset[mycases])[1:min(K, length(mycases))]}
-  if (orderby == "exposure") {
- myonsets =thisdata$symptom_onset[mycases][order(thisdata$end_source[mycases])][1:min(K,length(mycases))]
-  }
-  iccs =c(iccs, myonsets[-1]-myonsets[1])
-}
-  return(iccs[-1]) 
-  }
+    for (n in 1:max(ccs$membership)) {
+      mycases  = which(thisdata$component==n)
+      if (orderby == "onset")
+          {  myonsets = sort(thisdata$symptom_onset[mycases])[1:min(K, length(mycases))]}
+        if (orderby == "exposure") {
+          myonsets =thisdata$symptom_onset[mycases][order(thisdata$end_source[mycases])][1:min(K,length(mycases))]
+          }
+      iccs =c(iccs, myonsets[-1]-myonsets[1])
+        }
+    return(iccs[-1]) 
+    }
 ```
 
 
-
+Note that we are removing cases that do NOT have a date of symptom onset to determine the ICC. There are 10 cases without symptom onset, but all have a confirmation date.
 ```{r}
-stdata = tdata[which(!is.na(tdata$symptom_onset)),]
+stdata = tdata[which(!is.na(tdata$symptom_onset)),]  #10 observations
 
 icc3 = getICCs(stdata,ccs,3)
 icc4 = getICCs(stdata,ccs,4)
@@ -473,12 +472,12 @@ Perform the estimate using the Vink et al method, and display the result:
 
 ```{r}
 source("TianjinSI_VinkWallinga_CC.R")
-
-myest3 = serial_mix_est(data=icc3, N=100, startmu=10, startsig =4)
-myest4 = serial_mix_est(data=icc4, N=100, startmu=10, startsig =4)
-myest5 = serial_mix_est(data=icc5, N=100, startmu=10, startsig =4)
-myest6 = serial_mix_est(data=icc6, N=100, startmu=10, startsig =4)
-myest_exp= serial_mix_est(data=icc_expose, N=100, startmu=10, startsig =4)
+    #Changed to N = 50 to be consistent with Singapore analysis
+myest3 = serial_mix_est(data=icc3, N=50, startmu=10, startsig =4)
+myest4 = serial_mix_est(data=icc4, N=50, startmu=10, startsig =4)
+myest5 = serial_mix_est(data=icc5, N=50, startmu=10, startsig =4)
+myest6 = serial_mix_est(data=icc6, N=50, startmu=10, startsig =4)
+myest_exp= serial_mix_est(data=icc_expose, N=50, startmu=10, startsig =4)
 
 mm=rbind(myest3, myest4, myest5,myest6, myest_exp)
 colnames(mm)=c("mu","sig")
@@ -497,15 +496,18 @@ Bootstrap analysis code - have left it set to eval=FALSE in the Rmd because it t
 ```{r, eval=FALSE}
 # bootstrap analysis
 Nboot=100
-bestimates=myestimate 
+bestimates=myest4 
 for (kk in 1:Nboot) {
-bdata = sample(x=icc4, size = length(iccall), replace = T)
-bestimates = rbind(bestimates, serial_mix_est(data=bdata, N=50, startmu=10, startsig =4))
+  bdata = sample(x=icc4, size = length(icc4), replace = T)
+  bestimates = rbind(bestimates, serial_mix_est(data=bdata, N=50, startmu=10, startsig =4))
+  print(paste("loop iteration #", kk, sep = ": "))
 }
+
+# save(bestimates, file = "data/tianjin_boots_100.Rdata")
 ```
 
 ```{r,eval=TRUE}
-load("tianjin_bootstraps.Rdata")
+load("data/tianjin_boots_100.Rdata")
 mean(bestimates[,1]) # mean of the mean serial intervals
 median(bestimates[,1])
 mean(bestimates[,2]) # sd of the sd serial intervals 
@@ -522,8 +524,239 @@ bootdf=data.frame(mu=bestimates[,1], sig=bestimates[,2])
 ggplot(bootdf, aes(x=mu, y=sig))+geom_point()
 
 ggplot(bootdf, aes(x=mu))+geom_histogram()
- ggsave(file = "final_figures/FigS1_bootst_SI_tianjin.pdf", width = 6, height = 4)
+# ggsave(file = "final_figures/FigS1_bootst_SI_tianjin.pdf", width = 6, height = 4)
 ```
+
+
+#### Serial interval estimation based on early and late datasets
+This section is to determine what impact dividing the dataset based on "early" cases (for Tianjin data, "early" is defined as cases where the presumed source of infection is travel from Wuhan or Hubei) vs "late" cases (for Tianjin data, "late" is defined as cases where the presumed source of infection is not from Wuhan or Hubei).
+
+We will repeat the same steps as with the full dataset, on both the early and the late datasets. First step is to determine relationships between infectees and putative infectors by defining 'nodes' (= individuals; indicated by the CaseID of that row) and 'edges' (= relationships; indicate by the related_cases column in that lists the cases who are known possible sources of infection for that node) in both the early and late datasets.
+
+**Early**: nodes and edges
+```{r}
+mynodes_e = earlydata$case_id  
+mynodes_e <- str_to_lower(mynodes_e) #to keep consistent with infection source column
+earlydata$case_id <- str_to_lower(earlydata$case_id)
+
+edges_e = data.frame(from=mynodes_e[1],to=mynodes_e[24],stringsAsFactors = F ) # Looked up manually 
+
+for (id in 1:nrow(earlydata)) {
+tonode=earlydata$case_id[id]
+fromnodes=str_extract_all(earlydata$Infection_source[id], "tj\\d+", simplify = T) #in lower case due to above early/late split on infection source
+  if (length(fromnodes)>0) {
+    for (k in 1:length(fromnodes)) {
+      edges_e=rbind(edges_e, c(fromnodes[k], tonode))
+    }
+  }
+}
+head(edges_e)
+edges_e=edges_e[-1,]
+
+edges_e <- filter(edges_e, !is.na(from)) #Safer than using which(), in case there are no NAs
+head(edges_e)
+```
+
+Early: visNetwork graph with color 'group' based on presumed source of infection.
+```{r}
+edges_e$arrows="to"
+nodes_e = data.frame(id=earlydata$case_id, 
+                   label=earlydata$case_id,
+                   group=earlydata$source_group)
+visNetwork(nodes_e,edges_e) %>% visLegend()
+```
+
+Early: Estimate the serial interval using the ICC method from Vink et al. 
+```{r}
+# 1. First construct a graph from edgelist
+earlygraph = graph_from_edgelist(as.matrix(edges_e[,1:2]), directed = FALSE)
+ccs_e=components(earlygraph)
+
+earlydata$component=vapply(earlydata$case_id, function(x)
+  { if (x %in% names(ccs_e$membership)) { return(ccs_e$membership[match(x, names(ccs$membership))])
+  } else { 
+    return(NA)}}, FUN.VALUE = 3)
+
+# 2. Use the previously defined getICC function to extract the ICC from this graph object
+  #Note that the integers refer to the number of cases per cluster used to determine the ICC
+stdata_e = earlydata[which(!is.na(earlydata$symptom_onset)),]
+
+icc3_e = getICCs(stdata_e,ccs_e,3)
+icc4_e = getICCs(stdata_e,ccs_e,4)
+icc5_e = getICCs(stdata_e,ccs_e,5)
+icc6_e = getICCs(stdata_e,ccs_e,6)
+icc_expose_e = getICCs(stdata_e, ccs_e, 4, orderby ="exposure")
+
+# 3. Use the serial_mix_est function from the file ("TianjinSI_VinkWallinga_CC.R") sourced earlier
+  #Changed to N = 50 to be consistent with Singapore analysis
+myest3_e = serial_mix_est(data=icc3_e, N=50, startmu=10, startsig =4) 
+myest4_e = serial_mix_est(data=icc4_e, N=50, startmu=10, startsig =4)
+myest5_e = serial_mix_est(data=icc5_e, N=50, startmu=10, startsig =4)
+myest6_e = serial_mix_est(data=icc6_e, N=50, startmu=10, startsig =4)
+myest_exp_e= serial_mix_est(data=icc_expose_e, N=50, startmu=10, startsig =4)
+
+mm_e=rbind(myest3_e, myest4_e, myest5_e, myest6_e, myest_exp_e)
+colnames(mm_e)=c("mu","sig")
+mm_e=as.data.frame(mm_e)
+mm_e$NumCasesPerCluster=c( 3, 4, 5, 6, 4) 
+mm_e$ordering = c("Onset","Onset","Onset","Onset","LastExposure")
+print(mm_e[,c(4,3,1,2)]) 
+```
+
+The mean SI is `r myest4_e[1]`. The standard deviation of the serial intervals is `r myest4_e[2]`.
+
+Early: Bootstrapping to determine the 95% confidence intervals for the serial interval
+```{r, eval=FALSE}
+# bootstrap analysis
+Nboot=100
+#bestimates_e = myestimate 
+bestimates_e = myest4_e
+
+for (kk in 1:Nboot) {
+bdata = sample(x = icc4_e, 
+               size = length(iccall), #TODO: is this icc_4_e I think???
+               replace = T)
+bestimates_e = rbind(bestimates_e, serial_mix_est(data=bdata, N=50, startmu=10, startsig =4))
+print(paste("loop iteration #", kk, sep = ": "))
+}
+```
+
+```{r,eval=TRUE}
+load("data/tianjin_bootstraps_early.Rdata")
+mean(bestimates_e[,1]) # mean of the mean serial intervals
+median(bestimates_e[,1])
+mean(bestimates_e[,2]) # sd of the sd serial intervals 
+sd(bestimates_e[,1]) # sd of the MEAN serial intervals 
+```
+
+The 95% range for the mean serial interval is (`r myest4_e[1]-1.96*sd(bestimates_e[,1])`, `r myest4_e[1]+1.96*sd(bestimates_e[,1])`).
+
+Note, you need to run and save the following figure (part of Figure S1) manually (vs using knitr) for some reason:
+```{r, eval=FALSE}
+hist(bestimates_e[,1],breaks = 10)
+bootdf_e=data.frame(mu=bestimates_e[,1], sig=bestimates_e[,2])
+ggplot(bootdf_e, aes(x=mu, y=sig)) + geom_point()
+
+ggplot(bootdf_e, aes(x=mu))+geom_histogram()
+# ggsave(file = "final_figures/bootst_SI_tianjin_early.pdf", width = 6, height = 4)
+```
+**CHECK THAT EARLY DATA SERIAL ESTIMATES RUNS ON PROPERLY GROUPED DATA**
+This does NOT as almost all cases are individuals and not found in clusters (so getICC function returns empty objects instead of a vector of ICCs).
+
+
+
+**Late**: nodes and edges
+```{r}
+mynodes_l = latedata$case_id  
+mynodes_l <- str_to_lower(mynodes_l) #to keep consistent with infection source column
+latedata$case_id <- str_to_lower(latedata$case_id)
+
+edges_l = data.frame(from=mynodes_l[2],to=mynodes_l[3],stringsAsFactors = F ) # Looked up manually 
+
+for (id in 1:nrow(latedata)) {
+tonode=latedata$case_id[id]
+fromnodes=str_extract_all(latedata$Infection_source[id], "tj\\d+", simplify = T) #in lower case due to above early/late split on infection source
+  if (length(fromnodes)>0) {
+    for (k in 1:length(fromnodes)) {
+      edges_l=rbind(edges_l, c(fromnodes[k], tonode))
+    }
+  }
+}
+head(edges_l)
+edges_l=edges_l[-1,]
+
+edges_l <- filter(edges_l, !is.na(from)) #Safer than using which(), in case there are no NAs
+head(edges_l)
+```
+
+Early: visNetwork graph with color 'group' based on presumed source of infection.
+```{r}
+edges_l$arrows="to"
+nodes_l = data.frame(id=latedata$case_id, 
+                    label=latedata$case_id,
+                    group=latedata$source_group)
+visNetwork(nodes_l,edges_l) %>% visLegend()
+```
+
+Early: Estimate the serial interval using the ICC method from Vink et al. 
+```{r}
+# 1. First construct a graph from edgelist
+lategraph = graph_from_edgelist(as.matrix(edges_l[,1:2]), directed = FALSE)
+ccs_l=components(lategraph)
+
+latedata$component=vapply(latedata$case_id, function(x)
+  { if (x %in% names(ccs_l$membership)) { return(ccs_l$membership[match(x, names(ccs$membership))])
+  } else { 
+    return(NA)}}, FUN.VALUE = 3)
+
+# 2. Use the previously defined getICC function to extract the ICC from this graph object
+  #Note that the integers refer to the number of cases per cluster used to determine the ICC
+
+#Remove any cases with 'NA' with date of symptom onset
+stdata_l <- filter(latedata, !is.na(symptom_onset))
+
+icc3_l = getICCs(stdata_l,ccs_l,3)
+icc4_l = getICCs(stdata_l,ccs_l,4)
+icc5_l = getICCs(stdata_l,ccs_l,5)
+icc6_l = getICCs(stdata_l,ccs_l,6)
+icc_expose_l = getICCs(stdata_l, ccs_l, 4, orderby ="exposure")
+
+# 3. Use the serial_mix_est function from the file ("TianjinSI_VinkWallinga_CC.R") sourced earlier
+    #Changed to N = 50 to be consistent with Singapore analysis
+myest3_l = serial_mix_est(data=icc3_l, N=50, startmu=10, startsig =4)
+myest4_l = serial_mix_est(data=icc4_l, N=50, startmu=10, startsig =4)
+myest5_l = serial_mix_est(data=icc5_l, N=50, startmu=10, startsig =4)
+myest6_l = serial_mix_est(data=icc6_l, N=50, startmu=10, startsig =4)
+myest_exp_l= serial_mix_est(data=icc_expose_l, N=50, startmu=10, startsig =4)
+
+mm_l=rbind(myest3_l, myest4_l, myest5_l, myest6_l, myest_exp_l)
+colnames(mm_l)=c("mu","sig")
+mm_l=as.data.frame(mm_l)
+mm_l$NumCasesPerCluster=c( 3, 4, 5, 6, 4) 
+mm_l$ordering = c("Onset","Onset","Onset","Onset","LastExposure")
+print(mm_l[,c(4,3,1,2)]) 
+```
+
+The mean SI is `r myest4_l[1]`. The standard deviation of the serial intervals is `r myest4_l[2]`.
+
+Early: Bootstrapping to determine the 95% confidence intervals for the serial interval
+```{r, eval=FALSE}
+# bootstrap analysis
+Nboot=100
+#bestimates_l = myestimate 
+bestimates_l = myest4_l
+
+for (kk in 1:Nboot) {
+  bdata = sample(x = icc4_l, 
+                 size = length(icc4_l), 
+                 replace = T)
+  bestimates_l = rbind(bestimates_l, serial_mix_est(data=bdata, N=50, startmu=10, startsig =4))
+  print(paste("loop iteration #", kk, sep = ": "))
+}
+```
+
+```{r,eval=TRUE}
+load("data/tianjin_bootstraps_late.Rdata")
+mean(bestimates_l[,1]) # mean of the mean serial intervals
+median(bestimates_l[,1])
+mean(bestimates_l[,2]) # sd of the sd serial intervals 
+sd(bestimates_l[,1]) # sd of the MEAN serial intervals 
+```
+
+The 95% range for the mean serial interval is (`r myest4_l[1]-1.96*sd(bestimates_l[,1])`, `r myest4_l[1]+1.96*sd(bestimates_l[,1])`).
+
+Note, you need to run and save the following figure (part of Figure S1) manually (vs using knitr) for some reason:
+```{r, eval=FALSE}
+hist(bestimates_l[,1],breaks = 10)
+bootdf_l=data.frame(mu=bestimates_l[,1], sig=bestimates_l[,2])
+ggplot(bootdf_l, aes(x=mu, y=sig)) + geom_point()
+
+ggplot(bootdf_l, aes(x=mu))+geom_histogram()
+# ggsave(file = "final_figures/bootst_SI_tianjin_late.pdf", width = 6, height = 4)
+```
+
+
+
 
 ### R0 estimation
 
@@ -532,7 +765,7 @@ We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equat
 Jung et al Scenario 1
 
 ```{r,eval=TRUE}
- load("tianjin_bootstraps.Rdata") # in case in Rmd with above evals set to FALSE 
+load("tianjin_bootstraps.Rdata") # in case in Rmd with above evals set to FALSE 
 myrate=0.15
 
 Rs=0*(1:100) 
@@ -547,7 +780,6 @@ quantile(Rs, probs = c(0.025, 0.975))
 ```
 
 The mean R is `r mean(Rs)` and the range is (`r mean(Rs)-1.96*sd(Rs)`, `r mean(Rs)+1.96*sd(Rs)`), based on the 1.96 standard deviations from the mean.  This agrees closely with the above quantiles. 
-
 
 
 ### Additional (uninteresting, we think) points we explored: 
