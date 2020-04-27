@@ -168,11 +168,12 @@ pk <- function(k,maxinters=n, rate=r, maxtime, mintime) {
   }
 }
 
-# sum over k of pk*lirtk to get lirt (eq 2 of C's notes) 
+# log of sum over k of pk*lirtk to get log(lirt) (eq 2 of C's notes) 
 lirt = function(maxtime, mintime, rtTime, maxinters=n, rate=r,genshape = ag, 
                 incshape=ai, comscale = b) {
   pks = vapply(0:maxinters, 
-               function(x) pk(x, maxinters = maxinters, rate, maxtime,mintime),
+               function(x) pk(x, maxinters = maxinters, rate=rate,
+              maxtime=maxtime,mintime=mintime),
                FUN.VALUE = 0)
  
    lirtks = vapply(0:maxinters,
@@ -180,13 +181,46 @@ lirt = function(maxtime, mintime, rtTime, maxinters=n, rate=r,genshape = ag,
                                     genshape,   incshape, comscale), 
                   FUN.VALUE = 0)
   
-  return(sum(pks*lirtks))
+  return(log(sum(pks*lirtks)))
 }
 ```
 
 
-These functions seem to work. Yay! Now we have to compute the relevant data inputs, and maximize the likelihood to solve for several parameters. 
+These functions seem to work. Yay! Now we have to set up the relevant data inputs, and maximize the likelihood to solve for several parameters. 
+
+We have spdata's minIncTimes and maxIncTimes, which are the 'mintime' and 'maxtime' inputs. We already computed Ti which are the rtTime input. 
+
+```{r}
+# negative log likelihood function for optim 
+l_optim <- function( twopars, allmaxtimes, allmintimes, allrtTimes, 
+                     maxinters=n, rate=r, comscale=b) {
+  gs=twopars[1] # gen time scale parameter
+  is=twopars[2] # incubation period scale parameter
+  Ncases = length(allmaxtimes) 
+  # now compute lirt for each case i 
+  indelikes = vapply(1:Ncases, 
+                     function(ind) lirt(maxtime=allmaxtimes[ind],
+                                        mintime=allmintimes[ind],
+                                        rtTime=allrtTimes[ind],
+                                        maxinters=maxinters, rate=rate, 
+                                        genshape = gs, incshape=is, 
+                                        comscale=comscale),
+                     FUN.VALUE = 1)
+  # the product is the likelihood. the negative sum is the negative log likelihood
+  return(-sum(indelikes))
+}
+```
 
 
+
+Testing: seems to work 
+
+```{r}
+l_optim(c(3,4), allmaxtimes = spdata$maxIncTimes, 
+        allmintime=spdata$minIncTimes,allrtTimes = spdata$Ti, 
+         maxinters=n, rate=r, comscale=b)
+```
+
+So now let's optimize! 
 
 
