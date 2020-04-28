@@ -24,11 +24,11 @@ library(paletteer)
 
 load up all the links we have (just the first two column of the dataframe expanded)
 ```{r}
-#ncov = read.csv("../data/COVID-19_Singapore.csv")
-ncov=read.csv(file.choose())#just using this for the one time on March5th, 2020
+ncov = read.csv("../data/COVID-19_Singapore_formated_dates.csv")
+#ncov=read.csv(file.choose())#just using this for the one time on March5th, 2020
 # ncov=read.csv("../../Data/COVID-19_Singapore.csv")
 ncov_sing = ncov[ncov$country == "Singapore", ]
-names(ncov_sing)[1] <- 'CaseID'
+#names(ncov_sing)[1] <- 'CaseID'
 ```
 
 

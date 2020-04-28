@@ -26,7 +26,7 @@ set.seed(3456)
 Thanks to EpiCoronaHack Cluster team. These data are manually entered from postings from the Government of Singapore website: [website](https://www.moh.gov.sg/covid-19).
   
 ```{r}
-spdata <- read_csv("data/COVID-19_Singapore_eg_update_edges.csv")
+spdata <- read_csv("data/COVID-19_Singapore_formated_dates.csv")
 # Ensure properly imported
 glimpse(spdata)
 table(spdata$`Related cases`) # There is one cell with "\n", needs to be changed to 'NA'
