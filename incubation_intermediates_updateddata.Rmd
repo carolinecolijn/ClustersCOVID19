@@ -1,0 +1,293 @@
+---
+title: "Testing incubation with intermediate"
+author: "Caroline Colijn"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    keep_md: TRUE
+---
+  
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(survminer)
+library(survival)
+library(tidyverse)
+library(lubridate)
+library(icenReg)
+library(igraph)
+library(visNetwork)
+library(mvtnorm)
+library(ggplot2)
+library(hrbrthemes)
+library(viridis)
+library(gridExtra)
+options(digits=3)
+set.seed(3456)
+```
+
+## Data 
+
+Thanks to EpiCoronaHack Cluster team. These data are manually entered from postings from the Government of Singapore website: [website](https://www.moh.gov.sg/covid-19).
+  
+```{r}
+spdata <- read_csv("data/COVID-19_Singapore_formated_dates.csv")
+# Ensure properly imported
+glimpse(spdata)
+table(spdata$`Related cases`) # There is one cell with "\n", needs to be changed to 'NA'
+spdata$`Related cases`[which(spdata$`Related cases` == "\n")] <- NA
+colSums(is.na(spdata))
+# Rename columns 2, 3 and 4 so no spaces
+spdata <- rename(spdata, related_cases = starts_with("Related"),
+                 cluster_links = "Cluster links",
+                 relationship_notes = starts_with("Relation"))
+# Change date columns into date objects
+spdata <- mutate(spdata, presumed_infected_date = ymd(presumed_infected_date),
+                 last_poss_exposure = ymd(last_poss_exposure),
+                 symp_presumed_infector = ymd(symp_presumed_infector),
+                 date_onset_symptoms = ymd(date_onset_symptoms),
+                 date_quarantine = ymd(date_quarantine),
+                 date_hospital = ymd(date_hospital),
+                 date_confirmation = ymd(date_confirmation),
+                 date_discharge = ymd(date_discharge))
+
+# make sure dates parsed properly
+range(spdata$presumed_infected_date, na.rm = T)
+range(spdata$last_poss_exposure, na.rm = T)
+range(spdata$symp_presumed_infector, na.rm = T)
+range(spdata$date_onset_symptoms, na.rm = T)
+range(spdata$date_quarantine, na.rm = T)
+range(spdata$date_hospital, na.rm = T)
+range(spdata$date_confirmation, na.rm = T)
+range(spdata$date_discharge, na.rm = T)
+
+# Note that the date of symp_presumed_infector for CaseID 79 changed was originally listed as 2020-02-07 (based on online visualizations) but was changed to 2020-02-10, due to Feb 10, 2020 being on the earliest date of onset of symptoms from case 72, as from online info provided, presumed infective contact for CaseID 79 is from 72 (family member), rather than directly from case 52
+spdata$symp_presumed_infector[spdata$CaseID == 79] <- ymd("2020-02-10")
+# Change symp_presumed_infector to Feb 10, 2020 (date of symptom onset from caseID 72, the presumed infector)
+
+#TODO: Make a new script with imputed data for all those that do not have info on data of symptom onset
+spdata <- filter(spdata, !is.na(date_onset_symptoms)) #Remove all the cases that do not have info on date of symptom onset 
+# NOTE 12 of these, but they have a date of confirmation and dates of presumed infection - COULD FIX 
+```
+
+
+
+## Incubation period
+
+The incubation period is the time between exposure and the onset of symptoms. We estimate this directly from the stated start and end times for cases' exposure windows. These are explicitly listed for the Tianjin dataset but in Singapore they are approximated using contact tracing and the route by which a case was exposed. Because it is explicitly about the symptom onset, we removed those who don't have symptom onset defined. (These are a small minority of 12 cases and the alternative would be to impute their symptom onset time using the others' delay to confirmation time. For now, we remove them).   
+
+Then, if no other end time for the exposure is given or if the end of the exposure time is after the time of symptom onset, set the last exposure time to the symptom onset time. This is because they must have been exposed before symptom onset. We use four ideas to set the end time for the exposure window: 
+
+* 1: the end source is last possible exposure, if this is given 
+
+* 2:  if it is not given, then we set the end of the exposure window to the time of symptoms of the presumed infector plus a noise term epsilon (eps)
+
+* 3: and if neither the last possible expsure or the symptom time of the presumed infector are given, the last exposure time is set to the time of symptom onset. 
+
+* 4 Finally, we do not let the last possible exposure time be later than the time of symptom onset 
+
+```{r}
+spdata$end_source = spdata$last_poss_exposure # 1 above 
+(method1 <- sum(!is.na(spdata$end_source))) #20 cases can have date of last possible exposure provided by known end of exposure window
+
+eps=4
+hasPresInf = which(is.na(spdata$last_poss_exposure) & !(is.na(spdata$symp_presumed_infector))) # 2 above 
+spdata$end_source[hasPresInf] = spdata$presumed_infected_date[hasPresInf]+eps
+length(hasPresInf) #47 cases have date of last possible exposure estimated by method #2
+
+hasNone = which(is.na(spdata$last_poss_exposure) & is.na(spdata$symp_presumed_infector)) # 3 above 
+spdata$end_source[hasNone] = spdata$date_onset_symptoms[hasNone]
+length(hasNone) #14 cases have date of last possible exposure estimated by method #3
+
+spdata$end_source = pmin(spdata$end_source, spdata$date_onset_symptoms) # 4
+nrow(spdata) - method1 - length(hasPresInf) - length(hasNone) #0 cases  have date of last possible exposure estimated by method #4
+```
+
+Model the start source 
+
+* 1 if the time of presumed infector is given, use that - epsilon 
+
+* If it is not given use symptom onset minus say 20 days, based on prior 
+knowledge 
+
+```{r}
+spdata$start_source = spdata$presumed_infected_date - eps # 1
+spdata$start_source[is.na(spdata$presumed_infected_date)] = spdata$date_onset_symptoms[is.na(spdata$presumed_infected_date)]-20
+```
+
+Define the maximum and minimum exposure times based on these assumptions. These are the times $t_{min}^i$ and $t_{max}^i$ in the notation. 
+
+
+```{r}
+spdata$minIncTimes <- spdata$date_onset_symptoms - spdata$end_source
+spdata$maxIncTimes <- spdata$date_onset_symptoms - spdata$start_source
+```
+
+
+From here this file diverges from the ..wtables Rmd files .
+
+First define the relevant times for truncation $T_i$
+
+```{r}
+spdata$Ti = as.numeric(ymd("2020-02-27")-spdata$start_source)
+```
+
+Specify some fixed and initial parameters.  
+In the paper on medrxiv our estimates for the incubation period were shape: 3.36 (2.09, 4.28) and scale: 2.11 (1.32,2.46). 
+
+Here we will have a shape $a_g$ for the generation time and $a_i$ for the incubation period, and the same scale $b$ for both. 
+
+```{r}
+b=2.1 # common scale parameter 
+ai=3.4 # shape for incubation period ,as estimated in first round. true value less than this? 
+ag = 3 #starting point for shape for generation time. 
+n=3  # max number of intermediate cases 
+r = 0.1 # add on average 1 intermediate per 10 days? who knows. must look at sensitivity to this parameter 
+
+```
+
+Functions
+
+```{r}
+# CDF of convolution of k gen times and an incubation period 
+Fk <- function(t, ninters, genshape, incshape , comscale) {
+  return(pgamma(q = t, 
+                shape = ninters*genshape+incshape, 
+                scale = comscale))}
+
+#Li under right trunctation with k intermediates (Lirt k from eq 1 in C's notes) 
+lirtk <- function(maxtime, mintime,k, rtTime, genshape, incshape, comscale) {
+  Top1 = Fk(maxtime, ninters = k, genshape, incshape, comscale)
+  Top2 = Fk(mintime,  ninters = k, genshape, incshape, comscale)
+  Bottom = Fk(rtTime, ninters = k, genshape, incshape, comscale) 
+  return((Top1-Top2)/Bottom)
+}
+
+# probability of k intermediates , eq 4 in C's notes 
+pk <- function(k,maxinters=n, rate=r, maxtime, mintime) {
+ if (k > maxinters)  {return(0)}
+  if (k <= maxinters) {
+    lam = 0.5*rate*(maxtime+mintime)
+    return( dpois(k, lam)/ppois(maxinters, lam))
+  }
+}
+
+# log of sum over k of pk*lirtk to get log(lirt) (eq 2 of C's notes) 
+lirt = function(maxtime, mintime, rtTime, maxinters=n, rate=r,genshape = ag, 
+                incshape=ai, comscale = b) {
+  pks = vapply(0:maxinters, 
+               function(x) pk(x, maxinters = maxinters, rate=rate,
+              maxtime=maxtime,mintime=mintime),
+               FUN.VALUE = 0)
+ 
+   lirtks = vapply(0:maxinters,
+                  function(x) lirtk(maxtime, mintime,k =x, rtTime,
+                                    genshape,   incshape, comscale), 
+                  FUN.VALUE = 0)
+  
+  return(log(sum(pks*lirtks)))
+}
+```
+
+
+These functions seem to work. Yay! Now we have to set up the relevant data inputs, and maximize the likelihood to solve for several parameters. 
+
+We have spdata's minIncTimes and maxIncTimes, which are the 'mintime' and 'maxtime' inputs. We already computed Ti which are the rtTime input. 
+
+```{r}
+# negative log likelihood function for optim 
+l_optim <- function( twopars, allmaxtimes, allmintimes, allrtTimes, 
+                     maxinters=n, rate=r, comscale=b) {
+  gs=twopars[1] # gen time scale parameter
+  is=twopars[2] # incubation period scale parameter
+  Ncases = length(allmaxtimes) 
+  # now compute lirt for each case i 
+  indelikes = vapply(1:Ncases, 
+                     function(ind) lirt(maxtime=allmaxtimes[ind],
+                                        mintime=allmintimes[ind],
+                                        rtTime=allrtTimes[ind],
+                                        maxinters=maxinters, rate=rate, 
+                                        genshape = gs, incshape=is, 
+                                        comscale=comscale),
+                     FUN.VALUE = 1)
+  # the product is the likelihood. the negative sum is the negative log likelihood
+  return(-sum(indelikes))
+}
+```
+
+
+
+Testing: seems to work 
+
+```{r}
+l_optim(c(3,4), allmaxtimes = spdata$maxIncTimes, 
+        allmintimes=spdata$minIncTimes,allrtTimes = spdata$Ti, 
+         maxinters=n, rate=r, comscale=b)
+```
+
+So now let's optimize! 
+
+```{r}
+optim(c(3,4), l_optim, allmaxtimes = spdata$maxIncTimes, allmintime=spdata$minIncTimes,
+               allrtTimes = spdata$Ti, maxinters=n, rate=r, comscale=b )
+```
+
+Take a look at a heatmap:
+
+```{r}
+# Grid of likelihood values
+x <- c(seq(0.5,5, length.out=50))
+y <- c(seq(0.5,5, length.out=50))
+data <- expand.grid(X=x, Y=y)
+for (i in 1:dim(data)[1]){
+    data$Z[i] <- -l_optim(c(data[i,1],data[i,2]), allmaxtimes = spdata$maxIncTimes, 
+        allmintime=spdata$minIncTimes,allrtTimes = spdata$Ti, 
+         maxinters=n, rate=r, comscale=b)
+}
+
+
+# Plot them
+ggplot(data, aes(X, Y, fill= Z)) + 
+  geom_tile() +
+  scale_fill_viridis(discrete=FALSE) 
+
+```
+
+We can test for sensitivity to rate r - the number of intermediates 'arriving' per day
+
+```{r}
+# current MLEs: gen time shape 1.65, incubation period shape 2.23, for r=0.1
+
+r_cur = c(seq(0.01, 0.5, length.out=20))
+rec<-matrix(NA, length(r_cur), 2)
+for (i in 1:length(r_cur)){
+  ans <- optim(c(3,4), l_optim, allmaxtimes = spdata$maxIncTimes, allmintime=spdata$minIncTimes,
+               allrtTimes = spdata$Ti, maxinters=n, rate=r_cur[i], comscale=b )
+  rec[i,]<-ans$par
+}
+
+df1 <- data.frame(r=r_cur, ag=rec[,1])
+df2 <- data.frame(r=r_cur, ai=rec[,2])
+
+plot1 <- ggplot(df1, aes(x=r, y=ag)) + geom_line(color="maroon4")+ geom_point(color="maroon4") + theme_minimal()
+plot2 <- ggplot(df2, aes(x=r, y=ai)) + geom_line(color="royalblue4")+ geom_point(color="royalblue4") + theme_minimal()
+
+grid.arrange(plot1, plot2, ncol=2)
+
+
+# Plot mean estimate instead (scale 2.1)
+df3 <- data.frame(r=r_cur, "Mean generation time"=rec[,1]*2.1)
+df4 <- data.frame(r=r_cur, "Mean incubation period"=rec[,2]*2.1)
+
+plot1 <- ggplot(df3, aes(x=r, y=Mean.generation.time)) + geom_line(color="maroon4")+ geom_point(color="maroon4") + theme_minimal()
+plot2 <- ggplot(df4, aes(x=r, y=Mean.incubation.period)) + geom_line(color="royalblue4")+ geom_point(color="royalblue4") + theme_minimal()
+
+grid.arrange(plot1, plot2, ncol=2)
+
+# on the same plot
+df5 <- data.frame(r=r_cur, "Mean generation time"=rec[,1]*2.1, "Mean incubation period"=rec[,2]*2.1)
+
+ggplot(df5) + geom_line(color="maroon4", aes(x=r, y=Mean.generation.time))+ geom_point(color="maroon4", aes(x=r, y=Mean.generation.time)) + theme_minimal() + geom_line(color="royalblue4", aes(x=r, y=Mean.incubation.period))+ geom_point(color="royalblue4", aes(x=r, y=Mean.incubation.period)) + ylab("Time (days)")
+
+
+```
+
