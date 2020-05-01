@@ -472,12 +472,11 @@ Perform the estimate using the Vink et al method, and display the result:
 
 ```{r}
 source("TianjinSI_VinkWallinga_CC.R")
-    #Changed to N = 50 to be consistent with Singapore analysis
-myest3 = serial_mix_est(data=icc3, N=50, startmu=10, startsig =4)
-myest4 = serial_mix_est(data=icc4, N=50, startmu=10, startsig =4)
-myest5 = serial_mix_est(data=icc5, N=50, startmu=10, startsig =4)
-myest6 = serial_mix_est(data=icc6, N=50, startmu=10, startsig =4)
-myest_exp= serial_mix_est(data=icc_expose, N=50, startmu=10, startsig =4)
+myest3 = serial_mix_est(data=icc3, N=100, startmu=10, startsig =4)
+myest4 = serial_mix_est(data=icc4, N=100, startmu=10, startsig =4)
+myest5 = serial_mix_est(data=icc5, N=100, startmu=10, startsig =4)
+myest6 = serial_mix_est(data=icc6, N=100, startmu=10, startsig =4)
+myest_exp= serial_mix_est(data=icc_expose, N=100, startmu=10, startsig =4)
 
 mm=rbind(myest3, myest4, myest5,myest6, myest_exp)
 colnames(mm)=c("mu","sig")

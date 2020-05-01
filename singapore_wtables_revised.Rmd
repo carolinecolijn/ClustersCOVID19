@@ -499,8 +499,6 @@ spedges <- filter(spedges, !is.na(spedges$contactID_1)) #43 CasesIDs with 1 or m
 
 That is nice but visNetwork and igraph require an edge list with from, to nodes. So for each row of spedges we create entries like these.
 
-NOTE still need to check whether the related cases came prior to the stated cases.. (but this may come out in the wash, in the ICC method) 
-
 ```{r}
 singedges = data.frame(from=2,to=1) 
 for (n in 1:nrow(spedges)) {
@@ -520,6 +518,42 @@ fedges = data.frame(from=paste("case",undir[,1],sep=""),
                to=paste("case",undir[,2],sep=""))
 ```
 
+NOTE still need to check whether the related cases came prior to the stated cases.. (but this may come out in the wash, in the ICC method) 
+**TODO**
+```{r check timeline of related cases dates}
+
+#TODO - or else remove if not working...mostly just a confirmation anyways, so not essential to the analysis...
+
+# maybe use an ifelse statement and mutate using the 'fedges' data frame
+  #(i.e. if date of symptoms of 'from' case is earlier than date_onset of 'to' case, 
+  #then new 'symptom_timeline' column says "ok", else says "infectee_prior"
+
+ 
+for(i in 1:nrow(undir)){
+  undir$symp_timeline[i] <- if_else(spdata$date_onset_symptoms[which(spdata$CaseID == undir$from[i])] < spdata$date_onset_symptoms[which(spdata$CaseID == undir$to[i])],
+                             "dates_ok",
+                             "symptoms_in_infectee_prior")
+  print(i)
+  print(paste("From case",
+        undir$from[i], 
+        spdata$date_onset_symptoms[which(spdata$CaseID == undir$from[i])],
+        "vs",
+        "To case",
+        undir$to[i],
+        spdata$date_onset_symptoms[which(spdata$CaseID == undir$to[i])],
+        sep = " "))
+}
+
+#Hmmm..this breaks at: 
+  #i = 13, (From case 13 and To case 26) because case 26 has date_onset_symptoms = NA
+  #Also at i = 19 ("From case 19 2020-01-29 vs To case 28 ") where case 28 has date_onset_symptoms = NA)
+  #Also at i = 24 (""From case 27 2020-02-01 vs To case 28 ") where case 28 has date_onset_symptoms = NA)
+  #Also at i = 30 ("From case 26  vs To case 44 2020-01-31") where case 26 has date_onset_symptoms = NA)
+  #Also at i = 32 ("From case 50 2020-02-07 vs To case 65 ") where case 65 has date_onset_symptoms = NA)  
+ 
+  #Not sure how to fix this loop right now...
+
+```
 
 From this edge list we can use visNetwork to visualise the graph. Make 'group' based on source of probably infection. Colours are from the infection source column (but we could have a better colour scheme, like date of symptom onset). 
 
