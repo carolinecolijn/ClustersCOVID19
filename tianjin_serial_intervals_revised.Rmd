@@ -1,0 +1,727 @@
+---
+title: "Tianjin serial intervals - Revisions"
+author: "Caroline Colijn, Michelle Coombe, and Manu Saraswat"
+date: "`r Sys.Date()`"
+output: 
+  html_document:  
+    keep_md: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(survminer)
+library(survival)
+library(tidyverse)
+library(lubridate)
+library(icenReg)
+library(igraph)
+library(visNetwork)
+library(mvtnorm)
+library(viridis)
+options(digits=3)
+set.seed(1235) 
+```
+
+## Data 
+
+Thanks to Dongxuan Chen and Louxin Zhang. These data are from three main sources:
+
+* source1: http://wsjk.tj.gov.cn/col/col87/index.html#!uid=259&pageNum=1 (Tianjin health commission official website, for daily announcements)
+
+* source2: https://weibo.com/u/2967529507 (Jinyun News, Tianjin offical local media weibo account, for patient symptom onset reference)
+
+* source3: https://m.weibo.cn/status/IrrHI1FHm?jumpfrom=weibocom (another Tianjin local media weibo link, for mall cluster reference)
+
+```{r}
+tdata <- read.csv("data/Tianjin135casesFeb22.csv",na.strings = "", stringsAsFactors = F)
+
+tdata$symptom_onset=as.Date(tdata$symptom_onset, format = "%d/%m/%Y")
+tdata$start_source=as.Date(tdata$start_source, format = "%d/%m/%Y")
+tdata$end_source=as.Date(tdata$end_source,format = "%d/%m/%Y" )
+tdata$confirm_date=as.Date(tdata$confirm_date,format = "%d/%m/%Y" )
+
+glimpse(tdata)
+```
+
+
+## Estimates of serial interval from Tianjin data (without imputation)
+We will estimate the serial interval using the 'interval case to case' approach given in Vink et al (https://academic.oup.com/aje/article/180/9/865/2739204). 
+
+Note that we are removing cases that do NOT have a date of symptom onset to determine the ICC. There are 10 cases without symptom onset, but all have a confirmation date. We will re-run the estimates with imputed data a little later on. 
+```{r}
+# Make a copy of the original dataset for use later on in imputed serial interval estimates
+tdata_org <- tdata
+
+# Remove any cases that are missing data for date of symptom onset
+tdata <- tdata[which(!is.na(tdata$symptom_onset)),]  #removes 10 observations
+```
+
+Now let's make a column which groups all the information in the 'Infection_source' column into categories. Because the infection_source column can contain multiple possible sources of infection (for a handful of cases), it is important to consistently apply a decision rule for when each case would be assigned to a particular infection source group. Here we are emphasizing the Wuhan/Hubei and other known mall outbreak clusters over known interpersonal relationships, as it seems to best represent the introduction of the outbreak. **These groups are NOT used in the estimation of the serial intervals - only to help visualize the network graph.**
+
+Decision rule applied to source_group label classification:
+
+1. Known outbreak cluster locations (e.g. Wuhan/Hubei, mall, or church) *highest priority*
+
+2. Known close relationship to another case (i. family; ii. work; iii. other known direct contact)
+
+3. Known travel history to non-outbreak locations or unclear destinations
+
+4. Any other listed associations (e.g. being part of a particular at-risk group such as airport worker)
+
+5. No known source of possible viral exposure *lowest priority*
+
+```{r}
+# Make a column for sensible groupings for Tianjin, based on the reason why the case was exposed
+# Turn 'Infection_source' into lower case and get trim any whitespace so don't have issues with case sensitivity, etc
+tdata$Infection_source <- str_to_lower(tdata$Infection_source)
+tdata$Infection_source <- str_trim(tdata$Infection_source)
+table(tdata$Infection_source)
+sum(is.na(tdata$Infection_source)) #3 NAs
+
+#Note that the order the data are selected in is VERY important to which case goes into which source_group category
+  #For those that meet multiple criteria (e.g. wuhan; tj1), the str_match which is highest in the case_when call (i.e. "wuhan|hubei") will have priority over those matching later 
+  #so that the 'source' column contain "wuhan; tj1" would be labelled as infection from a "wuhan" rather than from a "known relationship" origin 
+
+#See what happens when we emphasize the wuhan and travel cases over known relationships
+  #This seems more logical, given that the epicenter of the outbreak was Wuhan
+tdata <- mutate(tdata, source_group = case_when(!is.na(str_match(Infection_source, "wuhan|hubei")) ~ "Wuhan and Hubei", #Priority 1
+                                                  !is.na(str_match(Infection_source, "mall|store|shopper")) ~ "Mall", #Priority 1
+                                                  !is.na(str_match(Infection_source, "family|relative|wife|mother|son|sister|husband")) ~ "Relative", #Priority 2
+                                                  !is.na(str_match(Infection_source, "coworker|business|workplace|colleague")) ~ "Coworker", #Priority 2
+                                                  !is.na(str_match(Infection_source, "tj|patient")) ~ "Known relationship", #Priority 2
+                                                  !is.na(str_match(Infection_source, "train|travel|trip|hebei|dalian")) ~ "Other travel", #Priority 3
+                                                  !is.na(str_match(Infection_source, "unknown|unclear")) ~ "Unknown", #Priority 5
+                                                  is.na(Infection_source) ~ "Unknown", #Priority 5
+                                                  T ~ "other")) #there should be none of these, so this is just a sanity check!  
+table(tdata$source_group) 
+```
+
+The dataset has quite a few instances where a putative infector or contact is known. These are listed in the 'Infection_source' column. We first make a graph in which nodes are individuals and edges are present from cases listed as possible sources, to the cases for whom they are possible sources. These are extracted regardless of which infection source group label has been applied.
+```{r}
+mynodes <- tdata$case_id
+
+#Transform everything to lower case to make sure there aren't any issues with matching due to case inconsistencies
+mynodes <- str_to_lower(mynodes) 
+tdata$case_id <- str_to_lower(tdata$case_id)
+
+edges = data.frame(from=mynodes[9],to=mynodes[21],stringsAsFactors = F ) # i read this one manually 
+
+for (id in 1:nrow(tdata)) {
+tonode=tdata$case_id[id]
+fromnodes=str_extract_all(tdata$Infection_source[id], "tj\\d+", simplify = T) #in lower case due to above early/late split on infection source
+  if (length(fromnodes)>0) {
+    for (k in 1:length(fromnodes)) {
+      edges=rbind(edges, c(fromnodes[k], tonode))
+    }
+  }
+}
+head(edges)
+edges=edges[-1,] #Remove the initial relationship we gave so it isn't duplicated
+edges=edges[-which(is.na(edges[,1])),] # NAs arose from a few empty entries for Infection_source 
+```
+
+We need to make sure the cases labelled as "from" (aka the infectors) actually got the virus prior to those in the "to" column (aka the infectees). It is reasonable to assume that cases that were infected first will show signs of infection first, so within case-pairs we will assign the case with the earliest date of symptom onset as the "from" (infector) case and the case with the later date of symptom onset as "to".
+
+To do this, let's start by making a new dataset from our case pairs ('undir') that contains date of symptom onset for each case. We will make a few new columns, both for determining which case has the earliest date of symptom onset, as well as to plot serial intervals over time later on. 
+```{r}
+# Make a smaller dataset of original spdata that contains only the CaseID and date of symptom onset
+tdata_sympt <- select(tdata, case_id, symptom_onset)
+
+# Add the date of symptom onset -for the caseID of the 'from' case - to the case pairs dataset (edges)
+  #Do some renaming so the join is based on the caseID in the from column and that name of date column reflects this
+names(tdata_sympt) <- str_replace(names(tdata_sympt), "case_id", "from")
+undir_tdates <- left_join(edges, tdata_sympt, by = "from")
+names(undir_tdates) <- str_replace(names(undir_tdates), "symptom_onset", "from_sympt_date")
+
+# Repeat, but add the date of symptom onset for the caseID of the 'to' case
+names(tdata_sympt) <- str_replace(names(tdata_sympt), "from", "to")
+undir_tdates <- left_join(undir_tdates, tdata_sympt, by = "to")
+names(undir_tdates) <- str_replace(names(undir_tdates), "symptom_onset", "to_sympt_date")
+
+# Now add some extra columns which give us the raw serial interval (i.e. number of days between symptom onset in infector-infectee pairs)
+  #As well as the absolute value of the serial interval (as some cases in the "from" and "to" columns should be switched around!)
+  #And finally a 'direction' column in case we need to sort out which directions the arrows should be going in for a network graph and where we have missing dates
+undir_tdates <- mutate(undir_tdates, earliest_sympt_onset = pmin(to_sympt_date, from_sympt_date, na.rm = T), 
+                                   raw_serial_interval = to_sympt_date - from_sympt_date,   
+                                   abs_serial_interval = abs(raw_serial_interval))
+```
+
+Now we need to split the dataset apart so that we can switch around the directionality of presumed transmission for case-pairs where the serial interval is negative. Easiest way to do this is to rename columns and then join back to the other parts of the dataset, based on the column names. This actually doesn't affect the serial inteval estimates, but makes the directionality on the network graph more likely to reflect the biology.
+```{r}
+# Split dataset into positive (or 0) serial interval vs. negative vs. NA 
+  #A negative serial interval means our "to" and "from" cases are mixed up
+pos <- filter(undir_tdates, raw_serial_interval >= 0)
+neg <- filter(undir_tdates, raw_serial_interval < 0)
+onlyone <- filter(undir_tdates, is.na(raw_serial_interval)) #3 NAs where date of symptom onset is not known
+
+# Negative dataset needs the column headers changed to reflect that the 'from' and 'to' columns are backwards
+  #as we are assuming that the 'case with the earliest onset of symptoms would have been infected first, 
+  #and passed on the infection to the other case in the pair
+names(neg)
+names(neg)[1] <- "to"
+names(neg)[2] <- "from"
+names(neg)[3] <- "to_sympt_date"
+names(neg)[4] <- "from_sympt_date"
+names(neg)
+
+# Now bind the rows of the seperated datasets back together based on column names
+  #Must use dplyr::bind_rows to bind based on column name rather than position
+undir_tdates <- bind_rows(pos, neg, onlyone)
+
+# For plotting - Add a column with padded to and from caseID numbers so they print in numerical order
+  #Add a zero on the left of the number so all numbers have three digits  
+undir_tdates$pto <- str_replace(undir_tdates$to, pattern = "tj", replacement = "")
+undir_tdates$pto <- str_pad(undir_tdates$pto, width = 3, side = "left", pad = "0")
+
+undir_tdates$pfrom <- str_replace(undir_tdates$from, pattern = "tj", replacement = "")
+undir_tdates$pfrom <- str_pad(undir_tdates$pfrom, width = 3, side = "left", pad = "0")
+
+# For plotting - Make a new column with case pair ID
+undir_tdates <- mutate(undir_tdates, pairID = factor(paste("tj", pfrom, "-", "tj", pto, sep = "")))
+
+rm(pos, neg, onlyone)
+```
+
+From the edge list we can use visNetwork to visualise the graph. Colours are from the infection source group column. 
+```{r}
+# Make data frame of edges, where the cases as the 'earliest' date of symptom onset are labeled as the "from" cases
+tedges <- select(undir_tdates, from, to)
+tedges$arrows <- "to" 
+
+# Select down to only the unique cases-pairs 
+  #Note that if you keep the negative serial intervals as negatives, there are no duplicates; 
+  #But instead there are two instances where you get a loop (tj114-tj115 and tj96-tj97)
+  #ex) tj114 is supposed to infect tj115 and tj115 is supposed to infect tj114
+tedges <- distinct(tedges)
+
+# Make a data frames of nodes
+nodes = data.frame(id=tdata$case_id, 
+                   label=tdata$case_id,
+                   group=tdata$source_group)
+
+# Plot network graph
+visNetwork(nodes, tedges) %>% visLegend()
+```
+
+The interval case to case (ICC) data are the times between the (presumed) index case for a small cluster and the other cases in the cluster. The Vink et al approach allows these intervals to be one of 4 types, and estimates the serial interval and the probability of each type. To extract ICC intervals, we let the clusters be the components of the graph, and we let the presumed index case be the first to develop symptoms. For each cluster, we subtract the index cases' symptom time from the symtom times of the rest of the cluster (or just the first few; it turns out that the estimate is not sensitive to this). This results in a list of time intervals between symptom onset in presumed index cases and symptom onset in other cases in the same cluster (graph component). 
+
+
+First construct the graph
+```{r}
+tgraph = graph_from_edgelist(as.matrix(edges[,1:2]), directed = FALSE)
+ccs=components(tgraph)
+
+tdata$component=vapply(tdata$case_id, function(x)
+  { if (x %in% names(ccs$membership)) { return(ccs$membership[match(x, names(ccs$membership))])
+  } else { 
+    return(NA)}}, FUN.VALUE = 3)
+```
+
+
+Extract ICC interval data: a function 
+```{r}
+ getICCs <- function(thisdata, ccs, K, orderby= "onset" ) {
+  iccs=1
+    for (n in 1:max(ccs$membership)) {
+      mycases  = which(thisdata$component==n)
+      if (orderby == "onset")
+          {  myonsets = sort(thisdata$symptom_onset[mycases])[1:min(K, length(mycases))]}
+        if (orderby == "exposure") {
+          myonsets =thisdata$symptom_onset[mycases][order(thisdata$end_source[mycases])][1:min(K,length(mycases))]
+          }
+      iccs =c(iccs, myonsets[-1]-myonsets[1])
+        }
+    return(iccs[-1]) 
+    }
+```
+
+
+Note that we are removing cases that do NOT have a date of symptom onset to determine the ICC. There are 10 cases without symptom onset, but all have a confirmation date.
+```{r}
+icc3 = getICCs(tdata,ccs,3)
+icc4 = getICCs(tdata,ccs,4)
+icc5 = getICCs(tdata,ccs,5)
+icc6 = getICCs(tdata,ccs,6)
+icc_expose = getICCs(tdata, ccs, 4, orderby ="exposure")
+```
+
+
+Perform the estimate using the Vink et al method, and display the result:
+
+```{r}
+source("TianjinSI_VinkWallinga_CC.R")
+myest3 = serial_mix_est(data=icc3, N=100, startmu=10, startsig =4)
+myest4 = serial_mix_est(data=icc4, N=100, startmu=10, startsig =4)
+myest5 = serial_mix_est(data=icc5, N=100, startmu=10, startsig =4)
+myest6 = serial_mix_est(data=icc6, N=100, startmu=10, startsig =4)
+myest_exp= serial_mix_est(data=icc_expose, N=100, startmu=10, startsig =4)
+
+mm=rbind(myest3, myest4, myest5,myest6, myest_exp)
+colnames(mm)=c("mu","sig")
+mm=as.data.frame(mm)
+mm$NumCasesPerCluster=c( 3, 4, 5, 6, 4) 
+mm$ordering = c("Onset","Onset","Onset","Onset","LastExposure")
+print(mm[,c(4,3,1,2)]) 
+```
+
+The mean SI is `r myest4[1]`. The standard deviation of the serial intervals is `r myest4[2]`.
+
+```{r}
+### Make a density plot of the ICC estimate
+days = seq(from=0, to=10, by=0.1) 
+sp.density= dnorm(days, mean = myest4[1], sd = myest4[2])
+
+ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) +
+    geom_line() + 
+    ggtitle("ICC estimate of the Tianjin cluster serial interval")
+# ggsave(file="final_figures/tianjin_serialint.pdf", height = 4, width = 6)
+```
+
+We need CIs for the mean. For this we use bootstrapping. 
+
+Bootstrap analysis code - have left it set to eval=FALSE in the Rmd because it takes time. Bootstraps are saved in the data folder and named "tianjin_bootstraps_100.Rdata". 
+```{r, eval=FALSE}
+# bootstrap analysis
+Nboot=100
+bestimates_tj = myest4 
+for (kk in 1:Nboot) {
+  bdata = sample(x=icc4, size = length(icc4), replace = T)
+  bestimates_tj = rbind(bestimates_tj, serial_mix_est(data=bdata, N=100, startmu=10, startsig =4))
+  print(paste("loop iteration #", kk, sep = ": "))
+}
+
+bestimates_tj <- bestimates_tj[-1, ] #Remove the non-bootstrapped row (i.e. the myest4 object)
+# save(bestimates_tj, file = "data/tianjin_boots_100.Rdata")
+```
+
+```{r,eval=TRUE}
+load("data/tianjin_boots_100.Rdata")
+mean(bestimates_tj[,1]) # mean of the mean serial intervals
+median(bestimates_tj[,1])
+mean(bestimates_tj[,2]) # sd of the sd serial intervals 
+sd(bestimates_tj[,1]) # sd of the MEAN serial intervals 
+```
+
+The 95% range for the mean serial interval is (`r myest4[1]-1.96*sd(bestimates_tj[,1])`, `r myest4[1]+1.96*sd(bestimates_tj[,1])`).
+
+The following makes a histogram of the bootstrapped mean serial interval (using a cluster size of 4).
+```{r, eval=TRUE}
+hist(bestimates_tj[,1],breaks = 10)
+bootdf=data.frame(mu=bestimates_tj[,1], sig=bestimates_tj[,2])
+
+ggplot(bootdf, aes(x=mu, y=sig)) + geom_point()
+
+ggplot(bootdf, aes(x=mu)) + geom_histogram()
+# ggsave(file = "final_figures/FigS1_bootst_SI_tianjin.pdf", width = 6, height = 4)
+```
+
+## Effect of time on serial interval estimates
+To see the effects of the passage of time on the raw serial intervals, we will plot all possible infector-infectee pairs and the difference in their dates of symptom onset. To do this, we need a dataframe that has (1) case pairs (= 'undir'), (2) dates of symptom onset for both individuals in that pair, and (3) difference in days between those pairs. This has been done above and is in the 'undir_tdates' object.
+
+#### Dotplot of raw serial intervals
+Now let's turn this into a dot plot and a bar chart so we can see if and how serial interval changes over time. The dates on the x-axis are the earliest date of symptom onset from each infected pair. 
+```{r Cleveland dotplot}
+###  Cleveland dotplot of raw serial intervals per possible case pair 
+
+# We want to exclude any case-pairs that have NA for length of serial interval
+  #i.e. one of the pair does not have a date of symptom onset
+undir_tdates_org <- undir_tdates  #Just in case....
+undir_tdates <- filter(undir_tdates, !is.na(raw_serial_interval))
+
+#Pivot the to/from dates of symptom onset column to a long format, so that can make a legend based on this variable
+undir_dotplot <- pivot_longer(undir_tdates, 
+                              cols = contains("sympt_date"),
+                              names_to = "pair_member",
+                              values_to = "onset_date")
+
+#Let's rename the values so it makes more sense in the legend
+undir_dotplot$pair_member <- str_replace(undir_dotplot$pair_member, pattern = "from_sympt_date", replacement = "Presumed infector")
+undir_dotplot$pair_member <- str_replace(undir_dotplot$pair_member, pattern = "to_sympt_date", replacement = "Presumed infectee")
+
+#Make the Cleaveland dotplot
+p <- ggplot(undir_dotplot, aes(y = reorder(pairID, earliest_sympt_onset))) +
+          geom_segment(aes(x = earliest_sympt_onset, xend = earliest_sympt_onset + abs_serial_interval, yend = pairID), 
+                       color = "#404788FF") +
+          geom_point(aes(x = onset_date, color = pair_member, fill = pair_member, shape = pair_member)) +
+          scale_x_date(date_breaks = "1 day") +
+          scale_color_manual(name = "Pair member for \ndate of symptom onset", values = c("#D44842FF", "#FAC127FF")) +
+          scale_fill_manual(name = "Pair member for \ndate of symptom onset", values = c("#D44842FF", "#FAC127FF")) +
+          scale_shape_manual(name = "Pair member for \ndate of symptom onset", values = c(23, 21)) +
+          theme(axis.text.x = element_text(angle = 60, hjust = 1),
+                axis.ticks.y = element_blank(),
+                panel.grid.major.x = element_blank(),
+                panel.grid.minor.x = element_blank(),
+                panel.grid.major.y = element_line(colour = "grey80", linetype = "dashed"),
+                panel.background = element_rect(fill = "white")) +
+          labs(title = "Serial intervals of possible case pairs from Tianjin, over time",
+               x = "Date of symptom onset",
+               y = "Case pairs")
+p
+
+# Write to PDF
+# pdf("final_figures/Dotplot_raw_serial_intervals_Tianjin.pdf", 
+     #family = "Times", 
+#     width = 8.5, height = 11)
+
+# p
+
+# dev.off()
+```
+
+Notice that there are 3 possible case-pairs where the serial interval is zero; these show up with a single point/diamond and no solid line.
+
+#### Mean and Median of half the case pairs
+To determine the effect of time on the raw serial intevals, we will split the case-pairs in half, and find the median, mean, and standard deviation for those pairs in the half with the earlier first date of symptom onset ('earliest_sympt_onset') vs. those in the half with the later dates of first symtom onset ('earliest_sympt_onset'). Note that splitting the case-pairs in half does arbitarily split some pairs that have the same date of earliest_sympt_onset into the two different datasets. 
+```{r}
+### Add a column that specifies if case-pairs are part of "early onset" or "late onset"
+  #based on which half of the case-pairs they fall into 
+# Need to arrange the dataset by the date of earliest symptom onset for each case pair
+undir_tdates <- arrange(undir_tdates, earliest_sympt_onset)
+
+# Define half of the dataset
+half <- nrow(undir_tdates) / 2 
+
+# Define which pairID fall into the early and later half of the dataset
+  #***NOTE THAT THIS DOES ARBITARILY SPLIT SOME PAIRS ON THE SAME DAY OF EARLIEST SYMPT ONSET INTO DIFFERENT HALVES***
+early_half <- undir_tdates$pairID[1:floor(half)] #use floor to round 'half' down
+early_half <- droplevels(early_half)
+
+late_half <- undir_tdates$pairID[ceiling(half):nrow(undir_tdates)] #use ceiling to round 'half' up
+late_half <- droplevels(late_half)
+
+# Make new column indicating which case-pair belongs to which half of the dataset
+undir_tdates <- mutate(undir_tdates, portion_of_pairs = case_when(pairID %in% early_half ~ "early half",
+                                                                  pairID %in% late_half ~"late half",
+                                                                  T ~ "other")) #Sanity check
+undir_tdates$portion_of_pairs <- factor(undir_tdates$portion_of_pairs, 
+                                        levels = c("late half", "early half"))
+
+### Calculate the mean and median for each of the two halves
+e <- undir_tdates %>% 
+        filter(portion_of_pairs == "early half") %>% 
+        summarize(mean_early = mean(abs_serial_interval),
+                  median_early = median(abs_serial_interval),
+                  sd_early = sd(abs_serial_interval))
+
+l <- undir_tdates %>% 
+        filter(portion_of_pairs == "late half") %>% 
+        summarize(mean_late = mean(abs_serial_interval),
+                  median_late = median(abs_serial_interval),
+                  sd_late = sd(abs_serial_interval))
+```
+
+The mean serial interval for the **early** half of the case-pairs is `r e$mean_early`, with a standard deviation of `r e$sd_early`, and a median of `r e$median_early`. The mean serial interval for the **late** half of the case-pairs is `r l$mean_late`, with a standard deviation of `r l$sd_late`, and a median of `r l$median_late`.
+
+This version of the Cleveland dotplot shows which half of the case-pairs was used to calculate each summary statistic.
+```{r Cleveland dotplot facetted by half for mean calculations}
+###  Cleveland dotplot of raw serial intervals, facetted by portion of dataset used to do mean, median and sd calculations
+#Pivot the to/from dates of symptom onset column to a long format, so that can make a legend based on this variable
+undir_dotplot2 <- pivot_longer(undir_tdates, 
+                              cols = contains("sympt_date"),
+                              names_to = "pair_member",
+                              values_to = "onset_date")
+
+#Let's rename the values so it makes more sense in the legend
+undir_dotplot2$pair_member <- str_replace(undir_dotplot2$pair_member, pattern = "from_sympt_date", replacement = "Presumed infector")
+undir_dotplot2$pair_member <- str_replace(undir_dotplot2$pair_member, pattern = "to_sympt_date", replacement = "Presumed infectee")
+
+#Make the Cleaveland dotplot; this time FACET by portion_of_pairs
+p2 <- ggplot(undir_dotplot2, aes(y = reorder(pairID, earliest_sympt_onset))) +
+          geom_segment(aes(x = earliest_sympt_onset, xend = earliest_sympt_onset + abs_serial_interval, yend = pairID), 
+                       color = "#404788FF") +
+          geom_point(aes(x = onset_date, color = pair_member, fill = pair_member, shape = pair_member)) +
+          facet_grid(portion_of_pairs ~ .,
+                     scales = "free_y", space = "free_y") +
+          scale_x_date(date_breaks = "1 day") +
+          scale_color_manual(name = "Pair member for \ndate of symptom onset", values = c("#D44842FF", "#FAC127FF")) +
+          scale_fill_manual(name = "Pair member for \ndate of symptom onset", values = c("#D44842FF", "#FAC127FF")) +
+          scale_shape_manual(name = "Pair member for \ndate of symptom onset", values = c(23, 21)) +
+          theme(axis.text.x = element_text(angle = 60, hjust = 1),
+                axis.ticks.y = element_blank(),
+                panel.grid.major.x = element_blank(),
+                panel.grid.minor.x = element_blank(),
+                panel.grid.major.y = element_line(colour = "grey80", linetype = "dashed"),
+                panel.background = element_rect(fill = "white")) +
+          labs(title = "Serial intervals of possible case pairs from Tianjin, over time",
+               x = "Date of symptom onset",
+               y = "Case pairs")
+p2
+
+# Write to PDF
+# pdf("final_figures/Dotplot_raw_serial_intervals_Tianjin_facetted_in_half.pdf", 
+     #family = "Times", 
+#     width = 8.5, height = 11)
+
+# p2
+
+# dev.off()
+```
+
+## Imputataion of missing data
+We want to see what the effect of cases with missing dates of symptom onset has on our estimates of serial intervals. To do this, we will impute the missing data by:
+missing date of symptom onset = confirmation date - mean(confirmation data- symptom onset date)...where the mean is taken over the cases that do have a symptom onset date present. We will use the copy made of the original data so that we can repeat the full estimation process using the data with imputed dates of symptom onset.
+```{r imputing missing date of symptom onset}
+# Figure out which cases are missing date of symptom onset
+no_date <- which(is.na(tdata_org$symptom_onset))
+tdata_org$case_id[no_date]
+
+#Do all of the cases missing date of symptom onset have a date of confirmation? 
+sum(is.na(tdata_org$confirm_date[no_date])) #Yes! 
+
+# Figure out the mean(confirmation date - symptom onset date) for cases that HAVE a symptom onset date
+avg_date_diff <- tdata_org %>% 
+                    filter(!is.na(symptom_onset)) %>% 
+                    select(case_id, confirm_date, symptom_onset) %>% 
+                    summarise(mean(confirm_date - symptom_onset)) %>% 
+                    pluck(1) 
+avg_date_diff   #Notice that this is a 'difftime' class variable; may become important later?? 
+
+# Impute the missing date of symptom onset values by each cases' date of confirmation - avg_date_diff
+imp_tdata <- tdata_org
+imp_tdata$dso_imputed = if_else(is.na(imp_tdata$symptom_onset),
+                                     imp_tdata$confirm_date - avg_date_diff,
+                                     imp_tdata$symptom_onset) 
+```
+
+Now we can re-run the serial estimates based on the imputed date of symptom onset column (dso_imputed).
+
+Step 1: make the source_group column where we group data in the infection source columns into categories. This categorization is based on the same decision rules as above and is not used in the actual calculation of the serial interval estimates.
+```{r}
+# Make a column for sensible groupings for Tianjin, based on the reason why the case was exposed
+# Turn 'Infection_source' into lower case and get trim any whitespace so don't have issues with case sensitivity, etc
+imp_tdata$Infection_source <- str_to_lower(imp_tdata$Infection_source)
+imp_tdata$Infection_source <- str_trim(imp_tdata$Infection_source)
+table(imp_tdata$Infection_source)
+sum(is.na(imp_tdata$Infection_source)) #3 NAs
+
+#Note that the order the data are selected in is VERY important to which case goes into which source_group category
+  #For those that meet multiple criteria (e.g. wuhan; tj1), the str_match which is highest in the case_when call (i.e. "wuhan|hubei") will have priority over those matching later 
+  #so that the 'source' column contain "wuhan; tj1" would be labelled as infection from a "wuhan" rather than from a "known relationship" origin 
+
+#See what happens when we emphasize the wuhan and travel cases over known relationships
+  #This seems more logical, given that the epicenter of the outbreak was Wuhan
+imp_tdata <- mutate(imp_tdata, source_group = case_when(!is.na(str_match(Infection_source, "wuhan|hubei")) ~ "Wuhan and Hubei", #Priority 1
+                                                  !is.na(str_match(Infection_source, "mall|store|shopper")) ~ "Mall", #Priority 1
+                                                  !is.na(str_match(Infection_source, "family|relative|wife|mother|son|sister|husband")) ~ "Relative", #Priority 2
+                                                  !is.na(str_match(Infection_source, "coworker|business|workplace|colleague")) ~ "Coworker", #Priority 2
+                                                  !is.na(str_match(Infection_source, "tj|patient")) ~ "Known relationship", #Priority 2
+                                                  !is.na(str_match(Infection_source, "train|travel|trip|hebei|dalian")) ~ "Other travel", #Priority 3
+                                                  !is.na(str_match(Infection_source, "unknown|unclear")) ~ "Unknown", #Priority 5
+                                                  is.na(Infection_source) ~ "Unknown", #Priority 5
+                                                  T ~ "other")) #there should be none of these, so this is just a sanity check!  
+table(imp_tdata$source_group) 
+```
+
+
+Step 2: split related cases column so that we can obtain nodes and edges for clusters.
+```{r}
+mynodes_i <- imp_tdata$case_id
+
+#Transform everything to lower case to make sure there aren't any issues with matching due to case inconsistencies
+mynodes_i <- str_to_lower(mynodes_i) 
+imp_tdata$case_id <- str_to_lower(imp_tdata$case_id)
+
+edges_i = data.frame(from=mynodes_i[9],to=mynodes_i[21],stringsAsFactors = F ) # i read this one manually 
+
+for (id in 1:nrow(imp_tdata)) {
+tonode=imp_tdata$case_id[id]
+fromnodes=str_extract_all(imp_tdata$Infection_source[id], "tj\\d+", simplify = T) #in lower case due to above early/late split on infection source
+  if (length(fromnodes)>0) {
+    for (k in 1:length(fromnodes)) {
+      edges_i=rbind(edges_i, c(fromnodes[k], tonode))
+    }
+  }
+}
+head(edges_i)
+edges_i=edges_i[-1,] #Remove the initial relationship we gave so it isn't duplicated
+edges_i=edges_i[-which(is.na(edges_i[,1])),] # NAs arose from a few empty entries for Infection_source 
+```
+
+Step 3: ensure that the "from" cases have the earliest date of symptom onset and the "to" cases have the later date of symptom onset.
+```{r}
+# Make a smaller dataset of original spdata that contains only the CaseID and date of symptom onset
+imp_tdata_sympt <- select(imp_tdata, case_id, symptom_onset)
+
+# Add the date of symptom onset -for the caseID of the 'from' case - to the case pairs dataset (edges_i)
+  #Do some renaming so the join is based on the caseID in the from column and that name of date column reflects this
+names(imp_tdata_sympt) <- str_replace(names(imp_tdata_sympt), "case_id", "from")
+undir_timp <- left_join(edges_i, imp_tdata_sympt, by = "from")
+names(undir_timp) <- str_replace(names(undir_timp), "symptom_onset", "from_sympt_date")
+
+# Repeat, but add the date of symptom onset for the caseID of the 'to' case
+names(imp_tdata_sympt) <- str_replace(names(imp_tdata_sympt), "from", "to")
+undir_timp <- left_join(undir_timp, imp_tdata_sympt, by = "to")
+names(undir_timp) <- str_replace(names(undir_timp), "symptom_onset", "to_sympt_date")
+
+# Now add some extra columns which give us the raw serial interval (i.e. number of days between symptom onset in infector-infectee pairs)
+  #As well as the absolute value of the serial interval (as some cases in the "from" and "to" columns should be switched around!)
+  #And finally a 'direction' column in case we need to sort out which directions the arrows should be going in for a network graph and where we have missing dates
+undir_timp <- mutate(undir_timp, earliest_sympt_onset = pmin(to_sympt_date, from_sympt_date, na.rm = T), 
+                                   raw_serial_interval = to_sympt_date - from_sympt_date,   
+                                   abs_serial_interval = abs(raw_serial_interval))
+
+# Split dataset into positive (or 0) serial interval vs. negative vs. NA 
+  #A negative serial interval means our "to" and "from" cases are mixed up
+pos <- filter(undir_timp, raw_serial_interval >= 0)
+neg <- filter(undir_timp, raw_serial_interval < 0)
+onlyone <- filter(undir_timp, is.na(raw_serial_interval)) #3 NAs where date of symptom onset is not known
+
+# Negative dataset needs the column headers changed to reflect that the 'from' and 'to' columns are backwards
+  #as we are assuming that the 'case with the earliest onset of symptoms would have been infected first, 
+  #and passed on the infection to the other case in the pair
+names(neg)
+names(neg)[1] <- "to"
+names(neg)[2] <- "from"
+names(neg)[3] <- "to_sympt_date"
+names(neg)[4] <- "from_sympt_date"
+names(neg)
+
+# Now bind the rows of the seperated datasets back together based on column names
+  #Must use dplyr::bind_rows to bind based on column name rather than position
+undir_timp <- bind_rows(pos, neg, onlyone)
+
+# For plotting - Add a column with padded to and from caseID numbers so they print in numerical order
+  #Add a zero on the left of the number so all numbers have three digits  
+undir_timp$pto <- str_replace(undir_timp$to, pattern = "tj", replacement = "")
+undir_timp$pto <- str_pad(undir_timp$pto, width = 3, side = "left", pad = "0")
+
+undir_timp$pfrom <- str_replace(undir_timp$from, pattern = "tj", replacement = "")
+undir_timp$pfrom <- str_pad(undir_timp$pfrom, width = 3, side = "left", pad = "0")
+
+# For plotting - Make a new column with case pair ID
+undir_timp <- mutate(undir_timp, pairID = factor(paste("tj", pfrom, "-", "tj", pto, sep = "")))
+
+rm(pos, neg, onlyone)
+```
+
+Step 4: make a network diagram. This won't be our manuscript figure (it's not as pretty...) but gives us that picture here without copying that script here too. 
+```{r}
+# Make data frame of edges_i, where the cases as the 'earliest' date of symptom onset are labeled as the "from" cases
+tedges_i <- select(undir_timp, from, to)
+tedges_i$arrows <- "to" 
+
+# Select down to only the unique cases-pairs 
+  #Note that if you keep the negative serial intervals as negatives, there are no duplicates; 
+  #But instead there are two instances where you get a loop (tj114-tj115 and tj96-tj97)
+  #ex) tj114 is supposed to infect tj115 and tj115 is supposed to infect tj114
+tedges_i <- distinct(tedges_i)
+
+# Make a data frames of nodes
+nodes = data.frame(id=imp_tdata$case_id, 
+                   label=imp_tdata$case_id,
+                   group=imp_tdata$source_group)
+
+# Plot network graph
+visNetwork(nodes, tedges_i) %>% visLegend()
+```
+
+Step 5: determine the ICC intervals by extracting the components of the network graph list. Need to update the 'getICC' function defined earlier so it uses the column with imputed date of symptom onset (or else get NAs!).
+First construct the graph
+```{r}
+tgraph_i = graph_from_edgelist(as.matrix(tedges_i[,1:2]), directed = FALSE)
+ccs_i=components(tgraph_i)
+
+imp_tdata$component=vapply(imp_tdata$case_id, function(x)
+  { if (x %in% names(ccs_i$membership)) { return(ccs_i$membership[match(x, names(ccs_i$membership))])
+  } else { 
+    return(NA)}}, FUN.VALUE = 3)
+```
+
+Extract ICC interval data: a function 
+```{r}
+ getICC_i <- function(thisdata, ccs, K, orderby= "onset" ) {
+  iccs=1
+    for (n in 1:max(ccs$membership)) {
+      mycases  = which(thisdata$component==n)
+      if (orderby == "onset")
+          {  myonsets = sort(thisdata$dso_imputed[mycases])[1:min(K, length(mycases))]}
+        if (orderby == "exposure") {
+          myonsets =thisdata$dso_imputed[mycases][order(thisdata$end_source[mycases])][1:min(K,length(mycases))]
+          }
+      iccs =c(iccs, myonsets[-1]-myonsets[1])
+        }
+    return(iccs[-1]) 
+    }
+```
+
+
+Note that this time we are using **imputed data** for 10 cases that are missing a date of symptom onset in order to determine the ICC. 
+```{r}
+icc3_i = getICC_i(imp_tdata,ccs_i,3)
+icc4_i = getICC_i(imp_tdata,ccs_i,4)
+icc5_i = getICC_i(imp_tdata,ccs_i,5)
+icc6_i = getICC_i(imp_tdata,ccs_i,6)
+icc_expose_i = getICC_i(imp_tdata, ccs_i, 4, orderby ="exposure")
+```
+
+
+Step 6: determine the serial interval estimates by using the method from Vink et al. Use the 'serial_mix_est' function sourced earlier.
+```{r}
+#source("TianjinSI_VinkWallinga_CC.R")
+myest3_i = serial_mix_est(data=icc3_i, N=100, startmu=10, startsig =4)
+myest4_i = serial_mix_est(data=icc4_i, N=100, startmu=10, startsig =4)
+myest5_i = serial_mix_est(data=icc5_i, N=100, startmu=10, startsig =4)
+myest6_i = serial_mix_est(data=icc6_i, N=100, startmu=10, startsig =4)
+myest_exp_i= serial_mix_est(data=icc_expose_i, N=100, startmu=10, startsig =4)
+
+mm=rbind(myest3_i, myest4_i, myest5_i,myest6_i, myest_exp_i)
+colnames(mm)=c("mu","sig")
+mm=as.data.frame(mm)
+mm$NumCasesPerCluster=c( 3, 4, 5, 6, 4) 
+mm$ordering = c("Onset","Onset","Onset","Onset","LastExposure")
+print(mm[,c(4,3,1,2)]) 
+```
+
+The mean SI is `r myest4_i[1]`. The standard deviation of the serial intervals is `r myest4_i[2]`.
+```{r}
+### Make a density plot of the ICC estimate
+days = seq(from=0, to=10, by=0.1) 
+sp.density_i= dnorm(days, mean = myest4_i[1], sd = myest4_i[2])
+
+ggplot(data=data.frame(days=days, density=sp.density_i), aes(x=days,y=density)) +
+    geom_line() + 
+    ggtitle("ICC estimate of the Tianjin cluster serial interval \nwith imputed data")
+# ggsave(file="final_figures/tianjin_serialint_imputed.pdf", height = 4, width = 6)
+```
+
+
+Step 7: determine the 95% confidence intervals for the mean serial estimate through bootstrapping.
+```{r, eval=FALSE}
+# bootstrap analysis
+Nboot=100
+tbestimates_i = myest4_i 
+for (kk in 1:Nboot) {
+  bdata = sample(x=icc4_i, size = length(icc4_i), replace = T)
+  tbestimates_i = rbind(tbestimates_i, serial_mix_est(data=bdata, N=100, startmu=10, startsig =4))
+  print(paste("loop iteration #", kk, sep = ": "))
+}
+
+tbestimates_i <- tbestimates_i[-1, ] #Remove the non-bootstrapped row (i.e. the myest4_i object)
+# save(tbestimates_i, file = "data/tianjin_boots_100_imputed.Rdata")
+```
+
+```{r,eval=TRUE}
+load("data/tianjin_boots_100_imputed.Rdata")
+mean(tbestimates_i[,1]) # mean of the mean serial intervals
+median(tbestimates_i[,1])
+mean(tbestimates_i[,2]) # sd of the sd serial intervals 
+sd(tbestimates_i[,1]) # sd of the MEAN serial intervals 
+```
+
+The 95% range for the mean serial interval is (`r myest4_i[1]-1.96*sd(tbestimates_i[,1])`, `r myest4[1]+1.96*sd(tbestimates_i[,1])`).
+
+The following makes a histogram of the bootstrapped mean serial interval (using a cluster size of 4).
+```{r, eval=TRUE}
+hist(tbestimates_i[,1],breaks = 10)
+bootdf_i=data.frame(mu=tbestimates_i[,1], sig=tbestimates_i[,2])
+
+ggplot(bootdf_i, aes(x=mu, y=sig)) + geom_point()
+
+ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
+# ggsave(file = "final_figures/bootst_SI_tianjin_imputed.pdf", width = 6, height = 4)
+```
+
+
+
+
+

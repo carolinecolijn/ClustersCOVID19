@@ -1,7 +1,7 @@
 ---
 title: "Singapore Serial Intervals - Revisions"
 author: "Caroline Colijn, Michelle Coombe, and Manu Saraswat"
-date: "2020-05-01"
+date: "2020-05-02"
 output: 
   html_document:  
     keep_md: TRUE
@@ -360,6 +360,7 @@ Both visNetwork and igraph require an edge list with "from" and "to" nodes. So f
 
 ```r
 singedges = data.frame(from=2,to=1) 
+
 for (n in 1:nrow(spedges)) {
  for (k in 2:ncol(spedges)) { 
    if (!is.na(spedges[n,k])) {
@@ -373,8 +374,6 @@ undir=data.frame(from = pmin(singedges[,1],singedges[,2]),
                  to = pmax(singedges[,1], singedges[,2]))
 undir = unique(undir)
 undir = undir[-which(undir[,1]==undir[,2]),]
-#fedges = data.frame(from=paste("case",undir[,1],sep=""), 
-#               to=paste("case",undir[,2],sep=""))
 ```
 
 As relationships in the 'related_cases' column were not directional, we need to make sure the cases labelled as "from" (aka the infectors) actually got the virus prior to those in the "to" column (aka the infectees). It is reasonable to assume that cases that were infected first will show signs of infection first, so within case-pairs we will assign the case with the earliest date of symptom onset as the "from" (infector) case and the case with the later date of symptom onset as "to".
@@ -532,7 +531,7 @@ table(spdata$presumed_reason_group)
 We also need to make a data frame of the edges (indicating direction of probable transmission) and nodes (the cases).
 
 ```r
-# Make data frame of edges
+# Make data frame of edges, where the cases as the 'earliest' date of symptom onset are labeled as the "from" cases
 fedges <- select(undir_dates, from, to)
 fedges = data.frame(from = paste("case", fedges[ ,1], sep=""), 
                      to = paste("case", fedges[ ,2], sep=""))
@@ -1205,15 +1204,15 @@ Nboot=100
 bestimates=myest4 
 
 # NOTE this loop had errors a few times; I just restarted it. 
-for (kk in 1:Nboot) {
+for (kk in 61:Nboot) {
   bdata = sample(x=icc4, size = length(icc4), replace = T)
   bestimates = rbind(bestimates, serial_mix_est(data=bdata, N=100, startmu=10, startsig =4))
   
   print(paste("loop iteration #", kk, sep = ": "))
 }
 
-bestimates <- bestimates[-1, ] #Remove the non-bootstrapped row (i.e. the myest4 object)
-# save(bestimates, file = "data/sing_boots_100.Rdata")
+#bestimates <- bestimates[-1, ] #Remove the non-bootstrapped row (i.e. the myest4 object)
+ save(bestimates, file = "data/sing_boots_100.Rdata")
 ```
 
 
@@ -1307,7 +1306,7 @@ undir_dates <- mutate(undir_dates, si_groups = factor(case_when(abs_serial_inter
                                                          T ~ "other")))
 ```
 
-
+#### Graphs of raw serial intervals
 Now let's turn this into a dot plot and a bar chart so we can see if and how serial interval changes over time. The dates on the x-axis are the earliest date of symptom onset from each infected pair.
 
 ```r
@@ -1389,6 +1388,11 @@ ggplot(sig_dates, aes(x = earliest_sympt_onset, y = count_sig, fill = serial_int
 ###~~~~~~~~~~~ C) Cleaveland dotplot of raw serial intervals per possible case pair ~~~~~~~~~~~~~~~~~~~~~~~~~~~~###
   # This is the plot that has the easiest visual interpretation, so we will use it in our final manuscript
 
+# We want to exclude any case-pairs that have NA for length of serial interval
+  #i.e. one of the pair does not have a date of symptom onset
+undir_dates_org <- undir_dates  #Just in case....
+undir_dates <- filter(undir_dates, !is.na(raw_serial_interval)) #Removes 5 NAs
+
 #Pivot the to/from dates of symptom onset column to a long format, so that can make a legend based on this variable
 undir_dotplot <- pivot_longer(undir_dates, 
                               cols = contains("sympt_date"),
@@ -1422,28 +1426,111 @@ p <- ggplot(undir_dotplot, aes(y = reorder(pairID, earliest_sympt_onset))) +
 p
 ```
 
-```
-## Warning: Removed 10 rows containing missing values (geom_segment).
-```
-
-```
-## Warning: Removed 5 rows containing missing values (geom_point).
-```
-
 ![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-21-3.png)<!-- -->
 
 ```r
 # Write to PDF
 # pdf("final_figures/Dotplot_raw_serial_intervals_Singapore.pdf", 
      #family = "Times", 
-#     width = 8, height = 8)
+#     width = 8.5, height = 11)
 
 # p
 
 # dev.off()
 ```
 
+#### Mean and Median of half the case pairs
+To determine the effect of time on the raw serial intevals, we will split the case-pairs in half, and find the median, mean, and standard deviation for those pairs in the half with the earlier first date of symptom onset ('earliest_sympt_onset') vs. those in the half with the later dates of first symtom onset ('earliest_sympt_onset'). Note that splitting the case-pairs in half does arbitarily split some pairs that have the same date of earliest_sympt_onset into the two different datasets. 
 
+```r
+### Add a column that specifies if case-pairs are part of "early onset" or "late onset"
+  #based on which half of the case-pairs they fall into 
+# Need to arrange the dataset by the date of earliest symptom onset for each case pair
+undir_dates <- arrange(undir_dates, earliest_sympt_onset)
+
+# Define half of the dataset
+half <- nrow(undir_dates) / 2 
+
+# Define which pairID fall into the early and later half of the dataset
+  #***NOTE THAT THIS DOES ARBITARILY SPLIT SOME PAIRS ON THE SAME DAY OF EARLIEST SYMPT ONSET INTO DIFFERENT HALVES***
+early_half <- undir_dates$pairID[1:half] 
+early_half <- droplevels(early_half)
+
+late_half <- undir_dates$pairID[half+1:nrow(undir_dates)] #as half is even, need to add 1
+late_half <- droplevels(late_half)
+
+# Make new column indicating which case-pair belongs to which half of the dataset
+undir_dates <- mutate(undir_dates, portion_of_pairs = case_when(pairID %in% early_half ~ "early half",
+                                                                pairID %in% late_half ~"late half",
+                                                                T ~ "other")) #Sanity check
+undir_dates$portion_of_pairs <- factor(undir_dates$portion_of_pairs, 
+                                       levels = c("late half", "early half"))
+
+### Calculate the mean and median for each of the two halves
+e <- undir_dates %>% 
+        filter(portion_of_pairs == "early half") %>% 
+        summarize(mean_early = mean(abs_serial_interval),
+                  median_early = median(abs_serial_interval),
+                  sd_early = sd(abs_serial_interval))
+
+l <- undir_dates %>% 
+        filter(portion_of_pairs == "late half") %>% 
+        summarize(mean_late = mean(abs_serial_interval),
+                  median_late = median(abs_serial_interval),
+                  sd_late = sd(abs_serial_interval))
+```
+
+The mean serial interval for the **early** half of the case-pairs is 4.071, with a standard deviation of 3.231, and a median of 4. The mean serial interval for the **late** half of the case-pairs is 4.036, with a standard deviation of 3.595, and a median of 3.
+
+This version of the Cleveland dotplot shows which half of the case-pairs was used to calculate each summary statistic.
+
+```r
+###  Cleveland dotplot of raw serial intervals, facetted by portion of dataset used to do mean, median and sd calculations
+#Pivot the to/from dates of symptom onset column to a long format, so that can make a legend based on this variable
+undir_dotplot2 <- pivot_longer(undir_dates, 
+                              cols = contains("sympt_date"),
+                              names_to = "pair_member",
+                              values_to = "onset_date")
+
+#Let's rename the values so it makes more sense in the legend
+undir_dotplot2$pair_member <- str_replace(undir_dotplot2$pair_member, pattern = "from_sympt_date", replacement = "Presumed infector")
+undir_dotplot2$pair_member <- str_replace(undir_dotplot2$pair_member, pattern = "to_sympt_date", replacement = "Presumed infectee")
+
+#Make the Cleaveland dotplot; this time FACET by portion_of_pairs
+p2 <- ggplot(undir_dotplot2, aes(y = reorder(pairID, earliest_sympt_onset))) +
+          geom_segment(aes(x = earliest_sympt_onset, xend = earliest_sympt_onset + abs_serial_interval, yend = pairID), 
+                       color = "#404788FF") +
+          geom_point(aes(x = onset_date, color = pair_member, fill = pair_member, shape = pair_member)) +
+          facet_grid(portion_of_pairs ~ .,
+                     scales = "free_y", space = "free_y") +
+          scale_x_date(date_breaks = "1 day") +
+          scale_color_manual(name = "Pair member for \ndate of symptom onset", values = c("#D44842FF", "#FAC127FF")) +
+          scale_fill_manual(name = "Pair member for \ndate of symptom onset", values = c("#D44842FF", "#FAC127FF")) +
+          scale_shape_manual(name = "Pair member for \ndate of symptom onset", values = c(23, 21)) +
+          theme(axis.text.x = element_text(angle = 60, hjust = 1),
+                axis.ticks.y = element_blank(),
+                panel.grid.major.x = element_blank(),
+                panel.grid.minor.x = element_blank(),
+                panel.grid.major.y = element_line(colour = "grey80", linetype = "dashed"),
+                panel.background = element_rect(fill = "white")) +
+          labs(title = "Serial intervals of possible case pairs from Tianjin, over time",
+               x = "Date of symptom onset",
+               y = "Case pairs")
+p2
+```
+
+![](singapore_serial_intervals_revised_files/figure-html/Cleveland dotplot facetted by half for mean calculations-1.png)<!-- -->
+
+```r
+# Write to PDF
+# pdf("final_figures/Dotplot_raw_serial_intervals_Singapore_facetted_in_half.pdf", 
+     #family = "Times", 
+#     width = 8.5, height = 11)
+
+# p2
+
+# dev.off()
+```
 
 ## Imputataion of missing data
 We want to see what the effect of cases with missing dates of symptom onset has on our estimates of serial intervals. To do this, we will impute the missing data by:
@@ -2420,7 +2507,7 @@ ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) +
     ggtitle("ICC estimate of the Singapore cluster serial interval \nwith imputed data")
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
 
 ```r
 # ggsave(file="final_figures/sing_serialint_imputed.pdf", height = 4, width = 6)
@@ -2454,14 +2541,14 @@ load("data/sing_boots_100_imputed.Rdata") # in case in Rmd with above evals set 
 hist(bestimates_i[ ,1], breaks = 30)
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
 
 ```r
 bootdf_i = data.frame(mu=bestimates_i[,1], sig=bestimates_i[,2])
 ggplot(bootdf_i, aes(x=mu, y=sig)) + geom_point()
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-31-2.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-32-2.png)<!-- -->
 
 ```r
 ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
@@ -2471,7 +2558,7 @@ ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-31-3.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-32-3.png)<!-- -->
 
 ```r
 # ggsave(file = "final_figures/bootst_SI_sing_imputed.pdf", width = 6, height = 4)
