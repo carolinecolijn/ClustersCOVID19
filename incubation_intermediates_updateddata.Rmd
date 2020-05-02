@@ -30,7 +30,7 @@ set.seed(3456)
 Thanks to EpiCoronaHack Cluster team. These data are manually entered from postings from the Government of Singapore website: [website](https://www.moh.gov.sg/covid-19).
   
 ```{r}
-spdata <- read_csv("data/COVID-19_Singapore_eg_update_edges.csv")
+spdata <- read_csv("data/COVID-19_Singapore_formated_dates.csv")
 # Ensure properly imported
 glimpse(spdata)
 table(spdata$`Related cases`) # There is one cell with "\n", needs to be changed to 'NA'
@@ -41,14 +41,14 @@ spdata <- rename(spdata, related_cases = starts_with("Related"),
                  cluster_links = "Cluster links",
                  relationship_notes = starts_with("Relation"))
 # Change date columns into date objects
-spdata <- mutate(spdata, presumed_infected_date = dmy(presumed_infected_date),
-                 last_poss_exposure = dmy(last_poss_exposure),
-                 symp_presumed_infector = dmy(symp_presumed_infector),
-                 date_onset_symptoms = dmy(date_onset_symptoms),
-                 date_quarantine = dmy(date_quarantine),
-                 date_hospital = dmy(date_hospital),
-                 date_confirmation = dmy(date_confirmation),
-                 date_discharge = dmy(date_discharge))
+spdata <- mutate(spdata, presumed_infected_date = ymd(presumed_infected_date),
+                 last_poss_exposure = ymd(last_poss_exposure),
+                 symp_presumed_infector = ymd(symp_presumed_infector),
+                 date_onset_symptoms = ymd(date_onset_symptoms),
+                 date_quarantine = ymd(date_quarantine),
+                 date_hospital = ymd(date_hospital),
+                 date_confirmation = ymd(date_confirmation),
+                 date_discharge = ymd(date_discharge))
 
 # make sure dates parsed properly
 range(spdata$presumed_infected_date, na.rm = T)
@@ -59,15 +59,14 @@ range(spdata$date_quarantine, na.rm = T)
 range(spdata$date_hospital, na.rm = T)
 range(spdata$date_confirmation, na.rm = T)
 range(spdata$date_discharge, na.rm = T)
-# Note that case 36 is listed has having symptoms 16 days AFTER being hospitalized; suspect a typo in the month, fixing: 
-# spdata$date_onset_symptoms[spdata$CaseID==36] <- ymd("2020-01-24")
+
 # Note that the date of symp_presumed_infector for CaseID 79 changed was originally listed as 2020-02-07 (based on online visualizations) but was changed to 2020-02-10, due to Feb 10, 2020 being on the earliest date of onset of symptoms from case 72, as from online info provided, presumed infective contact for CaseID 79 is from 72 (family member), rather than directly from case 52
 spdata$symp_presumed_infector[spdata$CaseID == 79] <- ymd("2020-02-10")
 # Change symp_presumed_infector to Feb 10, 2020 (date of symptom onset from caseID 72, the presumed infector)
 
 #TODO: Make a new script with imputed data for all those that do not have info on data of symptom onset
 spdata <- filter(spdata, !is.na(date_onset_symptoms)) #Remove all the cases that do not have info on date of symptom onset 
-# NOTE NOTE 12 of these, but they have a date of confiramation and dates of presumed infection - COULD FIX 
+# NOTE 12 of these, but they have a date of confirmation and dates of presumed infection - COULD FIX 
 ```
 
 
@@ -280,8 +279,7 @@ df3 <- data.frame(r=r_cur, "Mean generation time"=rec[,1]*2.1)
 df4 <- data.frame(r=r_cur, "Mean incubation period"=rec[,2]*2.1)
 
 plot1 <- ggplot(df3, aes(x=r, y=Mean.generation.time)) + geom_line(color="maroon4")+ geom_point(color="maroon4") + theme_minimal()
-plot2 <- ggplot(df4, aes(x=r, y=Mean.incubation.period)) + geom_line(color="royalblue4")+ geom_point(color="royalblue4") + theme_minimal() + geom_hline(yintercept=20, linetype="dashed", 
-                color = "red", size=2)
+plot2 <- ggplot(df4, aes(x=r, y=Mean.incubation.period)) + geom_line(color="royalblue4")+ geom_point(color="royalblue4") + theme_minimal()
 
 grid.arrange(plot1, plot2, ncol=2)
 
@@ -293,3 +291,70 @@ ggplot(df5) + geom_line(color="maroon4", aes(x=r, y=Mean.generation.time))+ geom
 
 ```
 
+
+Can we also try to optimize the shared scale parameter b?
+
+```{r}
+# negative log likelihood function for optim 
+l_optim_3 <- function( threepars, allmaxtimes, allmintimes, allrtTimes, 
+                     maxinters=n, rate=r) {
+  gs=threepars[1] # gen time scale parameter
+  is=threepars[2] # incubation period scale parameter
+  comscale=threepars[3]
+  Ncases = length(allmaxtimes) 
+  # now compute lirt for each case i 
+  indelikes = vapply(1:Ncases, 
+                     function(ind) lirt(maxtime=allmaxtimes[ind],
+                                        mintime=allmintimes[ind],
+                                        rtTime=allrtTimes[ind],
+                                        maxinters=maxinters, rate=rate, 
+                                        genshape = gs, incshape=is, 
+                                        comscale=comscale),
+                     FUN.VALUE = 1)
+  # the product is the likelihood. the negative sum is the negative log likelihood
+  return(-sum(indelikes))
+}
+
+l_optim_3(c(3,4,b), allmaxtimes = spdata$maxIncTimes, 
+        allmintimes=spdata$minIncTimes,allrtTimes = spdata$Ti, 
+         maxinters=n, rate=r) # matches the 2 par version
+
+
+optim(c(3,4, b), l_optim_3, allmaxtimes = spdata$maxIncTimes, allmintime=spdata$minIncTimes,
+               allrtTimes = spdata$Ti, maxinters=n, rate=r)
+```
+
+It wants to make scale b really small and the shape parameters really big  - but actually if you look at the resulting disribution it has a very similar mean to b=2.1 so that's good. Lets try running 2 par optim for a reasonable range of b values instead. 
+
+```{r}
+res<-matrix(NA,90,2)
+for (i in 10:100){
+ans <- optim(c(40/i,40/i), l_optim, allmaxtimes = spdata$maxIncTimes, allmintime=spdata$minIncTimes,
+               allrtTimes = spdata$Ti, maxinters=n, rate=r, comscale=i/20 )
+res[i-9,] <- ans$par
+}
+
+
+# Plot mean estimate instead (scale 2.1)
+dfbg <- data.frame(b=seq(10/20,100/20,length.out=90), ag=res[,1])
+dfbi <- data.frame(b=seq(10/20,100/20,length.out=90), ai = res[,2])
+
+dfbg2 <- data.frame(b=seq(10/20,100/20,length.out=90), "Mean generation time"=res[,1]*seq(10/20,100/20,length.out=90))
+dfbi2 <- data.frame(b=seq(10/20,100/20,length.out=90), "Mean incubation period" = res[,2]*seq(10/20,100/20,length.out=90))
+
+plot1 <- ggplot(dfbg, aes(x=b, y=ag)) + geom_line(color="maroon4")+ geom_point(color="maroon4") + theme_minimal()
+plot2 <- ggplot(dfbi, aes(x=b, y=ai)) + geom_line(color="royalblue4")+ geom_point(color="royalblue4") + theme_minimal()
+
+grid.arrange(plot1, plot2, ncol=2)
+
+plot1 <- ggplot(dfbg2, aes(x=b, y=Mean.generation.time)) + geom_line(color="maroon4")+ geom_point(color="maroon4") + theme_minimal()
+plot2 <- ggplot(dfbi2, aes(x=b, y=Mean.incubation.period)) + geom_line(color="royalblue4")+ geom_point(color="royalblue4") + theme_minimal()
+
+grid.arrange(plot1, plot2, ncol=2)
+
+# on the same plot
+df_together <- data.frame(b=seq(10/20,100/20,length.out=90), "Mean generation time"=res[,1]*seq(10/20,100/20,length.out=90), "Mean incubation period"=res[,2]*seq(10/20,100/20,length.out=90))
+
+ggplot(df_together) + geom_line(color="maroon4", aes(x=b, y=Mean.generation.time))+ geom_point(color="maroon4", aes(x=b, y=Mean.generation.time)) + theme_minimal() + geom_line(color="royalblue4", aes(x=b, y=Mean.incubation.period))+ geom_point(color="royalblue4", aes(x=b, y=Mean.incubation.period)) + ylab("Time (days)")
+
+```
