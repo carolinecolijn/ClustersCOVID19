@@ -717,7 +717,7 @@ imp_data$graphID = paste("case", imp_data$CaseID, sep="")
 visNetwork(nodes.df.i, fedges_i) %>% visLegend() 
 ```
 
-Step 5: determine the ICC intervals by extracting the components of the network graph list. Use the 'getICC' function defined earlier.
+Step 5: determine the ICC intervals by extracting the components of the network graph list. Need to update the 'getICC' function defined earlier so it uses the column with imputed date of symptom onset (or else get NAs!).
 ```{r}
 sgraph_i = graph_from_edgelist(as.matrix(fedges_i[,1:2]), directed = FALSE)
 ccs_imp = components(sgraph_i)
@@ -728,18 +728,32 @@ imp_data$component=vapply(imp_data$graphID, function(x)
   } else { 
     return(NA)}}, FUN.VALUE = 3)
 
-icc3_i = getICCs(imp_data,ccs_imp,3)
-icc4_i = getICCs(imp_data,ccs_imp,4)
-icc5_i = getICCs(imp_data,ccs_imp,5)
-icc6_i = getICCs(imp_data,ccs_imp,6)
-icc_expose_i = getICCs(imp_data, ccs_imp, 4, orderby ="exposure")
+#Need to have a new function that uses the column with imputed dates of symptom onset
+getICCs_imputed <- function(thisdata, ccs, K, orderby= "onset" ) {
+  iccs=1
+for (n in 1:max(ccs$membership)) {
+  mycases  = which(thisdata$component==n)
+  if (orderby == "onset")
+  {  myonsets = sort(thisdata$dso_imputed[mycases])[1:min(K, length(mycases))]}
+  if (orderby == "exposure") {
+ myonsets =thisdata$dso_imputed[mycases][order(thisdata$end_source[mycases])][1:min(K,length(mycases))]
+ # myonsets =  spdata$dso_imputed[mycases[order(spdata$start_source[mycases])]] # alternative also ORDERS by earliest exposure 
+ 
+ }
+  iccs =c(iccs, myonsets[-1]-myonsets[1])
+}
+  return(iccs[-1]) 
+  }
+
+icc3_i = getICCs_imputed(imp_data,ccs_imp,3)
+icc4_i = getICCs_imputed(imp_data,ccs_imp,4)
+icc5_i = getICCs_imputed(imp_data,ccs_imp,5)
+icc6_i = getICCs_imputed(imp_data,ccs_imp,6)
+icc_expose_i = getICCs_imputed(imp_data, ccs_imp, 4, orderby ="exposure")
 ```
 
 Step 6: determine the serial interval estimates by using the method from Vink et al. Use the 'serial_mix_est' function sourced earlier.
 ```{r}
-
-#TODO: I am getting errors when trying to run the serial_mix_est function; I think because there are NAs in the icc_i objects
-
 myest3_i = serial_mix_est(data=icc3_i, N=100, startmu=10, startsig =4)
 myest4_i = serial_mix_est(data=icc4_i, N=100, startmu=10, startsig =4)
 myest5_i = serial_mix_est(data=icc5_i, N=100, startmu=10, startsig =4)
@@ -752,16 +766,18 @@ mm=as.data.frame(mm)
 mm$NumCasesPerCluster=c( 3,4, 5, 6, 4) 
 mm$ordering = c("Onset","Onset","Onset","Onset","LastExposure")
 print(mm[,c(4,3,1,2)]) 
+```
 
+```{r}
 ### Make a density plot of the ICC estimate
 days = seq(from=0, to=10, by=0.1) 
- sp.density= dnorm(days, mean = myest4_i[1], sd = myest4_i[2])
+sp.density= dnorm(days, mean = myest4_i[1], sd = myest4_i[2])
+
 ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) +
     geom_line() + 
     ggtitle("ICC estimate of the Singapore cluster serial interval \nwith imputed data")
-#ggsave(file="final_figures/sing_serialint_imputed.pdf", height = 4, width = 6)
+# ggsave(file="final_figures/sing_serialint_imputed.pdf", height = 4, width = 6)
 ```
-
 The mean SI is `r myest4_i[1]`. The standard deviation of the serial intervals is `r myest4_i[2]`.
 
 
@@ -790,7 +806,7 @@ hist(bestimates_i[ ,1], breaks = 30)
 bootdf_i = data.frame(mu=bestimates_i[,1], sig=bestimates_i[,2])
 ggplot(bootdf_i, aes(x=mu, y=sig)) + geom_point()
 ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
-# ggsave(file = "final_figures/FigS1_bootst_SI_sing_imputed.pdf", width = 6, height = 4)
+# ggsave(file = "final_figures/bootst_SI_sing_imputed.pdf", width = 6, height = 4)
 ```
 
 ```{r,eval=TRUE} 
