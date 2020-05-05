@@ -131,7 +131,7 @@ edges_dist = distinct(edges_dist)
 
 Make the dataset for plotting , and make a new column that is just the number without the "TJ" to make for better node label 
 ```{r}
-tj_net=graph_from_data_frame(edges_dist,vertices = tdata,directed = FALSE)
+tj_net=graph_from_data_frame(edges,vertices = nodes,directed = FALSE)
 ntj=ggnetwork(tj_net)
 
 ntj$case_num=as.character(str_extract_all(ntj$name,"\\(?[0-9,.]+\\)?"))
@@ -144,7 +144,7 @@ Make the plot
 #ntj_clean=read.csv(here("network_diagram/tianjin_cluster_known_edges.csv"))
 tj_cov_net = ggplot(ntj, aes(x = x, y = y, xend = xend, yend = yend))+
   geom_edges() +
-  geom_nodes(aes(color=source_group),size=8) +
+  geom_nodes(aes(color=group),size=8) +
   geom_text(aes(label=case_num), check_overlap = TRUE)+
   #geom_text(aes(label=case_num),subset(ntj,cluster==" close contact "),colour="white",check_overlap = TRUE)+
   scale_color_viridis_d()+
