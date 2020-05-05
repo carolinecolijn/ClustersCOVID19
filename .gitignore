@@ -4,6 +4,6 @@
 .Rhistory
 .RData
 .Ruserdata
-
 #Ignore output and files used for trouble-shooting coding
 **/Testing
+.DS_Store
