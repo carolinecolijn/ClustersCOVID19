@@ -1,5 +1,5 @@
 #Ignore R Studio files that can overwrite on multiple users computers
-*.DS_Store
+**.DS_Store
 .Rproj.user
 .Rhistory
 .RData
