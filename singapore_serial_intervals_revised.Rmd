@@ -594,7 +594,7 @@ p2 <- ggplot(undir_dotplot2, aes(y = reorder(pairID, earliest_sympt_onset))) +
                 panel.grid.minor.x = element_blank(),
                 panel.grid.major.y = element_line(colour = "grey80", linetype = "dashed"),
                 panel.background = element_rect(fill = "white")) +
-          labs(title = "Serial intervals of possible case pairs from Tianjin, over time",
+          labs(title = "Serial intervals of possible case pairs from Singapore, over time",
                x = "Date of symptom onset",
                y = "Case pairs")
 p2
