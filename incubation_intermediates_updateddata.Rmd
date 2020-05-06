@@ -292,7 +292,40 @@ ggplot(df5) + geom_line(color="maroon4", aes(x=r, y=Mean.generation.time))+ geom
 ```
 
 
-Can we also try to optimize the shared scale parameter b?
+CC: I think we need some kind of uncertainty estimate around the parameters - having looked at it I suspect that the bootstrap is likely to be the best bet. 
+
+Based on these plots I would say $r=0.05, r=0.1, r=0.15$ to start; we resample the data using bootstrapping, and get empirical 90% CIs for example around the $ai$ and $ag$ parameters. 
+
+```{r}
+nboot = 500
+
+getBootstraps = function(nboot, dataset=spdata, therate=0.1) {
+bootresults= lapply(1:nboot, function(x) {
+  bootind = sample(1:nrow(dataset), nrow(dataset), replace = T)
+  return(optim(c(1,2), l_optim, allmaxtimes = dataset$maxIncTimes[bootind], allmintime=dataset$minIncTimes[bootind],
+               allrtTimes = dataset$Ti[bootind], maxinters=n, rate=therate, comscale=b ))
+})
+gsboots= 0*1:100
+isboots = 0*1:100
+for (n in 1:nboot) {gsboots[n]=bootresults[[n]]$par[1]}
+for (n in 1:nboot) {isboots[n]=bootresults[[n]]$par[2]}
+return(data.frame(gsboots = gsboots, isboots = isboots, rate = therate))
+}
+
+boot1=getBootstraps(nboot, spdata,therate = 0.05) 
+boot2=getBootstraps(nboot, spdata,therate = 0.1) 
+boot3=getBootstraps(nboot, spdata,therate = 0.15) 
+boot4=getBootstraps(nboot, spdata,therate = 0.2) 
+save(boot1, boot2, boot3, boot4, file = "interbooty.Rdata")
+
+```
+
+
+Then the remaining question is to see if we want to handle right truncation without intermediate cases. And the uncertainty and so on there. There, we could continue to do the 3 models (gamma, Weibull, lognormal) because without intermediate cases, it's just the CDFs (which we have access to in R). 
+
+
+
+JS: Can we also try to optimize the shared scale parameter b? CC: I think we discuss this but don't show it (re optimizing b). 
 
 ```{r}
 # negative log likelihood function for optim 
