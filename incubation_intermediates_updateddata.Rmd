@@ -116,46 +116,8 @@ r = 0.1 # add on average 1 intermediate per 10 days? who knows. must look at sen
 ```
 
 Functions
-
 ```{r}
-# CDF of convolution of k gen times and an incubation period 
-Fk <- function(t, ninters, genshape, incshape , comscale) {
-  return(pgamma(q = t, 
-                shape = ninters*genshape+incshape, 
-                scale = comscale))}
-
-#Li under right trunctation with k intermediates (Lirt k from eq 1 in C's notes) 
-lirtk <- function(maxtime, mintime,k, rtTime, genshape, incshape, comscale) {
-  Top1 = Fk(maxtime, ninters = k, genshape, incshape, comscale)
-  Top2 = Fk(mintime,  ninters = k, genshape, incshape, comscale)
-  Bottom = Fk(rtTime, ninters = k, genshape, incshape, comscale) 
-  return((Top1-Top2)/Bottom)
-}
-
-# probability of k intermediates , eq 4 in C's notes 
-pk <- function(k,maxinters=n, rate=r, maxtime, mintime) {
- if (k > maxinters)  {return(0)}
-  if (k <= maxinters) {
-    lam = 0.5*rate*(maxtime+mintime)
-    return( dpois(k, lam)/ppois(maxinters, lam))
-  }
-}
-
-# log of sum over k of pk*lirtk to get log(lirt) (eq 2 of C's notes) 
-lirt = function(maxtime, mintime, rtTime, maxinters=n, rate=r,genshape = ag, 
-                incshape=ai, comscale = b) {
-  pks = vapply(0:maxinters, 
-               function(x) pk(x, maxinters = maxinters, rate=rate,
-              maxtime=maxtime,mintime=mintime),
-               FUN.VALUE = 0)
- 
-   lirtks = vapply(0:maxinters,
-                  function(x) lirtk(maxtime, mintime,k =x, rtTime,
-                                    genshape,   incshape, comscale), 
-                  FUN.VALUE = 0)
-  
-  return(log(sum(pks*lirtks)))
-}
+source("incufuncs.R")
 ```
 
 
@@ -186,10 +148,10 @@ l_optim <- function( twopars, allmaxtimes, allmintimes, allrtTimes,
 
 
 
-Testing: seems to work 
+Testing: seems to work *except* if max and min times are the same; then 
 
 ```{r}
-l_optim(c(3,4), allmaxtimes = spdata$maxIncTimes, 
+l_optim(c(1,2), allmaxtimes = spdata$maxIncTimes, 
         allmintimes=spdata$minIncTimes,allrtTimes = spdata$Ti, 
          maxinters=n, rate=r, comscale=b)
 ```
@@ -197,16 +159,17 @@ l_optim(c(3,4), allmaxtimes = spdata$maxIncTimes,
 So now let's optimize! 
 
 ```{r}
-optim(c(3,4), l_optim, allmaxtimes = spdata$maxIncTimes, allmintime=spdata$minIncTimes,
-               allrtTimes = spdata$Ti, maxinters=n, rate=r, comscale=b )
+optim(c(1,2), l_optim, allmaxtimes = spdata$maxIncTimes, allmintime=spdata$minIncTimes,
+               allrtTimes = spdata$Ti, maxinters=n, rate=r, comscale=b,
+      lower = c(0,0), upper = c(20,20), method = "L-BFGS-B")
 ```
 
 Take a look at a heatmap:
 
 ```{r}
 # Grid of likelihood values
-x <- c(seq(0.5,5, length.out=50))
-y <- c(seq(0.5,5, length.out=50))
+x <- c(seq(0.1,5, length.out=50))
+y <- c(seq(0.1,5, length.out=50))
 data <- expand.grid(X=x, Y=y)
 for (i in 1:dim(data)[1]){
     data$Z[i] <- -l_optim(c(data[i,1],data[i,2]), allmaxtimes = spdata$maxIncTimes, 
@@ -227,11 +190,12 @@ We can test for sensitivity to rate r - the number of intermediates 'arriving' p
 ```{r}
 # current MLEs: gen time shape 1.65, incubation period shape 2.23, for r=0.1
 
-r_cur = c(seq(0.01, 0.5, length.out=20))
+r_cur = c(seq(0.01, 0.25, length.out=20))
 rec<-matrix(NA, length(r_cur), 2)
 for (i in 1:length(r_cur)){
-  ans <- optim(c(3,4), l_optim, allmaxtimes = spdata$maxIncTimes, allmintime=spdata$minIncTimes,
-               allrtTimes = spdata$Ti, maxinters=n, rate=r_cur[i], comscale=b )
+  ans <- optim(c(1,2), l_optim, allmaxtimes = spdata$maxIncTimes, allmintime=spdata$minIncTimes,
+               allrtTimes = spdata$Ti, maxinters=n, rate=r_cur[i], comscale=b ,
+               lower = c(0,0), upper = c(20,20), method = "L-BFGS-B")
   rec[i,]<-ans$par
 }
 
@@ -267,7 +231,7 @@ CC: I think we need some kind of uncertainty estimate around the parameters - ha
 Based on these plots I would say $r=0.05, r=0.1, r=0.15$ to start; we resample the data using bootstrapping, and get empirical 90% CIs for example around the $ai$ and $ag$ parameters. 
 
 ```{r}
-nboot = 500
+nboot = 200
 
 getBootstraps = function(nboot, dataset=spdata, therate=0.1) {
 bootresults= lapply(1:nboot, function(x) {
@@ -286,7 +250,7 @@ boot1=getBootstraps(nboot, spdata,therate = 0.05)
 boot2=getBootstraps(nboot, spdata,therate = 0.1) 
 boot3=getBootstraps(nboot, spdata,therate = 0.15) 
 boot4=getBootstraps(nboot, spdata,therate = 0.2) 
-save(boot1, boot2, boot3, boot4, file = "interbooty.Rdata")
+save(boot1, boot2, boot3, boot4, file = "interbooty2.Rdata")
 
 ```
 
