@@ -68,7 +68,6 @@ tdata$minIncTimes = tdata$symptom_onset-tdata$end_source
 
 tdata$maxIncTimes
 tdata$minIncTimes
-tdata$maxIncTimes[27] = 50 # for some reason this was coming up negative 
 ```
 
 
