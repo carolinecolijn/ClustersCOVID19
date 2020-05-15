@@ -28,10 +28,12 @@ Thanks to EpiCoronaHack Cluster team. These data are manually entered from posti
 
 Here we will upload and examine the data prior to analysis. 
 ```{r}
-spdata <- read_csv("data/COVID-19_Singapore_formated_dates.csv")
+#spdata <- read_csv("data/COVID-19_Singapore_formated_dates.csv")
+spdata <-read_csv("data/COVID-19_Singapore_data_revised.csv", col_types = list(presumed_infected_date = col_datetime()))
 
 # Ensure properly imported
 glimpse(spdata)
+
 table(spdata$`Related cases`) # There is one cell with "\n", needs to be changed to 'NA'
 spdata$`Related cases`[which(spdata$`Related cases` == "\n")] <- NA
 
@@ -43,76 +45,56 @@ spdata <- rename(spdata, related_cases = starts_with("Related"),
 # Make sure we are seeing the number of missing data we are expecting
 colSums(is.na(spdata))
 
-# Make sure dates parsed properly
+# make sure dates parsed properly
 range(spdata$presumed_infected_date, na.rm = T)
 range(spdata$last_poss_exposure, na.rm = T)
-range(spdata$symp_presumed_infector, na.rm = T)
+range(spdata$contact_based_exposure, na.rm = T)
 range(spdata$date_onset_symptoms, na.rm = T)
 range(spdata$date_quarantine, na.rm = T)
 range(spdata$date_hospital, na.rm = T)
 range(spdata$date_confirmation, na.rm = T)
 range(spdata$date_discharge, na.rm = T)
+range(spdata$start_source, na.rm = T)
+range(spdata$end_source, na.rm = T)
 
-# Change symp_presumed_infector to Feb 10, 2020 (date of symptom onset from caseID 72, the presumed infector)
-spdata$symp_presumed_infector[spdata$CaseID == 79] <- ymd("2020-02-10")
 ```
 
+
 **Missing data and imputation**: We have 12 cases that are missing date of symptom onset. We will start the analysis by just removing these cases from the dataset; however, we will then repeat the analysis when imputing the data to determine the effect of removing these cases.
+
 ```{r}
 # Keep a copy of the original dataset with missing data for imputation later
 spdata_org <- spdata
 
 # Remove all the cases that do not have info on date of symptom onset 
 spdata <- filter(spdata, !is.na(date_onset_symptoms)) 
-  # This removes 12 cases; we will examine the effect of imputing these values later on 
+  # This removes 10 cases; we will examine the effect of imputing these values later on 
 ```
 
-In order to determine ICC later, we need columns that define a window for possible start and end of exposure to the virus. To do this, we will define "start_source" and "end_source" columns as follows.
+**End_source and start_source columns**:
 
-We estimate this directly from the stated start and end times for cases' exposure windows. These are explicitly listed for the Tianjin dataset but in Singapore they are approximated using contact tracing and the route by which a case was exposed. Because it is explicitly about the symptom onset, we removed those who don't have symptom onset defined. (But see effect of imputing those values later).   
+In order to determine ICC later, we need columns that define a window for possible start and end of exposure to the virus. These are now explicitly listed for both Tianjin and Singapore datasets in the 'start_source' and 'end_source' columns.
 
-**End_source column**:
-If no estimated end time for the exposure is given, or if the end of the exposure time is after the time of symptom onset, set the last exposure time to the symptom onset time. This is because they must have been exposed before symptom onset. We use four ideas to set the end time for the exposure window: 
+The rules for defining these start and end dates are as follows:
 
-* 1: the end source is last possible exposure, if this is given 
+- For Wuhan travel cases, their end_source is equal to the time they travelled from Wuhan. In the absence of any other contact info, their start_source is equal to their symptom onset - 20 days, to account for wide uncertainty. 
 
-* 2:  if it is not given, then we set the end of the exposure window to the time of symptoms of the presumed infector plus a noise term epsilon (eps)
+- For cluster cases thought to originate from an index case (but with no further known dates of contact), the start source is set to the 1st symptom onset in the cluster - 7 days. The end date is set to the minimum of the earliest quarantine, hospitalization or hospitalization in the cluster, and the symptom onset date of the case in question. (We assume that once a case in a cluster was identified, people were well aware of this and stopped mixing).
 
-* 3: and if neither the last possible expsure or the symptom time of the presumed infector are given, the last exposure time is set to the time of symptom onset. 
+- For cluster cases thought to originate from a specific meeting/event (e.g. company meeting at Grand Hyatt hotel), the start_source is set to the 1st known meeting day. The end_source is set to that day + 4. (4 to account for some error/uncertainty)
 
-* 4 Finally, we do not let the last possible exposure time be later than the time of symptom onset 
+- For cases with no known contact or travel info, their start_source is their symptom onset - 20 and their end_source is their symptom onset date (essentially, we have no information on these cases)
+
+If no other end time for the exposure is given (by a known epidemiological route) or if the end of the exposure time is after the time of symptom onset, we set the last exposure time to the symptom onset time. This is because they must have been exposed before symptom onset.
+
+Because this is explicitly about the symptom onset, we removed those who don't have symptom onset defined. (But see effect of imputing those values later).   
 
 ```{r}
-spdata$end_source = spdata$last_poss_exposure # 1 above 
-(method1 <- sum(!is.na(spdata$end_source))) #20 cases can have date of last possible exposure provided by known end of exposure window
-
-eps=4
-hasPresInf = which(is.na(spdata$last_poss_exposure) & !(is.na(spdata$symp_presumed_infector))) # 2 above 
-spdata$end_source[hasPresInf] = spdata$presumed_infected_date[hasPresInf]+eps
-length(hasPresInf) #47 cases have date of last possible exposure estimated by method #2
-
-hasNone = which(is.na(spdata$last_poss_exposure) & is.na(spdata$symp_presumed_infector)) # 3 above 
-spdata$end_source[hasNone] = spdata$date_onset_symptoms[hasNone]
-length(hasNone) #14 cases have date of last possible exposure estimated by method #3
-
-spdata$end_source = pmin(spdata$end_source, spdata$date_onset_symptoms) # 4
-
-rm(hasNone, hasPresInf, method1)
+# Let's confirm that the end_source is always before or equal to the symptom onset date
+sum(spdata$end_source>spdata$date_onset_symptoms) # =0. Good
 ```
 
-**Start_source column**: Model the start source by one of two methods:
-
-* 1 if the time of presumed infector is given, use that - epsilon 
-
-* If it is not given use symptom onset minus say 20 days, based on prior 
-knowledge 
-
-```{r}
-spdata$start_source = spdata$presumed_infected_date - eps # 1
-spdata$start_source[is.na(spdata$presumed_infected_date)] = spdata$date_onset_symptoms[is.na(spdata$presumed_infected_date)]-20
-```
-
-
+JS UPDATED TO HERE - DATA FORMATTING
 
 ## Estimates of serial interval from Singapore data (without imputation)
 The simplest serial interval estimate we can make with these data is a direct estimate based on the time of symptoms of the presumed infector, and the time of symptoms of the case. However, this does not account for the fact that the presumed infector is not necessarily the infector. There are missing intermediate cases (with reasonable probability), or two cases could both be infected by a third unknown case.  
@@ -180,6 +162,7 @@ undir = undir[-which(undir[,1]==undir[,2]),]
 As relationships in the 'related_cases' column were not directional, we need to make sure the cases labelled as "from" (aka the infectors) actually got the virus prior to those in the "to" column (aka the infectees). It is reasonable to assume that cases that were infected first will show signs of infection first, so within case-pairs we will assign the case with the earliest date of symptom onset as the "from" (infector) case and the case with the later date of symptom onset as "to".
 
 To do this, let's start by making a new dataset from our case pairs ('undir') that contains date of symptom onset for each case. We will make a few new columns, both for determining which case has the earliest date of symptom onset, as well as to plot serial intervals over time later on. 
+
 ```{r}
 # Make a smaller dataset of original spdata that contains only the CaseID and date of symptom onset
 spdata_sympt <- select(spdata_org, CaseID, date_onset_symptoms)
@@ -204,6 +187,7 @@ undir_dates <- mutate(undir_dates, earliest_sympt_onset = pmin(to_sympt_date, fr
 ```
 
 Now we need to split the dataset apart so that we can switch around the directionality of presumed transmission for case-pairs where the serial interval is negative. Easiest way to do this is to rename columns and then join back to the other parts of the dataset, based on the column names.
+
 ```{r}
 # Split dataset into positive (or 0) serial interval vs. negative vs. NA 
   #A negative serial interval means our "to" and "from" cases are mixed up
@@ -258,6 +242,7 @@ table(spdata$presumed_reason_group)
 ```
 
 We also need to make a data frame of the edges (indicating direction of probable transmission) and nodes (the cases).
+
 ```{r}
 # Make data frame of edges, where the cases as the 'earliest' date of symptom onset are labeled as the "from" cases
 fedges <- select(undir_dates, from, to)
@@ -273,6 +258,7 @@ visNetwork(nodes.df, fedges) %>% visLegend()
 ```
 
 Now we estimate the serial interval using the ICC method; for this we first construct a graph. The "interval case to case" data are from identifying a putative first infector each small cluster in the graph, and finding the times between symptom onset in the first observed case and the others. See Vink et al. 
+
 ```{r}
 sgraph = graph_from_edgelist(as.matrix(fedges[,1:2]), directed = FALSE)
 ccs = components(sgraph)
@@ -288,6 +274,7 @@ Now knowing the components of the graph I can extract the ICC intervals.
 I did this in a few ways (commented out lines): taking the first case for each cluster to be the first reported symptoms (I get a 5 day serial interval); the first start exposure time (now there are negative ICCs so I get a 4.5 day serial interval) and the latest end exposure time.
 
 Extract ICC interval data: a function 
+
 ```{r}
 getICCs <- function(thisdata, ccs, K, orderby= "onset" ) {
   iccs=1
@@ -343,6 +330,7 @@ I note that the serial interval gets longer if we include more cases per cluster
 The mean SI is `r myest4[1]`. The standard deviation of the serial intervals is `r myest4[2]`.
 
 We need CIs for the mean. For this we use bootstrapping. 
+
 ```{r, eval=FALSE}
 # bootstrap analysis
 Nboot=100
@@ -384,7 +372,9 @@ The 95% range for the mean serial interval is (`r myest4[1]-1.96*sd(bestimates[,
 
 
 ## Effect of time on serial interval estimates
+
 To see the effects of the passage of time on the raw serial intervals, we will plot all possible infector-infectee pairs and the difference in their dates of symptom onset. To do this, we need a dataframe that has (1) case pairs (= 'undir'), (2) dates of symptom onset for both individuals in that pair, and (3) difference in days between those pairs.
+
 ```{r}
 # Add an extra column that groups serial interval based on length 
   #We will do every two days, as otherwise there are too many bars next to each other!
@@ -401,7 +391,9 @@ undir_dates <- mutate(undir_dates, si_groups = factor(case_when(abs_serial_inter
 ```
 
 #### Graphs of raw serial intervals
+
 Now let's turn this into a dot plot and a bar chart so we can see if and how serial interval changes over time. The dates on the x-axis are the earliest date of symptom onset from each infected pair.
+
 ```{r}
 ### A) Histogram - length of serial interval on the y-axis
 #Transform 'undir_dates' into a better format for making a bar chart...need counts of serial intervals as a factor
@@ -522,8 +514,11 @@ p
 # dev.off()
 ```
 
+
 #### Mean and Median of half the case pairs
+
 To determine the effect of time on the raw serial intevals, we will split the case-pairs in half, and find the median, mean, and standard deviation for those pairs in the half with the earlier first date of symptom onset ('earliest_sympt_onset') vs. those in the half with the later dates of first symtom onset ('earliest_sympt_onset'). Note that splitting the case-pairs in half does arbitarily split some pairs that have the same date of earliest_sympt_onset into the two different datasets. 
+
 ```{r}
 ### Add a column that specifies if case-pairs are part of "early onset" or "late onset"
   #based on which half of the case-pairs they fall into 
@@ -565,6 +560,7 @@ l <- undir_dates %>%
 The mean serial interval for the **early** half of the case-pairs is `r e$mean_early`, with a standard deviation of `r e$sd_early`, and a median of `r e$median_early`. The mean serial interval for the **late** half of the case-pairs is `r l$mean_late`, with a standard deviation of `r l$sd_late`, and a median of `r l$median_late`.
 
 This version of the Cleveland dotplot shows which half of the case-pairs was used to calculate each summary statistic.
+
 ```{r Cleveland dotplot facetted by half for mean calculations}
 ###  Cleveland dotplot of raw serial intervals, facetted by portion of dataset used to do mean, median and sd calculations
 #Pivot the to/from dates of symptom onset column to a long format, so that can make a legend based on this variable
@@ -610,12 +606,16 @@ p2
 ```
 
 ## Imputataion of missing data
+
+JS: I HAVE UPDATED THIS SECTION FOR NEW DATA TOO
+
 We want to see what the effect of cases with missing dates of symptom onset has on our estimates of serial intervals. To do this, we will impute the missing data by:
 missing date of symptom onset = confirmation date - mean(confirmation data- symptom onset date)...where the mean is taken over the cases that do have a symptom onset date present. We will use the copy made of the original data so that we can repeat the full estimation process using the data with imputed dates of symptom onset.
+
 ```{r imputing missing date of symptom onset}
 # Figure out which cases are missing date of symptom onset
 no_date <- which(is.na(spdata_org$date_onset_symptoms))
-spdata_org$CaseID[no_date]
+spdata_org$CaseID[no_date] # 10 of them
 
 #Do all of the cases missing date of symptom onset have a date of confirmation? 
 sum(is.na(spdata_org$date_confirmation[no_date])) #Yes! 
@@ -637,35 +637,18 @@ imp_data$dso_imputed = if_else(is.na(imp_data$date_onset_symptoms),
 
 Now we can re-run the serial estimates based on the imputed date of symptom onset column (dso_imputed).
 
-Step 1: make the end_source and start_source columns to indicate possible exposure times. Uses same methods/decision rules as explained with non-imputed data set; except in method 3 and 4 where we use the imputed date of symptom onset instead of date of symptom onset.
+Step 1: All end_source entries are already complete, but the some of the imputed symptom onset individuals don't have a start_source. We use the same rules as with the non-imputed dataset with the imputed symptom onsets, and set the start source as the symptom onset - 20 in the absence of other data.
+
 ```{r}
-### End source column
-imp_data$end_source = imp_data$last_poss_exposure # method 1 above 
-(method1 <- sum(!is.na(imp_data$end_source))) #28 cases can have date of last possible exposure provided by known end of exposure window
-
-eps=4
-hasPresInf = which(is.na(imp_data$last_poss_exposure) & !(is.na(imp_data$symp_presumed_infector))) # method 2 above 
-imp_data$end_source[hasPresInf] = imp_data$presumed_infected_date[hasPresInf]+eps
-length(hasPresInf) #49 cases have date of last possible exposure estimated by method #2
-
-#~~~~ Use the imputed date of symptom onset for method 3 this time ~~~~#
-hasNone = which(is.na(imp_data$last_poss_exposure) & is.na(imp_data$symp_presumed_infector)) # method 3 above 
-imp_data$end_source[hasNone] = imp_data$dso_imputed[hasNone]
-length(hasNone) #16 cases have date of last possible exposure estimated by method #3
-
-#~~~~ Use the imputed date of symptom onset for method 4 this time ~~~~#
-sum(is.na(imp_data$end_source)) #2 cases remaining that could not be imputed by any other method
-imp_data$end_source = pmin(imp_data$end_source, imp_data$dso_imputed, na.rm = T) # method 4 
-
 ### Start source column
-imp_data$start_source = imp_data$presumed_infected_date - eps # method 1
-imp_data$start_source[is.na(imp_data$presumed_infected_date)] = imp_data$dso_imputed[is.na(imp_data$presumed_infected_date)]-20 # method 2
+imp_data$start_source[is.na(imp_data$start_source)] = imp_data$dso_imputed[is.na(imp_data$start_source)]-20 
 
-
-rm(hasNone, hasPresInf, method1)
 ```
 
+JS UPDATED TO HERE - DATA FORMATTING
+
 Step 2: split related cases column so that we can obtain nodes and edges for clusters.
+
 ```{r}
 imp_nodes <- imp_data$CaseID
 
@@ -719,6 +702,7 @@ undir_i = undir_i[-which(undir_i[,1]==undir_i[,2]),]
 ```
 
 Step 3: ensure that the "from" cases have the earliest date of symptom onset and the "to" cases have the later date of symptom onset
+
 ```{r}
 # Make a smaller dataset of original imp_data that contains only the CaseID and imputed date of symptom onset
 imp_data_sympt <- select(imp_data, CaseID, dso_imputed)
@@ -743,6 +727,7 @@ undir_i_dates <- mutate(undir_i_dates, earliest_sympt_onset = pmin(to_sympt_date
 ```
 
 Now we need to split the dataset apart so that we can switch around the directionality of presumed transmission for case-pairs where the serial interval is negative. Easiest way to do this is to rename columns and then join back to the other parts of the dataset, based on the column names.
+
 ```{r}
 # Split dataset into positive (or 0) serial interval vs. negative vs. NA 
   #A negative serial interval means our "to" and "from" cases are mixed up
@@ -773,6 +758,7 @@ undir_i_dates <- mutate(undir_i_dates, pairID = factor(paste("case", pfrom, "-",
 ```
 
 Step 4: make a network diagram. This won't be our manuscript figure (it's not as pretty...) but gives us that picture here without copying that script here too. This involves making a column that gives a cluster group based on the presumed reason of infection.
+
 ```{r}
 # Turn 'presumed_reason' into lower case and get trim any whitespace so don't have issues with case sensitivity, etc
 imp_data$presumed_reason <- str_to_lower(imp_data$presumed_reason)
@@ -807,6 +793,7 @@ visNetwork(nodes.df.i, fedges_i) %>% visLegend()
 ```
 
 Step 5: determine the ICC intervals by extracting the components of the network graph list. Need to update the 'getICC' function defined earlier so it uses the column with imputed date of symptom onset (or else get NAs!).
+
 ```{r}
 sgraph_i = graph_from_edgelist(as.matrix(fedges_i[,1:2]), directed = FALSE)
 ccs_imp = components(sgraph_i)
@@ -842,6 +829,7 @@ icc_expose_i = getICCs_imputed(imp_data, ccs_imp, 4, orderby ="exposure")
 ```
 
 Step 6: determine the serial interval estimates by using the method from Vink et al. Use the 'serial_mix_est' function sourced earlier.
+
 ```{r}
 myest3_i = serial_mix_est(data=icc3_i, N=100, startmu=10, startsig =4)
 myest4_i = serial_mix_est(data=icc4_i, N=100, startmu=10, startsig =4)
@@ -871,6 +859,7 @@ The mean SI is `r myest4_i[1]`. The standard deviation of the serial intervals i
 
 
 Step 7: determine the 95% confidence intervals for the mean serial estimate through bootstrapping.
+
 ```{r, eval=FALSE}
 # bootstrap analysis
 Nboot=100
@@ -907,6 +896,7 @@ sd(bestimates_i[,1])
 mean(bestimates_i[,2])
 sd(bestimates_i[,2])
 ```
+
 The mean of the mean serial intervals with imputed dates of symptom onset is`r mean(bestimates_i[,1])` days and the standard deviation of these means is `r sd(bestimates_i[,1])`. 
 The 95% range for the mean serial interval with imputed dates of symptom onset is (`r myest4_i[1]-1.96*sd(bestimates_i[,1])`, `r myest4_i[1]+1.96*sd(bestimates_i[,1])`).
 

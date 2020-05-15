@@ -30,9 +30,13 @@ set.seed(3456)
 Thanks to EpiCoronaHack Cluster team. These data are manually entered from postings from the Government of Singapore website: [website](https://www.moh.gov.sg/covid-19).
   
 ```{r}
-spdata <- read_csv("data/COVID-19_Singapore_formated_dates.csv")
+#spdata <- read_csv("data/COVID-19_Singapore_data_revised.csv")
+spdata <-read_csv("data/COVID-19_Singapore_data_revised.csv", col_types = list(presumed_infected_date = col_datetime())) # This seems to make the dates read in correctly
+
 # Ensure properly imported
 glimpse(spdata)
+colSums(is.na(spdata))
+
 table(spdata$`Related cases`) # There is one cell with "\n", needs to be changed to 'NA'
 spdata$`Related cases`[which(spdata$`Related cases` == "\n")] <- NA
 colSums(is.na(spdata))
@@ -40,88 +44,54 @@ colSums(is.na(spdata))
 spdata <- rename(spdata, related_cases = starts_with("Related"),
                  cluster_links = "Cluster links",
                  relationship_notes = starts_with("Relation"))
-# Change date columns into date objects
-spdata <- mutate(spdata, presumed_infected_date = ymd(presumed_infected_date),
-                 last_poss_exposure = ymd(last_poss_exposure),
-                 symp_presumed_infector = ymd(symp_presumed_infector),
-                 date_onset_symptoms = ymd(date_onset_symptoms),
-                 date_quarantine = ymd(date_quarantine),
-                 date_hospital = ymd(date_hospital),
-                 date_confirmation = ymd(date_confirmation),
-                 date_discharge = ymd(date_discharge))
 
 # make sure dates parsed properly
 range(spdata$presumed_infected_date, na.rm = T)
 range(spdata$last_poss_exposure, na.rm = T)
-range(spdata$symp_presumed_infector, na.rm = T)
+range(spdata$contact_based_exposure, na.rm = T)
 range(spdata$date_onset_symptoms, na.rm = T)
 range(spdata$date_quarantine, na.rm = T)
 range(spdata$date_hospital, na.rm = T)
 range(spdata$date_confirmation, na.rm = T)
 range(spdata$date_discharge, na.rm = T)
+range(spdata$start_source, na.rm = T)
+range(spdata$end_source, na.rm = T)
 
-# Note that the date of symp_presumed_infector for CaseID 79 changed was originally listed as 2020-02-07 (based on online visualizations) but was changed to 2020-02-10, due to Feb 10, 2020 being on the earliest date of onset of symptoms from case 72, as from online info provided, presumed infective contact for CaseID 79 is from 72 (family member), rather than directly from case 52
-spdata$symp_presumed_infector[spdata$CaseID == 79] <- ymd("2020-02-10")
-# Change symp_presumed_infector to Feb 10, 2020 (date of symptom onset from caseID 72, the presumed infector)
-
-#TODO: Make a new script with imputed data for all those that do not have info on data of symptom onset
 spdata <- filter(spdata, !is.na(date_onset_symptoms)) #Remove all the cases that do not have info on date of symptom onset 
-# NOTE 12 of these, but they have a date of confirmation and dates of presumed infection - COULD FIX 
+# NOTE: 10 of these
 ```
-
 
 
 ## Incubation period
 
-The incubation period is the time between exposure and the onset of symptoms. We estimate this directly from the stated start and end times for cases' exposure windows. These are explicitly listed for the Tianjin dataset but in Singapore they are approximated using contact tracing and the route by which a case was exposed. Because it is explicitly about the symptom onset, we removed those who don't have symptom onset defined. (These are a small minority of 12 cases and the alternative would be to impute their symptom onset time using the others' delay to confirmation time. For now, we remove them).   
+The incubation period is the time between exposure and the onset of symptoms. We estimate this directly from the stated start and end times for cases' exposure windows. These are now explicitly listed for both Tianjin and Singapore datasets in the 'start_source' and 'end_source' columns.
 
-Then, if no other end time for the exposure is given or if the end of the exposure time is after the time of symptom onset, set the last exposure time to the symptom onset time. This is because they must have been exposed before symptom onset. We use four ideas to set the end time for the exposure window: 
+The rules for defining these start and end dates are as follows:
 
-* 1: the end source is last possible exposure, if this is given 
+- For Wuhan travel cases, their end_source is equal to the time they travelled from Wuhan. In the absence of any other contact info, their start_source is equal to their symptom onset - 20 days, to account for wide uncertainty. 
 
-* 2:  if it is not given, then we set the end of the exposure window to the time of symptoms of the presumed infector plus a noise term epsilon (eps)
+- For cluster cases thought to originate from an index case (but with no further known dates of contact), the start source is set to the 1st symptom onset in the cluster - 7 days. The end date is set to the minimum of the earliest quarantine, hospitalization or hospitalization in the cluster, and the symptom onset date of the case in question. (We assume that once a case in a cluster was identified, people were well aware of this and stopped mixing).
 
-* 3: and if neither the last possible expsure or the symptom time of the presumed infector are given, the last exposure time is set to the time of symptom onset. 
+- For cluster cases thought to originate from a specific meeting/event (e.g. company meeting at Grand Hyatt hotel), the start_source is set to the 1st known meeting day. The end_source is set to that day + 4. (4 to account for some error/uncertainty)
 
-* 4 Finally, we do not let the last possible exposure time be later than the time of symptom onset 
+- For cases with no known contact or travel info, their start_source is their symptom onset - 20 and their end_source is their symptom onset date (essentially, we have no information on these cases)
 
-```{r}
-spdata$end_source = spdata$last_poss_exposure # 1 above 
-(method1 <- sum(!is.na(spdata$end_source))) #20 cases can have date of last possible exposure provided by known end of exposure window
+If no other end time for the exposure is given (by a known epidemiological route) or if the end of the exposure time is after the time of symptom onset, we set the last exposure time to the symptom onset time. This is because they must have been exposed before symptom onset.
 
-eps=4
-hasPresInf = which(is.na(spdata$last_poss_exposure) & !(is.na(spdata$symp_presumed_infector))) # 2 above 
-spdata$end_source[hasPresInf] = spdata$presumed_infected_date[hasPresInf]+eps
-length(hasPresInf) #47 cases have date of last possible exposure estimated by method #2
-
-hasNone = which(is.na(spdata$last_poss_exposure) & is.na(spdata$symp_presumed_infector)) # 3 above 
-spdata$end_source[hasNone] = spdata$date_onset_symptoms[hasNone]
-length(hasNone) #14 cases have date of last possible exposure estimated by method #3
-
-spdata$end_source = pmin(spdata$end_source, spdata$date_onset_symptoms) # 4
-nrow(spdata) - method1 - length(hasPresInf) - length(hasNone) #0 cases  have date of last possible exposure estimated by method #4
-```
-
-Model the start source 
-
-* 1 if the time of presumed infector is given, use that - epsilon 
-
-* If it is not given use symptom onset minus say 20 days, based on prior 
-knowledge 
 
 ```{r}
-spdata$start_source = spdata$presumed_infected_date - eps # 1
-spdata$start_source[is.na(spdata$presumed_infected_date)] = spdata$date_onset_symptoms[is.na(spdata$presumed_infected_date)]-20
+# Let's confirm that the end_source is always before or equal to the symptom onset date
+sum(spdata$end_source>spdata$date_onset_symptoms) # =0. Good
 ```
 
 Define the maximum and minimum exposure times based on these assumptions. These are the times $t_{min}^i$ and $t_{max}^i$ in the notation. 
-
 
 ```{r}
 spdata$minIncTimes <- spdata$date_onset_symptoms - spdata$end_source
 spdata$maxIncTimes <- spdata$date_onset_symptoms - spdata$start_source
 ```
 
+JS UPDATED TO HERE - DATA FORMATTING
 
 From here this file diverges from the ..wtables Rmd files .
 

@@ -33,18 +33,20 @@ Thanks to Dongxuan Chen and Louxin Zhang. These data are from three main sources
 * source3: https://m.weibo.cn/status/IrrHI1FHm?jumpfrom=weibocom (another Tianjin local media weibo link, for mall cluster reference)
 
 ```{r}
-tdata <- read.csv("data/Tianjin135casesFeb22.csv",na.strings = "", stringsAsFactors = F)
-
+tdata=read.csv("data/Tianjin135cases_revised.csv",na.strings = "", stringsAsFactors = F)
 tdata$symptom_onset=as.Date(tdata$symptom_onset, format = "%d/%m/%Y")
 tdata$start_source=as.Date(tdata$start_source, format = "%d/%m/%Y")
 tdata$end_source=as.Date(tdata$end_source,format = "%d/%m/%Y" )
 tdata$confirm_date=as.Date(tdata$confirm_date,format = "%d/%m/%Y" )
+names(tdata)[1] = "case_id"
+str(tdata)
 
 glimpse(tdata)
 ```
 
 
 ## Estimates of serial interval from Tianjin data (without imputation)
+
 We will estimate the serial interval using the 'interval case to case' approach given in Vink et al (https://academic.oup.com/aje/article/180/9/865/2739204). 
 
 Note that we are removing cases that do NOT have a date of symptom onset to determine the ICC. There are 10 cases without symptom onset, but all have a confirmation date. We will re-run the estimates with imputed data a little later on. 
@@ -55,6 +57,9 @@ tdata_org <- tdata
 # Remove any cases that are missing data for date of symptom onset
 tdata <- tdata[which(!is.na(tdata$symptom_onset)),]  #removes 10 observations
 ```
+
+
+JS UPDATED TO HERE - DATA FORMATTING
 
 Now let's make a column which groups all the information in the 'Infection_source' column into categories. Because the infection_source column can contain multiple possible sources of infection (for a handful of cases), it is important to consistently apply a decision rule for when each case would be assigned to a particular infection source group. Here we are emphasizing the Wuhan/Hubei and other known mall outbreak clusters over known interpersonal relationships, as it seems to best represent the introduction of the outbreak. **These groups are NOT used in the estimation of the serial intervals - only to help visualize the network graph.**
 
@@ -76,7 +81,7 @@ Decision rule applied to source_group label classification:
 tdata$Infection_source <- str_to_lower(tdata$Infection_source)
 tdata$Infection_source <- str_trim(tdata$Infection_source)
 table(tdata$Infection_source)
-sum(is.na(tdata$Infection_source)) #3 NAs
+sum(is.na(tdata$Infection_source)) #1 NA
 
 #Note that the order the data are selected in is VERY important to which case goes into which source_group category
   #For those that meet multiple criteria (e.g. wuhan; tj1), the str_match which is highest in the case_when call (i.e. "wuhan|hubei") will have priority over those matching later 
@@ -97,6 +102,7 @@ table(tdata$source_group)
 ```
 
 The dataset has quite a few instances where a putative infector or contact is known. These are listed in the 'Infection_source' column. We first make a graph in which nodes are individuals and edges are present from cases listed as possible sources, to the cases for whom they are possible sources. These are extracted regardless of which infection source group label has been applied.
+
 ```{r}
 mynodes <- tdata$case_id
 
@@ -207,6 +213,7 @@ The interval case to case (ICC) data are the times between the (presumed) index 
 
 
 First construct the graph
+
 ```{r}
 tgraph = graph_from_edgelist(as.matrix(edges[,1:2]), directed = FALSE)
 ccs=components(tgraph)
@@ -237,6 +244,7 @@ Extract ICC interval data: a function
 
 
 Note that we are removing cases that do NOT have a date of symptom onset to determine the ICC. There are 10 cases without symptom onset, but all have a confirmation date.
+
 ```{r}
 icc3 = getICCs(tdata,ccs,3)
 icc4 = getICCs(tdata,ccs,4)
@@ -458,11 +466,15 @@ p2
 ```
 
 ## Imputataion of missing data
+
+JS: I HAVE UPDATED THIS SECTION FOR NEW DATA TOO
+
 We want to see what the effect of cases with missing dates of symptom onset has on our estimates of serial intervals. To do this, we will impute the missing data by:
 missing date of symptom onset = confirmation date - mean(confirmation data- symptom onset date)...where the mean is taken over the cases that do have a symptom onset date present. We will use the copy made of the original data so that we can repeat the full estimation process using the data with imputed dates of symptom onset.
+
 ```{r imputing missing date of symptom onset}
 # Figure out which cases are missing date of symptom onset
-no_date <- which(is.na(tdata_org$symptom_onset))
+no_date <- which(is.na(tdata_org$symptom_onset)) #10 of them
 tdata_org$case_id[no_date]
 
 #Do all of the cases missing date of symptom onset have a date of confirmation? 
@@ -483,9 +495,12 @@ imp_tdata$dso_imputed = if_else(is.na(imp_tdata$symptom_onset),
                                      imp_tdata$symptom_onset) 
 ```
 
+JS UPDATED TO HERE - DATA FORMATTING
+
 Now we can re-run the serial estimates based on the imputed date of symptom onset column (dso_imputed).
 
 Step 1: make the source_group column where we group data in the infection source columns into categories. This categorization is based on the same decision rules as above and is not used in the actual calculation of the serial interval estimates.
+
 ```{r}
 # Make a column for sensible groupings for Tianjin, based on the reason why the case was exposed
 # Turn 'Infection_source' into lower case and get trim any whitespace so don't have issues with case sensitivity, etc
@@ -514,6 +529,7 @@ table(imp_tdata$source_group)
 
 
 Step 2: split related cases column so that we can obtain nodes and edges for clusters.
+
 ```{r}
 mynodes_i <- imp_tdata$case_id
 
@@ -538,6 +554,7 @@ edges_i=edges_i[-which(is.na(edges_i[,1])),] # NAs arose from a few empty entrie
 ```
 
 Step 3: ensure that the "from" cases have the earliest date of symptom onset and the "to" cases have the later date of symptom onset.
+
 ```{r}
 # Make a smaller dataset of original spdata that contains only the CaseID and date of symptom onset
 imp_tdata_sympt <- select(imp_tdata, case_id, symptom_onset)
