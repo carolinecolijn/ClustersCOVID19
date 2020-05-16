@@ -1,45 +1,149 @@
 ---
 title: "Testing incubation with intermediate"
 author: "Caroline Colijn"
-date: "`r Sys.Date()`"
+date: "2020-05-16"
 output: 
   html_document:
     keep_md: TRUE
 ---
   
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(survminer)
-library(survival)
-library(tidyverse)
-library(lubridate)
-library(icenReg)
-library(igraph)
-library(visNetwork)
-library(mvtnorm)
-library(ggplot2)
-library(hrbrthemes)
-library(viridis)
-library(gridExtra)
-options(digits=3)
-set.seed(3456)
-```
+
 
 ## Data 
 
 Thanks to EpiCoronaHack Cluster team. These data are manually entered from postings from the Government of Singapore website: [website](https://www.moh.gov.sg/covid-19).
   
-```{r}
+
+```r
 #spdata <- read_csv("data/COVID-19_Singapore_data_revised.csv")
 spdata <-read_csv("data/COVID-19_Singapore_data_revised.csv", col_types = list(presumed_infected_date = col_datetime())) # This seems to make the dates read in correctly
 
 # Ensure properly imported
 glimpse(spdata)
-colSums(is.na(spdata))
+```
 
+```
+## Observations: 93
+## Variables: 25
+## $ CaseID                 <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, ...
+## $ `Related cases`        <chr> "2,3", "1,3", "1,2", "13", "11", NA, NA...
+## $ `Cluster links`        <chr> NA, NA, NA, NA, NA, NA, NA, NA, "9,31,3...
+## $ `Relationship notes`   <chr> NA, NA, "Son of 1", "Daughter of 13", N...
+## $ Case                   <chr> "Case 1, 66M, Wuhan", "Case 2, 53F, Wuh...
+## $ age                    <dbl> 66, 53, 37, 42, 36, 56, 56, 35, 56, 56,...
+## $ sex                    <chr> "M", "F", "M", "F", "M", "F", "M", "M",...
+## $ country                <chr> "Singapore", "Singapore", "Singapore", ...
+## $ hospital               <chr> "Singapore General Hospital", "National...
+## $ presumed_infected_date <dttm> 2020-01-20, 2020-01-20, 2020-01-20, 20...
+## $ presumed_reason        <chr> "Arrived from Wuhan", "Arrived from Wuh...
+## $ last_poss_exposure     <date> 2020-01-20, 2020-01-20, 2020-01-20, 20...
+## $ contact_based_exposure <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ start_source           <date> 2019-12-31, 2020-01-01, 2020-01-03, NA...
+## $ end_source             <date> 2020-01-20, 2020-01-20, 2020-01-20, 20...
+## $ date_onset_symptoms    <date> 2020-01-20, 2020-01-21, 2020-01-23, NA...
+## $ date_quarantine        <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ date_hospital          <date> 2020-01-22, 2020-01-22, 2020-01-23, 20...
+## $ date_confirmation      <date> 2020-01-23, 2020-01-24, 2020-01-24, 20...
+## $ outcome                <chr> "Discharged", "Discharged", "Discharged...
+## $ date_discharge         <date> 2020-02-19, 2020-02-07, 2020-02-21, 20...
+## $ travel_history         <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wu...
+## $ additional_information <chr> "Travelled with Case 3 (son) and M1 (wi...
+## $ cluster                <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wu...
+## $ citizenship            <chr> "China", "China", "China", "China", "Ch...
+```
+
+```r
+colSums(is.na(spdata))
+```
+
+```
+##                 CaseID          Related cases          Cluster links 
+##                      0                     41                     88 
+##     Relationship notes                   Case                    age 
+##                     64                      0                      0 
+##                    sex                country               hospital 
+##                      0                      0                      0 
+## presumed_infected_date        presumed_reason     last_poss_exposure 
+##                     16                     16                     65 
+## contact_based_exposure           start_source             end_source 
+##                     42                      7                      0 
+##    date_onset_symptoms        date_quarantine          date_hospital 
+##                     10                     78                      0 
+##      date_confirmation                outcome         date_discharge 
+##                      0                     31                     31 
+##         travel_history additional_information                cluster 
+##                      0                     55                     23 
+##            citizenship 
+##                      0
+```
+
+```r
 table(spdata$`Related cases`) # There is one cell with "\n", needs to be changed to 'NA'
+```
+
+```
+## 
+##                     \n                    1,2                    1,3 
+##                      1                      1                      1 
+##                     11                     12                     13 
+##                      1                      1                      1 
+##                  13,26                     18                     19 
+##                      1                      1                      1 
+##                  19,20               19,20,25                  19,27 
+##                      2                      1                      1 
+##                    2,3   20,21,24,27,28,34,40                     22 
+##                      1                      1                      1 
+##                     23                     24                  24,19 
+##                      1                      1                      1 
+##                  26, 2                  28,19                  30,39 
+##                      1                      1                      1 
+##                      4                     41            42,47,52,56 
+##                      1                      1                      1 
+##                     50                  50,55                     51 
+##                      2                      1                      1 
+##                  54,57                  54,58               55,65,77 
+##                      1                      1                      1 
+##                  57,58                 59, 79                     61 
+##                      1                      1                      1 
+##                     66     66, 68, 70, 71, 80         66, 68, 71, 80 
+##                      3                      1                      1 
+##         66, 70, 71, 80                 66, 83                     67 
+##                      1                      1                      1 
+## 68, 70, 71, 80, 83, 91                     72                  72,79 
+##                      1                      1                      1 
+##                     76                      8                     82 
+##                      1                      1                      1 
+##                     86    9,83,91,90,38,33,31                     91 
+##                      1                      1                      1
+```
+
+```r
 spdata$`Related cases`[which(spdata$`Related cases` == "\n")] <- NA
 colSums(is.na(spdata))
+```
+
+```
+##                 CaseID          Related cases          Cluster links 
+##                      0                     42                     88 
+##     Relationship notes                   Case                    age 
+##                     64                      0                      0 
+##                    sex                country               hospital 
+##                      0                      0                      0 
+## presumed_infected_date        presumed_reason     last_poss_exposure 
+##                     16                     16                     65 
+## contact_based_exposure           start_source             end_source 
+##                     42                      7                      0 
+##    date_onset_symptoms        date_quarantine          date_hospital 
+##                     10                     78                      0 
+##      date_confirmation                outcome         date_discharge 
+##                      0                     31                     31 
+##         travel_history additional_information                cluster 
+##                      0                     55                     23 
+##            citizenship 
+##                      0
+```
+
+```r
 # Rename columns 2, 3 and 4 so no spaces
 spdata <- rename(spdata, related_cases = starts_with("Related"),
                  cluster_links = "Cluster links",
@@ -47,16 +151,85 @@ spdata <- rename(spdata, related_cases = starts_with("Related"),
 
 # make sure dates parsed properly
 range(spdata$presumed_infected_date, na.rm = T)
-range(spdata$last_poss_exposure, na.rm = T)
-range(spdata$contact_based_exposure, na.rm = T)
-range(spdata$date_onset_symptoms, na.rm = T)
-range(spdata$date_quarantine, na.rm = T)
-range(spdata$date_hospital, na.rm = T)
-range(spdata$date_confirmation, na.rm = T)
-range(spdata$date_discharge, na.rm = T)
-range(spdata$start_source, na.rm = T)
-range(spdata$end_source, na.rm = T)
+```
 
+```
+## [1] "2020-01-18 UTC" "2020-02-10 UTC"
+```
+
+```r
+range(spdata$last_poss_exposure, na.rm = T)
+```
+
+```
+## [1] "2020-01-18" "2020-02-09"
+```
+
+```r
+range(spdata$contact_based_exposure, na.rm = T)
+```
+
+```
+## [1] "2020-01-19" "2020-02-10"
+```
+
+```r
+range(spdata$date_onset_symptoms, na.rm = T)
+```
+
+```
+## [1] "2020-01-20" "2020-02-17"
+```
+
+```r
+range(spdata$date_quarantine, na.rm = T)
+```
+
+```
+## [1] "2020-01-26" "2020-02-25"
+```
+
+```r
+range(spdata$date_hospital, na.rm = T)
+```
+
+```
+## [1] "2020-01-22" "2020-02-25"
+```
+
+```r
+range(spdata$date_confirmation, na.rm = T)
+```
+
+```
+## [1] "2020-01-23" "2020-02-26"
+```
+
+```r
+range(spdata$date_discharge, na.rm = T)
+```
+
+```
+## [1] "2020-02-04" "2020-02-26"
+```
+
+```r
+range(spdata$start_source, na.rm = T)
+```
+
+```
+## [1] "2019-12-31" "2020-02-02"
+```
+
+```r
+range(spdata$end_source, na.rm = T)
+```
+
+```
+## [1] "2020-01-18" "2020-02-17"
+```
+
+```r
 spdata <- filter(spdata, !is.na(date_onset_symptoms)) #Remove all the cases that do not have info on date of symptom onset 
 # NOTE: 10 of these
 ```
@@ -79,20 +252,27 @@ The rules for defining these start and end dates are as follows:
 If no other end time for the exposure is given (by a known epidemiological route) or if the end of the exposure time is after the time of symptom onset, we set the last exposure time to the symptom onset time. This is because they must have been exposed before symptom onset.
 
 
-```{r}
+
+```r
 # Let's confirm that the end_source is always before or equal to the symptom onset date
 sum(spdata$end_source>spdata$date_onset_symptoms) # =0. Good
 ```
 
+```
+## [1] 0
+```
+
 Define the maximum and minimum exposure times based on these assumptions. These are the times $t_{min}^i$ and $t_{max}^i$ in the notation. 
 
-```{r}
+
+```r
 spdata$minIncTimes <- spdata$date_onset_symptoms - spdata$end_source
 spdata$maxIncTimes <- spdata$date_onset_symptoms - spdata$start_source
 ```
 
 REMOVE THIS EVENTUALLY 
-```{r}
+
+```r
 #spdata = filter(spdata, maxIncTimes > 2)
 spdata$maxIncTimes = pmax(3, spdata$maxIncTimes)
 spdata$minIncTimes = pmax(1, spdata$minIncTimes)
@@ -104,7 +284,8 @@ From here this file diverges from the ..wtables Rmd files .
 
 First define the relevant times for truncation $T_i$
 
-```{r}
+
+```r
 spdata$Ti = as.numeric(ymd("2020-02-27")-spdata$start_source)
 ```
 
@@ -113,17 +294,18 @@ In the paper on medrxiv our estimates for the incubation period were shape: 3.36
 
 Here we will have a shape $a_g$ for the generation time and $a_i$ for the incubation period, and the same scale $b$ for both. 
 
-```{r}
+
+```r
 b=2.1 # common scale parameter 
 ai=3.4 # shape for incubation period ,as estimated in first round. true value less than this? 
 ag = 3 #starting point for shape for generation time. 
 n=3  # max number of intermediate cases 
 r = 0.1 # add on average 1 intermediate per 10 days? who knows. must look at sensitivity to this parameter 
-
 ```
 
 Functions
-```{r}
+
+```r
 source("incufuncs.R")
 ```
 
@@ -132,7 +314,8 @@ These functions seem to work. Yay! Now we have to set up the relevant data input
 
 We have spdata's minIncTimes and maxIncTimes, which are the 'mintime' and 'maxtime' inputs. We already computed Ti which are the rtTime input. 
 
-```{r}
+
+```r
 # negative log likelihood function for optim 
 l_optim <- function( twopars, allmaxtimes, allmintimes, allrtTimes, 
                      maxinters=n, rate=r, comscale=b) {
@@ -157,23 +340,48 @@ l_optim <- function( twopars, allmaxtimes, allmintimes, allrtTimes,
 
 Testing: seems to work *except* if max and min times are the same; then 
 
-```{r}
+
+```r
 l_optim(c(1,2), allmaxtimes = spdata$maxIncTimes, 
         allmintimes=spdata$minIncTimes,allrtTimes = spdata$Ti, 
          maxinters=n, rate=r, comscale=b)
 ```
 
+```
+## [1] 38.9
+```
+
 So now let's optimize! 
 
-```{r}
+
+```r
 optim(c(1,2), l_optim, allmaxtimes = spdata$maxIncTimes, allmintime=spdata$minIncTimes,
                allrtTimes = spdata$Ti, maxinters=n, rate=r, comscale=b,
       lower = c(0,0), upper = c(20,20), method = "L-BFGS-B")
 ```
 
+```
+## $par
+## [1] 1.37 2.12
+## 
+## $value
+## [1] 37.7
+## 
+## $counts
+## function gradient 
+##        9        9 
+## 
+## $convergence
+## [1] 0
+## 
+## $message
+## [1] "CONVERGENCE: REL_REDUCTION_OF_F <= FACTR*EPSMCH"
+```
+
 Take a look at a heatmap:
 
-```{r}
+
+```r
 # Grid of likelihood values
 x <- c(seq(0.1,5, length.out=50))
 y <- c(seq(0.1,5, length.out=50))
@@ -189,12 +397,14 @@ for (i in 1:dim(data)[1]){
 ggplot(data, aes(X, Y, fill= Z)) + 
   geom_tile() +
   scale_fill_viridis(discrete=FALSE) 
-
 ```
+
+![](incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 We can test for sensitivity to rate r - the number of intermediates 'arriving' per day
 
-```{r}
+
+```r
 # current MLEs: gen time shape 1.65, incubation period shape 2.23, for r=0.1
 
 r_cur = c(seq(0.01, 0.25, length.out=20))
@@ -213,8 +423,11 @@ plot1 <- ggplot(df1, aes(x=r, y=ag)) + geom_line(color="maroon4")+ geom_point(co
 plot2 <- ggplot(df2, aes(x=r, y=ai)) + geom_line(color="royalblue4")+ geom_point(color="royalblue4") + theme_minimal()
 
 grid.arrange(plot1, plot2, ncol=2)
+```
 
+![](incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
 
+```r
 # Plot mean estimate instead (scale 2.1)
 df3 <- data.frame(r=r_cur, "Mean generation time"=rec[,1]*2.1)
 df4 <- data.frame(r=r_cur, "Mean incubation period"=rec[,2]*2.1)
@@ -223,21 +436,26 @@ plot1 <- ggplot(df3, aes(x=r, y=Mean.generation.time)) + geom_line(color="maroon
 plot2 <- ggplot(df4, aes(x=r, y=Mean.incubation.period)) + geom_line(color="royalblue4")+ geom_point(color="royalblue4") + theme_minimal()
 
 grid.arrange(plot1, plot2, ncol=2)
+```
 
+![](incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-12-2.png)<!-- -->
+
+```r
 # on the same plot
 df5 <- data.frame(r=r_cur, "Mean generation time"=rec[,1]*2.1, "Mean incubation period"=rec[,2]*2.1)
 
 ggplot(df5) + geom_line(color="maroon4", aes(x=r, y=Mean.generation.time))+ geom_point(color="maroon4", aes(x=r, y=Mean.generation.time)) + theme_minimal() + geom_line(color="royalblue4", aes(x=r, y=Mean.incubation.period))+ geom_point(color="royalblue4", aes(x=r, y=Mean.incubation.period)) + ylab("Time (days)")
-
-
 ```
+
+![](incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-12-3.png)<!-- -->
 
 
 CC: I think we need some kind of uncertainty estimate around the parameters - having looked at it I suspect that the bootstrap is likely to be the best bet. 
 
 Based on these plots I would say $r=0.05, r=0.1, r=0.15$ to start; we resample the data using bootstrapping, and get empirical 90% CIs for example around the $ai$ and $ag$ parameters. 
 
-```{r eval=FALSE}
+
+```r
 nboot = 200
 
 getBootstraps = function(nboot, dataset=spdata, therate=0.1) {
@@ -258,7 +476,6 @@ boot2=getBootstraps(nboot, spdata,therate = 0.1)
 boot3=getBootstraps(nboot, spdata,therate = 0.15) 
 boot4=getBootstraps(nboot, spdata,therate = 0.2) 
 save(boot1, boot2, boot3, boot4, file = "interbooty2.Rdata")
-
 ```
 
 
@@ -268,7 +485,8 @@ Then the remaining question is to see if we want to handle right truncation with
 
 JS: Can we also try to optimize the shared scale parameter b? CC: I think we discuss this but don't show it (re optimizing b). 
 
-```{r}
+
+```r
 # negative log likelihood function for optim 
 l_optim_3 <- function( threepars, allmaxtimes, allmintimes, allrtTimes, 
                      maxinters=n, rate=r) {
@@ -292,15 +510,39 @@ l_optim_3 <- function( threepars, allmaxtimes, allmintimes, allrtTimes,
 l_optim_3(c(3,4,b), allmaxtimes = spdata$maxIncTimes, 
         allmintimes=spdata$minIncTimes,allrtTimes = spdata$Ti, 
          maxinters=n, rate=r) # matches the 2 par version
+```
 
+```
+## [1] 73.1
+```
 
+```r
 optim(c(3,4, b), l_optim_3, allmaxtimes = spdata$maxIncTimes, allmintime=spdata$minIncTimes,
                allrtTimes = spdata$Ti, maxinters=n, rate=r)
 ```
 
+```
+## $par
+## [1] 30.288 17.547  0.154
+## 
+## $value
+## [1] 26.5
+## 
+## $counts
+## function gradient 
+##      320       NA 
+## 
+## $convergence
+## [1] 0
+## 
+## $message
+## NULL
+```
+
 It wants to make scale b really small and the shape parameters really big  - but actually if you look at the resulting disribution it has a very similar mean to b=2.1 so that's good. Lets try running 2 par optim for a reasonable range of b values instead. 
 
-```{r eval=FALSE}
+
+```r
 res<-matrix(NA,90,2)
 for (i in 10:100){
 ans <- optim(c(40/i,40/i), l_optim, allmaxtimes = spdata$maxIncTimes, allmintime=spdata$minIncTimes,
@@ -330,5 +572,4 @@ grid.arrange(plot1, plot2, ncol=2)
 df_together <- data.frame(b=seq(10/20,100/20,length.out=90), "Mean generation time"=res[,1]*seq(10/20,100/20,length.out=90), "Mean incubation period"=res[,2]*seq(10/20,100/20,length.out=90))
 
 ggplot(df_together) + geom_line(color="maroon4", aes(x=b, y=Mean.generation.time))+ geom_point(color="maroon4", aes(x=b, y=Mean.generation.time)) + theme_minimal() + geom_line(color="royalblue4", aes(x=b, y=Mean.incubation.period))+ geom_point(color="royalblue4", aes(x=b, y=Mean.incubation.period)) + ylab("Time (days)")
-
 ```
