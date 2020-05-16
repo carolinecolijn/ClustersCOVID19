@@ -33,7 +33,7 @@ Trying to make weighted edges
 
 ```{r}
 #make a list so that we can supply weights to the edges 
-w_edge=ncov[,c(1:3)]#only need these from the pain dataset 
+w_edge=ncov_sing[,c(1:3)]#only need these from the pain dataset 
 names(w_edge)=c("CaseID","2","1")#change the names 
 w_edge[w_edge==""] <- NA# make the blanks into NAs for better sorting 
 
@@ -47,6 +47,8 @@ w_edge_long=pivot_longer(w_edge,cols=c("2","1"),names_to="weight")%>% #pivot lon
 names(w_edge_long)=c("from","to","weight")#change names so things will merge 
 
 #using fedges fom the singapore_serial_intervals_revised.Rmd 
+load("data/singapore_edges_for_network_plot.rdata")
+
 fedges_weighted=fedges%>%select(-arrows)
 fedges_weighted$weight=2
 fedges_weighted$from=as.character(str_extract_all(fedges_weighted$from,"\\(?[0-9,.]+\\)?"))
@@ -62,6 +64,10 @@ plot_edges=plot_edges%>%
 
 
 ```{r}
+#Load nodes from Singapore
+load("data/singapore_nodes_for_network_plot.rdata")
+nodes_sing <- nodes.df
+
 cov_weighted=graph_from_data_frame(plot_edges, vertices = nodes_sing, directed = FALSE)
 cov_net_weight=ggnetwork(cov_weighted)
 #write.csv(cov_net_weight,("data/singapore_weighted_network_0504.csv"))
@@ -101,6 +107,12 @@ There won't be any weighting or anything with the Tianjin one so we can just use
 - nodes 
  But we still have to filter based on nodes that were removed based on missing data 
 ```{r}
+#load Tianjin edges and nodes objects made in the "tianjin_serial_intervals_revised.rmd" file 
+  #Do this so we are using the same data for analysis and plotting
+load("data/tianjin_edges_for_network_plot.rdata")
+load("data/tianjin_nodes_for_network_plot.rdata")
+
+#Filter nodes based on those that were removed due to missing data
 tedges$test=tedges$from %in% nodes$id
 tedges=tedges%>%filter(test=="TRUE")%>%select(-test)
 ```
@@ -142,7 +154,7 @@ tj_cov_net = ggplot(ntj, aes(x = x, y = y, xend = xend, yend = yend))+
 
 tj_cov_net
 
-ggsave("final_figures/Fig4_tianjin_cov_network_revised_0505.pdf",plot=tj_cov_net,device="pdf",height=8,width=11,units="in")
+ggsave("final_figures/Fig4_tianjin_cov_network_revised.pdf",plot=tj_cov_net,device="pdf",height=8,width=11,units="in")
 ```
 
 

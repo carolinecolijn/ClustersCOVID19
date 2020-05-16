@@ -1,0 +1,318 @@
+---
+title: "Incidence plots"
+author: "Michelle Coombe"
+output: 
+  html_document:
+    keep_md: TRUE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Load packages and data
+```{r}
+library(tidyverse)
+library(lubridate)
+library(incidence)
+#library(RColorBrewer)
+library(viridis)
+library(scales)
+
+#Load Singapore data; 
+  #Use this saved object to ensure using the same infection source grouping as Network plot, load data from serial_intervals_revised rmd
+load("data/Singapore_cleaned_infection_source_groups.rdata")
+
+#Load Tianjin data; 
+  #Use this saved object to ensure using the same infection source grouping as Network plot, load data from serial_intervals_revised rmd
+load("data/Tianjin_cleaned_infection_source_groups.rdata")
+
+```
+
+## Select variables of interest and clean for incidence plotting purposes
+There are two possible choices of dates we can use to demonstrate the incidence curve of the epidemic: the date of symptom onset or the date of COVID-19 confirmation. The date of symptom onset is biologically more consistent (there is nothing about the nature of the virus that would suggest each case should be confirmed on the same day post-infection); however, there is missing data for 10 cases (in both Tianjin and Singapore datasets). But we have chosen to do the primary analysis with the raw (non-imputed data) so we will use this for the plots and just remove any missing cases.
+
+#### Notes on how cases were grouped based on source of infection
+It is important to note in the making of source of infection grouping labels, that some cases in the *Tianjin dataset* have multiple possible sources of infection listed (which may or may not represent the same "source" of infection, eg 'wuhan; train import' could be both a 'train' source, a from 'Wuhan' source, or—most likely—arrived on a train coming from Wuhan). 
+Because the infection_source column can contain multiple possible sources of infection (for a handful of cases), it is important to consistently apply a decision rule for when each case would be assigned to a particular infection source group. Here we are emphasizing the Wuhan/Hubei and other known mall outbreak clusters over known interpersonal relationships, as it seems to best represent the introduction of the outbreak. **These groups are NOT used in the estimation of the serial intervals or incubation periods - only to help visualize the incidence plot and network graph.**
+
+Decision rule applied to source_group label classification:
+
+1. Known outbreak cluster locations (e.g. Wuhan/Hubei, mall, or church) *highest priority*
+
+2. Known close relationship to another case (i. family; ii. work; iii. other known direct contact)
+
+3. Known travel history to non-outbreak locations or unclear destinations
+
+4. Any other listed associations (e.g. being part of a particular at-risk group such as airport worker)
+
+5. No known source of possible viral exposure *lowest priority*
+
+For instance, with case TJ60 (where 'Infection_source is 'wuhan; tj1'), the highest priority is a close relationship with another known case ('known relationship') over travel in 'Wuhan', thus for case TJ60 the 'source_group' becomes 'Known relationship'. 
+
+It should also be noted that a similar decision rule is implicit in the coding for selecting infection source group labels ('presumed_reason_group') in the *Singapore dataset*; however, at this time, the data does not have cases with multiple possible sources in the 'presumed_reason' column that could lead to multiple labels.
+
+Make these grouped columns has all been done in the 'serial_interval_revised' rmds for each respective location; see those files for the code. No need to repeat here as already saved in objects we loaded above.
+
+```{r}
+### 1. Singapore dataset
+# Select down to columns of interest and turn dates into Date class
+s.sympt <- spdata %>% 
+           select(CaseID, 
+                  date_onset_symptoms,
+                  presumed_reason_group) %>% 
+           mutate(presumed_reason_group = factor(presumed_reason_group, 
+                                                 levels = c("Wuhan travel",
+                                                           "Known relationship",
+                                                            "Grace Assembly of God",
+                                                            "Grand Hyatt Singapore",
+                                                            "Life Church",
+                                                            "Seletar Aerospace Heights",
+                                                            "Yong Thai Hang",
+                                                            "Unknown")))
+
+### 2. Tianjin dataset
+# Select down to columns of interest
+t.sympt <- tdata %>% 
+          select(case_id,
+                 symptom_onset,
+                 Infection_source,
+                 source_group) %>% 
+          mutate(source_group = factor(source_group,
+                                       levels = c("Wuhan and Hubei",
+                                                  "Mall",
+                                                  "Relative",
+                                                  "Coworker",
+                                                  "Other relationship",
+                                                  "Other travel",
+                                                  "Unknown")))
+
+```
+
+
+## Plot daily incidence curves grouped by source of infection, for both clusters
+What happens when we look at the incidence plots for each source of infection? Can either use the incidence package in R and base graphics plotting device or I can make the same plot using ggplot. We will use the ggplot versions for the manuscript so it is consistent with the other figures.
+
+### For Singapore dataset
+```{r}
+#~~~~~~~~~~~~~~ A) Using 'indicidence package' and base graphics plotting ; NOT for manuscript ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+  #Downside is that I can't match the virdis color scheme and graphing style used in the rest of our manuscript very easily
+
+s.grouped <- incidence(s.sympt$date_onset_symptoms,
+                       interval = 1,
+                       groups = s.sympt$presumed_reason_group)
+s.grouped
+plot(s.grouped,
+    # stacked = TRUE,
+     border = "grey")
+  #Hmmm, kinda hard to read with so many groups
+ 
+#Using the presumed_reason_group2 column to group cases is better to look at but less informative, so we will just leave out
+#s.grouped2 <- incidence(s.sympt$date_onset_symptoms,
+#                       interval = 1,
+#                       groups = s.sympt$presumed_reason_group2)
+#s.grouped2
+#plot(s.grouped2,
+#     border = "grey")
+
+
+#~~~~~~~~~~~~~~~~~~ B) Using 'ggplot2' and 'viridis' - FOR MANUSCRIPT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+### Reshape dataset to plot with ggplot
+#Group dataset by date and by infection source group
+s.gg <- s.sympt %>% 
+          group_by(date_onset_symptoms, presumed_reason_group) %>% 
+          summarize(n_daily = n())
+
+# Need to add zeros to for the dates where there are no cases, for each of the groups
+sdays <- seq(min(s.sympt$date_onset_symptoms), max(s.sympt$date_onset_symptoms), by = "day") #We have 29 days worth of data for Singapore
+
+s.zeros <- data.frame(date_onset_symptoms = c(rep(sdays[1], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[2], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[3], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[4], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[5], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[6], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[7], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[8], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[9], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[10], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[11], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[12], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[13], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[14], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[15], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[16], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[17], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[18], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[19], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[20], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[21], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[22], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[23], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[24], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[25], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[26], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[27], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[28], times = length(unique(s.sympt$presumed_reason_group))),
+                                              rep(sdays[29], times = length(unique(s.sympt$presumed_reason_group)))),
+                      presumed_reason_group = rep(c("Wuhan travel",
+                                                    "Known relationship",
+                                                    "Grace Assembly of God",
+                                                    "Grand Hyatt Singapore",
+                                                    "Life Church",
+                                                    "Seletar Aerospace Heights",
+                                                    "Yong Thai Hang",
+                                                    "Unknown"),
+                                                  times = length(seq(min(s.sympt$date_onset_symptoms), max(s.sympt$date_onset_symptoms), by = "day"))),
+                      n_daily = rep(0, length.out = length(seq(min(s.sympt$date_onset_symptoms), max(s.sympt$date_onset_symptoms), by = "day")) * length(unique(s.sympt$presumed_reason_group))))
+
+# Anti join with s.gg with s.zeros to add zero-filled rows where do not have a count
+s.missing.zeros <- anti_join(s.zeros, s.gg, by = c("date_onset_symptoms", "presumed_reason_group")) 
+    #Just ignore the coercing to character warning
+
+# Now bind the missing zeros to the grouped dataset
+s.gg <- bind_rows(s.gg, s.missing.zeros) #Note that the presumed_reason_group is now back to a factor with our pre-set levels; hooray!
+
+### Plot with ggplot
+#Define a colour palatte
+show_col(viridis_pal(option = "inferno") (8))
+viridisLite::inferno(n = 8)
+
+s.cols <- c("Wuhan travel" = "#000004FF", #Use the same as Singapore plot, as are using the same criteria
+#            "Wuhan travel" = "#280B54FF",  #Pretty dark, kinda hard to distinguish from the black
+            "Known relationship" = "#404788FF",
+            "Grace Assembly of God" = "#65156EFF",
+            "Grand Hyatt Singapore" = "#9F2A63FF",
+            "Life Church" = "#D44842FF",
+            "Seletar Aerospace Heights" = "#F57D15FF",
+            "Yong Thai Hang" = "#FAC127FF",
+            "Unknown" = "#FCFFA4FF")
+
+#Write to PDF
+pdf("final_figures/Fig 1b_Singapore incidence by source of infection.pdf", 
+     #family = "Times", 
+     width = 8, height = 6)
+
+s <- ggplot(s.gg, aes(x = date_onset_symptoms, y = n_daily, fill = presumed_reason_group)) +
+        geom_col(color = "grey") +
+        labs(title = "Daily Singapore COVID-19 cases, per probable source of infection",
+             y = "Number of Cases",
+             x = "Date of symptom onset") +
+        theme(axis.text.x = element_text(angle =60, hjust = 0.5, size = 6.5),
+              axis.ticks.x = element_blank(), #remove x axis ticks
+              axis.ticks.y = element_blank()) + #remove y axis ticks
+        scale_x_date(date_breaks = "day") +
+        scale_y_continuous(breaks=pretty_breaks(n=10)) +
+        scale_fill_manual(name = "Legend", values = s.cols) +
+        theme(panel.background = element_rect(fill = "white"))
+s 
+
+dev.off()
+
+```
+
+### For Tianjin dataset
+```{r}
+#~~~~~~~~~~~~~~~~~~  Using 'ggplot2' and 'viridis' - FOR MANUSCRIPT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+### Reshape dataset to plot with ggplot
+#Group dataset by date and by infection source group
+t.gg <- t.sympt %>% 
+          group_by(symptom_onset, source_group) %>% 
+          summarize(n_daily = n())
+
+# Need to add zeros to for the dates where there are no cases, for each of the groups
+tdays <- seq(min(t.sympt$symptom_onset), max(t.sympt$symptom_onset), by = "day") #We have 37 days worth of data for Tianjin
+
+t.zeros <- data.frame(symptom_onset = c(rep(tdays[1], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[2], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[3], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[4], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[5], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[6], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[7], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[8], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[9], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[10], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[11], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[12], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[13], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[14], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[15], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[16], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[17], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[18], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[19], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[20], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[21], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[22], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[23], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[24], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[25], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[26], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[27], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[28], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[29], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[30], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[31], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[32], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[33], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[34], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[35], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[36], times = length(unique(t.sympt$source_group))),
+                                              rep(tdays[37], times = length(unique(t.sympt$source_group)))),
+                      source_group = rep(c("Wuhan and Hubei",
+                                            "Mall",
+                                            "Relative",
+                                            "Coworker",
+                                            "Other relationship",
+                                            "Other travel",
+                                            "Unknown"),
+                                         times = length(seq(min(t.sympt$symptom_onset), max(t.sympt$symptom_onset), by = "day"))),
+                      n_daily = rep(0, length.out = length(seq(min(t.sympt$symptom_onset), max(t.sympt$symptom_onset), by = "day")) * length(unique(t.sympt$source_group))))
+
+# Anti join with s.gg with s.zeros to add zero-filled rows where do not have a count
+t.missing.zeros <- anti_join(t.zeros, t.gg, by = c("symptom_onset", "source_group")) 
+    #Just ignore the coercing to character warning
+
+# Now bind the missing zeros to the grouped dataset
+t.gg <- bind_rows(t.gg, t.missing.zeros) #Note that the presumed_reason_group is now back to a factor with our pre-set levels; hooray!
+
+### Plot with ggplot
+#Define a colour palatte
+show_col(viridis_pal(option = "inferno") (7))
+viridisLite::inferno(n = 7)
+
+#Write to PDF
+pdf("final_figures/Fig 2b_Tianjin incidence by source of infection_revised.pdf", 
+     #family = "Times", 
+     width = 8, height = 6)
+
+t.cols <- c("Wuhan and Hubei" = "#000004FF", #Use the same as Singapore plot, as are using the same criteria
+            "Mall" = "#404788FF",
+            "Relative" = "#781C6DFF",
+            "Coworker" = "#BB3754FF",
+            "Other relationship" = "#ED6925FF",
+            "Other travel" = "#FCB519FF",
+            "Unknown" = "#FCFFA4FF")  
+
+t <- ggplot(t.gg, aes(x = symptom_onset, y = n_daily, fill = source_group)) +
+        geom_col(color = "grey") +
+        labs(title = "Daily Tianjin COVID-19 cases, per probable source of infection",
+             y = "Number of Cases",
+             x = "Date of symptom onset") +
+        theme(axis.text.x = element_text(angle =60, hjust = 0.5, vjust = 1, size = 6.5),
+              axis.ticks.x = element_blank(), #remove x axis ticks
+              axis.ticks.y = element_blank()) + #remove y axis ticks
+        scale_x_date(date_breaks = "day") +
+        scale_y_continuous(breaks=pretty_breaks(n=10)) +
+        scale_fill_manual(name = "Legend", values = t.cols) +
+        theme(panel.background = element_rect(fill = "white"))
+
+t 
+
+dev.off()
+                                              
+```
+

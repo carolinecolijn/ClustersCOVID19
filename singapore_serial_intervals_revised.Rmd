@@ -34,7 +34,7 @@ spdata <-read_csv("data/COVID-19_Singapore_data_revised.csv", col_types = list(p
 # Ensure properly imported
 glimpse(spdata)
 
-table(spdata$`Related cases`) # There is one cell with "\n", needs to be changed to 'NA'
+#table(spdata$`Related cases`) # There is one cell with "\n", needs to be changed to 'NA'
 spdata$`Related cases`[which(spdata$`Related cases` == "\n")] <- NA
 
 # Rename columns 2, 3 and 4 so no spaces
@@ -60,7 +60,7 @@ range(spdata$end_source, na.rm = T)
 ```
 
 
-**Missing data and imputation**: We have 12 cases that are missing date of symptom onset. We will start the analysis by just removing these cases from the dataset; however, we will then repeat the analysis when imputing the data to determine the effect of removing these cases.
+**Missing data and imputation**: We have 10 cases that are missing date of symptom onset. We will start the analysis by just removing these cases from the dataset; however, we will then repeat the analysis when imputing the data to determine the effect of removing these cases.
 
 ```{r}
 # Keep a copy of the original dataset with missing data for imputation later
@@ -94,17 +94,7 @@ Because this is explicitly about the symptom onset, we removed those who don't h
 sum(spdata$end_source>spdata$date_onset_symptoms) # =0. Good
 ```
 
-JS UPDATED TO HERE - DATA FORMATTING
-
 ## Estimates of serial interval from Singapore data (without imputation)
-The simplest serial interval estimate we can make with these data is a direct estimate based on the time of symptoms of the presumed infector, and the time of symptoms of the case. However, this does not account for the fact that the presumed infector is not necessarily the infector. There are missing intermediate cases (with reasonable probability), or two cases could both be infected by a third unknown case.  
-```{r}
-directSI = spdata$date_onset_symptoms - spdata$symp_presumed_infector
-directSI = as.numeric(directSI[!is.na(directSI)])
-mean(directSI)
-sd(directSI)
-```
-
 We will estimate the serial interval using the 'interval case to case' approach given in Vink et al (https://academic.oup.com/aje/article/180/9/865/2739204). 
 
 The dataset has several instances where a putative infector or contact is known. These are listed in the 'related_cases' column. We first make a graph in which nodes are individuals and edges are present from cases listed as possible sources, to the cases for whom they are possible sources. 
@@ -226,7 +216,7 @@ From this edge list we can use visNetwork to visualise the graph. Make 'group' b
 spdata$presumed_reason <- str_to_lower(spdata$presumed_reason)
 spdata$presumed_reason <- str_trim(spdata$presumed_reason)
 table(spdata$presumed_reason)
-sum(is.na(spdata$presumed_reason)) #15 NAs
+sum(is.na(spdata$presumed_reason)) #16 NAs
 # Make a new column where we group the 'presumed_reason' under a label (known relationship, gathering, wuhan travel) for each of the above three groups
 spdata <- mutate(spdata, presumed_reason_group = case_when(!is.na(str_match(presumed_reason, "wuhan|airport")) ~ "Wuhan travel", 
                           #'airport' case (CaseID 17) does not have 'wuhan' in reason but does have it under 'Case' column that they are from Wuhan
@@ -239,6 +229,9 @@ spdata <- mutate(spdata, presumed_reason_group = case_when(!is.na(str_match(pres
                                                            is.na(presumed_reason) ~ "Unknown",
                                                            TRUE ~ "other")) #should not be any other, so is just a double check this has run correctly, especially as dataset grows
 table(spdata$presumed_reason_group)
+
+# Save this object for plotting incidence curve by infection source group (figure 1b)
+save(spdata, file = "data/Singapore_cleaned_infection_source_groups.rdata")
 ```
 
 We also need to make a data frame of the edges (indicating direction of probable transmission) and nodes (the cases).
@@ -250,8 +243,15 @@ fedges = data.frame(from = paste("case", fedges[ ,1], sep=""),
                      to = paste("case", fedges[ ,2], sep=""))
 fedges$arrows <- "to"  
 
+# Save this object so we can use it to plot Fig4 Network diagram
+save(fedges, file = "data/singapore_edges_for_network_plot.rdata")
+
 # Make data frame of nodes
 nodes.df <- data.frame(id=paste("case",spdata$CaseID,sep=""), label=spdata$CaseID, group=spdata$presumed_reason_group)
+
+# Save this object so in case we can use it to plot Fig4 Network diagram
+save(nodes.df, file = "data/singapore_nodes_for_network_plot.rdata")
+
 glimpse(nodes.df)
 spdata$graphID = paste("case",spdata$CaseID,sep="")
 visNetwork(nodes.df, fedges) %>% visLegend() 
@@ -372,7 +372,6 @@ The 95% range for the mean serial interval is (`r myest4[1]-1.96*sd(bestimates[,
 
 
 ## Effect of time on serial interval estimates
-
 To see the effects of the passage of time on the raw serial intervals, we will plot all possible infector-infectee pairs and the difference in their dates of symptom onset. To do this, we need a dataframe that has (1) case pairs (= 'undir'), (2) dates of symptom onset for both individuals in that pair, and (3) difference in days between those pairs.
 
 ```{r}
@@ -464,7 +463,7 @@ ggplot(sig_dates, aes(x = earliest_sympt_onset, y = count_sig, fill = serial_int
        x = "Date of first onset of symptoms within case pairs")
 
 
-###~~~~~~~~~~~ C) Cleaveland dotplot of raw serial intervals per possible case pair ~~~~~~~~~~~~~~~~~~~~~~~~~~~~###
+###~~~~~~~~~~~ C) Cleveland dotplot of raw serial intervals per possible case pair ~~~~~~~~~~~~~~~~~~~~~~~~~~~~###
   # This is the plot that has the easiest visual interpretation, so we will use it in our final manuscript
 
 # We want to exclude any case-pairs that have NA for length of serial interval
@@ -514,10 +513,34 @@ p
 # dev.off()
 ```
 
+#### Direct serial interval estimates: all possible case-pairs
+To determine an estimate of the raw serial intevals, we will find the mean, median, and standard deviation of all possible case-pairs. Note that this is the raw data where cases without date of symptom onset have been removed (i.e. NOT imputed!).
+```{r, }
+#OLD WAY OF DIRECTLY ESTIMATING S.I. from Singapore data (without imputation)
+#The simplest serial interval estimate we can make with these data is a direct estimate based on the time of symptoms of the presumed infector, and the time of symptoms of the case. However, this does not account for the fact that the presumed infector is not necessarily the infector. There are missing intermediate cases (with reasonable probability), or two cases could both be infected by a third unknown case.
+#directSI = spdata$date_onset_symptoms - spdata$symp_presumed_infector
+#directSI = as.numeric(directSI[!is.na(directSI)])
+#mean(directSI)
+#sd(directSI)
+```
 
-#### Mean and Median of half the case pairs
 
-To determine the effect of time on the raw serial intevals, we will split the case-pairs in half, and find the median, mean, and standard deviation for those pairs in the half with the earlier first date of symptom onset ('earliest_sympt_onset') vs. those in the half with the later dates of first symtom onset ('earliest_sympt_onset'). Note that splitting the case-pairs in half does arbitarily split some pairs that have the same date of earliest_sympt_onset into the two different datasets. 
+```{r}
+### Arrange the dataset by the date of earliest symptom onset for each case pair
+undir_dates <- arrange(undir_dates, earliest_sympt_onset)
+
+### Calculate the mean and median for all possible case-pairs
+all_scp <- undir_dates %>% 
+        summarize(mean_direct_si = mean(abs_serial_interval),
+                  median_direct_si = median(abs_serial_interval),
+                  sd_direct_si = sd(abs_serial_interval))
+```
+
+The mean direct serial interval of the possible case-pairs is `r all_scp$mean_direct_si`, with a standard deviation of `r all_scp$sd_direct_si`: giving a confidence interval around the mean of (`r all_scp$mean_direct_si - 1.96*all_scp$sd_direct_si`, `r all_scp$mean_direct_si + 1.96*all_scp$sd_direct_si`). The median of the direct serial interval `r all_scp$median_direct_si`.
+
+#### Effect of time on direct serial interval estimates: splitting possible case-pairs in half by earliest date of symptom onset
+To determine the effect of time on the raw serial intevals, we will split the case-pairs into early and late, and find the median, mean, and standard deviation. Early cases are those case-pairs where the earlier first date of symptom onset for the pair ('earliest_sympt_onset') is on or before Jan 31, 2020, and late cases are those with earliest_sympt_onset after Jan 31, 2020. 
+Remember that this is the raw data where cases without date of symptom onset have been removed (i.e. NOT imputed data). 
 
 ```{r}
 ### Add a column that specifies if case-pairs are part of "early onset" or "late onset"
@@ -525,15 +548,24 @@ To determine the effect of time on the raw serial intevals, we will split the ca
 # Need to arrange the dataset by the date of earliest symptom onset for each case pair
 undir_dates <- arrange(undir_dates, earliest_sympt_onset)
 
-# Define half of the dataset
-half <- nrow(undir_dates) / 2 
+# Define half of the dataset...if just want to split dataset 50:50 by # of case-pairs, rather than by date
+#half <- nrow(undir_dates) / 2 
 
-# Define which pairID fall into the early and later half of the dataset
+# Define which pairID fall into the early and later half of the dataset...if splitting in half, rather than by date
   #***NOTE THAT THIS DOES ARBITARILY SPLIT SOME PAIRS ON THE SAME DAY OF EARLIEST SYMPT ONSET INTO DIFFERENT HALVES***
-early_half <- undir_dates$pairID[1:half] 
+#early_half <- undir_dates$pairID[1:half] 
+#early_half <- droplevels(early_half)
+
+#late_half <- undir_dates$pairID[half+1:nrow(undir_dates)] #as half is even, need to add 1
+#late_half <- droplevels(late_half)
+
+# Define which pairID fall into the early and later half of the dataset; based on dates prior to or on Jan 31st = early
+early_half <- filter(undir_dates, earliest_sympt_onset > "2020-01-31")
+early_half <- early_half$pairID
 early_half <- droplevels(early_half)
 
-late_half <- undir_dates$pairID[half+1:nrow(undir_dates)] #as half is even, need to add 1
+late_half <- filter(undir_dates, earliest_sympt_onset > "2020-01-31")
+late_half <- late_half$pairID
 late_half <- droplevels(late_half)
 
 # Make new column indicating which case-pair belongs to which half of the dataset
@@ -606,9 +638,6 @@ p2
 ```
 
 ## Imputataion of missing data
-
-JS: I HAVE UPDATED THIS SECTION FOR NEW DATA TOO
-
 We want to see what the effect of cases with missing dates of symptom onset has on our estimates of serial intervals. To do this, we will impute the missing data by:
 missing date of symptom onset = confirmation date - mean(confirmation data- symptom onset date)...where the mean is taken over the cases that do have a symptom onset date present. We will use the copy made of the original data so that we can repeat the full estimation process using the data with imputed dates of symptom onset.
 
@@ -644,8 +673,6 @@ Step 1: All end_source entries are already complete, but the some of the imputed
 imp_data$start_source[is.na(imp_data$start_source)] = imp_data$dso_imputed[is.na(imp_data$start_source)]-20 
 
 ```
-
-JS UPDATED TO HERE - DATA FORMATTING
 
 Step 2: split related cases column so that we can obtain nodes and edges for clusters.
 
@@ -900,3 +927,42 @@ sd(bestimates_i[,2])
 The mean of the mean serial intervals with imputed dates of symptom onset is`r mean(bestimates_i[,1])` days and the standard deviation of these means is `r sd(bestimates_i[,1])`. 
 The 95% range for the mean serial interval with imputed dates of symptom onset is (`r myest4_i[1]-1.96*sd(bestimates_i[,1])`, `r myest4_i[1]+1.96*sd(bestimates_i[,1])`).
 
+
+## Presymptomatic transmission from original submission code
+Currently not run and have not done associated trouble-shooting to ensure works for revised manuscript.
+#### R0 estimation 
+We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equation $R=\exp{r \mu - 1/2 r^2 \sigma^2}$. To obtain CIs for R, we could use our bootstrap estimates of $\mu$ and $\sigma^2$ and simply resample R using this equation. 
+
+Jung et al Scenario 1
+
+```{r,eval=FALSE}
+
+myrate=0.15
+
+Rs=0*(1:100) 
+for (n in 1:100) {
+  Rs[n]= exp(myrate*bestimates[n,1] - 0.5*(myrate)^2*bestimates[n,2]^2)
+}
+hist(Rs,breaks = 30)
+mean(Rs)
+sd(Rs)
+quantile(Rs, probs = c(0.025, 0.975))
+```
+
+```{r}
+#This should NOT be in R code, but rather in rmd text BUT I've done this so I can hash it out or the file won't knit
+
+#The mean R is `r mean(Rs)` and the range is (`r mean(Rs)-1.96*sd(Rs)`, `r mean(Rs)+1.96*sd(Rs)`), based on the 1.96 standard deviations from the mean.  This agrees closely with the above quantiles. 
+```
+
+#### Additional (uninteresting we think)  - Jung et al Scenario 2 (faster doubling time, higher R values ) 
+```{r,eval=FALSE}
+myrate=0.29
+Rs=0*(1:100) 
+for (n in 1:100) {
+  Rs[n]= exp(myrate*bestimates[n,1] - 0.5*(myrate)^2*bestimates[n,2]^2)
+}
+hist(Rs,breaks = 30)
+mean(Rs)
+quantile(Rs, probs = c(0.025, 0.975))
+```
