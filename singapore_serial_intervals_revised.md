@@ -1,7 +1,7 @@
 ---
 title: "Singapore Serial Intervals - Revisions"
 author: "Caroline Colijn, Michelle Coombe, and Manu Saraswat"
-date: "2020-05-02"
+date: "2020-05-16"
 output: 
   html_document:  
     keep_md: TRUE
@@ -16,57 +16,37 @@ Thanks to EpiCoronaHack Cluster team. These data are manually entered from posti
 Here we will upload and examine the data prior to analysis. 
 
 ```r
-spdata <- read_csv("data/COVID-19_Singapore_formated_dates.csv")
-```
+#spdata <- read_csv("data/COVID-19_Singapore_formated_dates.csv")
+spdata <-read_csv("data/COVID-19_Singapore_data_revised.csv", col_types = list(presumed_infected_date = col_datetime()))
 
-```
-## Parsed with column specification:
-## cols(
-##   .default = col_character(),
-##   CaseID = col_double(),
-##   age = col_double(),
-##   presumed_infected_date = col_date(format = ""),
-##   last_poss_exposure = col_date(format = ""),
-##   symp_presumed_infector = col_date(format = ""),
-##   date_onset_symptoms = col_date(format = ""),
-##   date_quarantine = col_date(format = ""),
-##   date_hospital = col_date(format = ""),
-##   date_confirmation = col_date(format = ""),
-##   date_discharge = col_date(format = "")
-## )
-```
-
-```
-## See spec(...) for full column specifications.
-```
-
-```r
 # Ensure properly imported
 glimpse(spdata)
 ```
 
 ```
 ## Observations: 93
-## Variables: 23
-## $ CaseID                 <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,…
-## $ `Related cases`        <chr> "2,3", "1,3", "1,2", "11", NA, NA, NA, "9,83,9…
-## $ `Cluster links`        <chr> NA, NA, NA, NA, NA, NA, NA, "9,31,33,38,83, 90…
-## $ `Relationship notes`   <chr> NA, NA, "Son of 1", NA, NA, NA, NA, "Married t…
+## Variables: 25
+## $ CaseID                 <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,…
+## $ `Related cases`        <chr> "2,3", "1,3", "1,2", "13", "11", NA, NA, NA, "…
+## $ `Cluster links`        <chr> NA, NA, NA, NA, NA, NA, NA, NA, "9,31,33,38,83…
+## $ `Relationship notes`   <chr> NA, NA, "Son of 1", "Daughter of 13", NA, NA, …
 ## $ Case                   <chr> "Case 1, 66M, Wuhan", "Case 2, 53F, Wuhan", "C…
-## $ age                    <dbl> 66, 53, 37, 36, 56, 56, 35, 56, 56, 56, 31, 37…
-## $ sex                    <chr> "M", "F", "M", "M", "F", "M", "M", "F", "M", "…
+## $ age                    <dbl> 66, 53, 37, 42, 36, 56, 56, 35, 56, 56, 56, 31…
+## $ sex                    <chr> "M", "F", "M", "F", "M", "F", "M", "M", "F", "…
 ## $ country                <chr> "Singapore", "Singapore", "Singapore", "Singap…
 ## $ hospital               <chr> "Singapore General Hospital", "National Centre…
-## $ presumed_infected_date <date> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
+## $ presumed_infected_date <dttm> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
 ## $ presumed_reason        <chr> "Arrived from Wuhan", "Arrived from Wuhan", "A…
 ## $ last_poss_exposure     <date> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
-## $ symp_presumed_infector <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ date_onset_symptoms    <date> 2020-01-20, 2020-01-21, 2020-01-23, 2020-01-2…
-## $ date_quarantine        <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 2020-…
+## $ contact_based_exposure <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ start_source           <date> 2019-12-31, 2020-01-01, 2020-01-03, NA, 2020-…
+## $ end_source             <date> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
+## $ date_onset_symptoms    <date> 2020-01-20, 2020-01-21, 2020-01-23, NA, 2020-…
+## $ date_quarantine        <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 2…
 ## $ date_hospital          <date> 2020-01-22, 2020-01-22, 2020-01-23, 2020-01-2…
-## $ date_confirmation      <date> 2020-01-23, 2020-01-24, 2020-01-24, 2020-01-2…
+## $ date_confirmation      <date> 2020-01-23, 2020-01-24, 2020-01-24, 2020-02-0…
 ## $ outcome                <chr> "Discharged", "Discharged", "Discharged", "Dis…
-## $ date_discharge         <date> 2020-02-19, 2020-02-07, 2020-02-21, 2020-02-1…
+## $ date_discharge         <date> 2020-02-19, 2020-02-07, 2020-02-21, 2020-02-0…
 ## $ travel_history         <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wuhan", "…
 ## $ additional_information <chr> "Travelled with Case 3 (son) and M1 (wife) ;MO…
 ## $ cluster                <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wuhan", "…
@@ -74,46 +54,7 @@ glimpse(spdata)
 ```
 
 ```r
-table(spdata$`Related cases`) # There is one cell with "\n", needs to be changed to 'NA'
-```
-
-```
-## 
-##                     \n                    1,2                    1,3 
-##                      1                      1                      1 
-##                     11                     12                     13 
-##                      1                      1                      1 
-##                  13,26                     18                     19 
-##                      1                      1                      1 
-##                  19,20               19,20,25                  19,27 
-##                      2                      1                      1 
-##                    2,3   20,21,24,27,28,34,40                     22 
-##                      1                      1                      1 
-##                     23                     24                  24,19 
-##                      1                      1                      1 
-##                  26, 2                  28,19                  30,39 
-##                      1                      1                      1 
-##                      4                     41            42,47,52,56 
-##                      1                      1                      1 
-##                     50                  50,55                     51 
-##                      2                      1                      1 
-##                  54,57                  54,58               55,65,77 
-##                      1                      1                      1 
-##                  57,58                 59, 79                     61 
-##                      1                      1                      1 
-##                     66     66, 68, 70, 71, 80         66, 68, 71, 80 
-##                      3                      1                      1 
-##         66, 70, 71, 80                 66, 83                     67 
-##                      1                      1                      1 
-## 68, 70, 71, 80, 83, 91                     72                  72,79 
-##                      1                      1                      1 
-##                     76                      8                     82 
-##                      1                      1                      1 
-##                     86    9,83,91,90,38,33,31                     91 
-##                      1                      1                      1
-```
-
-```r
+#table(spdata$`Related cases`) # There is one cell with "\n", needs to be changed to 'NA'
 spdata$`Related cases`[which(spdata$`Related cases` == "\n")] <- NA
 
 # Rename columns 2, 3 and 4 so no spaces
@@ -134,23 +75,25 @@ colSums(is.na(spdata))
 ##                      0                      0                      0 
 ## presumed_infected_date        presumed_reason     last_poss_exposure 
 ##                     16                     16                     65 
-## symp_presumed_infector    date_onset_symptoms        date_quarantine 
-##                     42                     12                     80 
-##          date_hospital      date_confirmation                outcome 
-##                      0                      0                     31 
-##         date_discharge         travel_history additional_information 
-##                     31                      0                     55 
-##                cluster            citizenship 
-##                     23                      0
+## contact_based_exposure           start_source             end_source 
+##                     42                      7                      0 
+##    date_onset_symptoms        date_quarantine          date_hospital 
+##                     10                     78                      0 
+##      date_confirmation                outcome         date_discharge 
+##                      0                     31                     31 
+##         travel_history additional_information                cluster 
+##                      0                     55                     23 
+##            citizenship 
+##                      0
 ```
 
 ```r
-# Make sure dates parsed properly
+# make sure dates parsed properly
 range(spdata$presumed_infected_date, na.rm = T)
 ```
 
 ```
-## [1] "2020-01-18" "2020-02-10"
+## [1] "2020-01-18 UTC" "2020-02-10 UTC"
 ```
 
 ```r
@@ -162,11 +105,11 @@ range(spdata$last_poss_exposure, na.rm = T)
 ```
 
 ```r
-range(spdata$symp_presumed_infector, na.rm = T)
+range(spdata$contact_based_exposure, na.rm = T)
 ```
 
 ```
-## [1] "2020-01-19" "2020-02-09"
+## [1] "2020-01-19" "2020-02-10"
 ```
 
 ```r
@@ -174,7 +117,7 @@ range(spdata$date_onset_symptoms, na.rm = T)
 ```
 
 ```
-## [1] "2020-01-20" "2020-02-16"
+## [1] "2020-01-20" "2020-02-17"
 ```
 
 ```r
@@ -182,7 +125,7 @@ range(spdata$date_quarantine, na.rm = T)
 ```
 
 ```
-## [1] "2020-01-26" "2020-02-15"
+## [1] "2020-01-26" "2020-02-25"
 ```
 
 ```r
@@ -210,11 +153,24 @@ range(spdata$date_discharge, na.rm = T)
 ```
 
 ```r
-# Change symp_presumed_infector to Feb 10, 2020 (date of symptom onset from caseID 72, the presumed infector)
-spdata$symp_presumed_infector[spdata$CaseID == 79] <- ymd("2020-02-10")
+range(spdata$start_source, na.rm = T)
 ```
 
-**Missing data and imputation**: We have 12 cases that are missing date of symptom onset. We will start the analysis by just removing these cases from the dataset; however, we will then repeat the analysis when imputing the data to determine the effect of removing these cases.
+```
+## [1] "2019-12-31" "2020-02-02"
+```
+
+```r
+range(spdata$end_source, na.rm = T)
+```
+
+```
+## [1] "2020-01-18" "2020-02-17"
+```
+
+
+**Missing data and imputation**: We have 10 cases that are missing date of symptom onset. We will start the analysis by just removing these cases from the dataset; however, we will then repeat the analysis when imputing the data to determine the effect of removing these cases.
+
 
 ```r
 # Keep a copy of the original dataset with missing data for imputation later
@@ -222,97 +178,38 @@ spdata_org <- spdata
 
 # Remove all the cases that do not have info on date of symptom onset 
 spdata <- filter(spdata, !is.na(date_onset_symptoms)) 
-  # This removes 12 cases; we will examine the effect of imputing these values later on 
+  # This removes 10 cases; we will examine the effect of imputing these values later on 
 ```
 
-In order to determine ICC later, we need columns that define a window for possible start and end of exposure to the virus. To do this, we will define "start_source" and "end_source" columns as follows.
+**End_source and start_source columns**:
 
-We estimate this directly from the stated start and end times for cases' exposure windows. These are explicitly listed for the Tianjin dataset but in Singapore they are approximated using contact tracing and the route by which a case was exposed. Because it is explicitly about the symptom onset, we removed those who don't have symptom onset defined. (But see effect of imputing those values later).   
+In order to determine ICC later, we need columns that define a window for possible start and end of exposure to the virus. These are now explicitly listed for both Tianjin and Singapore datasets in the 'start_source' and 'end_source' columns.
 
-**End_source column**:
-If no estimated end time for the exposure is given, or if the end of the exposure time is after the time of symptom onset, set the last exposure time to the symptom onset time. This is because they must have been exposed before symptom onset. We use four ideas to set the end time for the exposure window: 
+The rules for defining these start and end dates are as follows:
 
-* 1: the end source is last possible exposure, if this is given 
+- For Wuhan travel cases, their end_source is equal to the time they travelled from Wuhan. In the absence of any other contact info, their start_source is equal to their symptom onset - 20 days, to account for wide uncertainty. 
 
-* 2:  if it is not given, then we set the end of the exposure window to the time of symptoms of the presumed infector plus a noise term epsilon (eps)
+- For cluster cases thought to originate from an index case (but with no further known dates of contact), the start source is set to the 1st symptom onset in the cluster - 7 days. The end date is set to the minimum of the earliest quarantine, hospitalization or hospitalization in the cluster, and the symptom onset date of the case in question. (We assume that once a case in a cluster was identified, people were well aware of this and stopped mixing).
 
-* 3: and if neither the last possible expsure or the symptom time of the presumed infector are given, the last exposure time is set to the time of symptom onset. 
+- For cluster cases thought to originate from a specific meeting/event (e.g. company meeting at Grand Hyatt hotel), the start_source is set to the 1st known meeting day. The end_source is set to that day + 4. (4 to account for some error/uncertainty)
 
-* 4 Finally, we do not let the last possible exposure time be later than the time of symptom onset 
+- For cases with no known contact or travel info, their start_source is their symptom onset - 20 and their end_source is their symptom onset date (essentially, we have no information on these cases)
+
+If no other end time for the exposure is given (by a known epidemiological route) or if the end of the exposure time is after the time of symptom onset, we set the last exposure time to the symptom onset time. This is because they must have been exposed before symptom onset.
+
+Because this is explicitly about the symptom onset, we removed those who don't have symptom onset defined. (But see effect of imputing those values later).   
 
 
 ```r
-spdata$end_source = spdata$last_poss_exposure # 1 above 
-(method1 <- sum(!is.na(spdata$end_source))) #20 cases can have date of last possible exposure provided by known end of exposure window
+# Let's confirm that the end_source is always before or equal to the symptom onset date
+sum(spdata$end_source>spdata$date_onset_symptoms) # =0. Good
 ```
 
 ```
-## [1] 20
+## [1] 0
 ```
-
-```r
-eps=4
-hasPresInf = which(is.na(spdata$last_poss_exposure) & !(is.na(spdata$symp_presumed_infector))) # 2 above 
-spdata$end_source[hasPresInf] = spdata$presumed_infected_date[hasPresInf]+eps
-length(hasPresInf) #47 cases have date of last possible exposure estimated by method #2
-```
-
-```
-## [1] 47
-```
-
-```r
-hasNone = which(is.na(spdata$last_poss_exposure) & is.na(spdata$symp_presumed_infector)) # 3 above 
-spdata$end_source[hasNone] = spdata$date_onset_symptoms[hasNone]
-length(hasNone) #14 cases have date of last possible exposure estimated by method #3
-```
-
-```
-## [1] 14
-```
-
-```r
-spdata$end_source = pmin(spdata$end_source, spdata$date_onset_symptoms) # 4
-
-rm(hasNone, hasPresInf, method1)
-```
-
-**Start_source column**: Model the start source by one of two methods:
-
-* 1 if the time of presumed infector is given, use that - epsilon 
-
-* If it is not given use symptom onset minus say 20 days, based on prior 
-knowledge 
-
-
-```r
-spdata$start_source = spdata$presumed_infected_date - eps # 1
-spdata$start_source[is.na(spdata$presumed_infected_date)] = spdata$date_onset_symptoms[is.na(spdata$presumed_infected_date)]-20
-```
-
-
 
 ## Estimates of serial interval from Singapore data (without imputation)
-The simplest serial interval estimate we can make with these data is a direct estimate based on the time of symptoms of the presumed infector, and the time of symptoms of the case. However, this does not account for the fact that the presumed infector is not necessarily the infector. There are missing intermediate cases (with reasonable probability), or two cases could both be infected by a third unknown case.  
-
-```r
-directSI = spdata$date_onset_symptoms - spdata$symp_presumed_infector
-directSI = as.numeric(directSI[!is.na(directSI)])
-mean(directSI)
-```
-
-```
-## [1] 7.75
-```
-
-```r
-sd(directSI)
-```
-
-```
-## [1] 4.95
-```
-
 We will estimate the serial interval using the 'interval case to case' approach given in Vink et al (https://academic.oup.com/aje/article/180/9/865/2739204). 
 
 The dataset has several instances where a putative infector or contact is known. These are listed in the 'related_cases' column. We first make a graph in which nodes are individuals and edges are present from cases listed as possible sources, to the cases for whom they are possible sources. 
@@ -380,6 +277,7 @@ As relationships in the 'related_cases' column were not directional, we need to 
 
 To do this, let's start by making a new dataset from our case pairs ('undir') that contains date of symptom onset for each case. We will make a few new columns, both for determining which case has the earliest date of symptom onset, as well as to plot serial intervals over time later on. 
 
+
 ```r
 # Make a smaller dataset of original spdata that contains only the CaseID and date of symptom onset
 spdata_sympt <- select(spdata_org, CaseID, date_onset_symptoms)
@@ -404,6 +302,7 @@ undir_dates <- mutate(undir_dates, earliest_sympt_onset = pmin(to_sympt_date, fr
 ```
 
 Now we need to split the dataset apart so that we can switch around the directionality of presumed transmission for case-pairs where the serial interval is negative. Easiest way to do this is to rename columns and then join back to the other parts of the dataset, based on the column names.
+
 
 ```r
 # Split dataset into positive (or 0) serial interval vs. negative vs. NA 
@@ -460,47 +359,12 @@ From this edge list we can use visNetwork to visualise the graph. Make 'group' b
 # Turn 'presumed_reason' into lower case and get trim any whitespace so don't have issues with case sensitivity, etc
 spdata$presumed_reason <- str_to_lower(spdata$presumed_reason)
 spdata$presumed_reason <- str_trim(spdata$presumed_reason)
-table(spdata$presumed_reason)
+#table(spdata$presumed_reason)
+sum(is.na(spdata$presumed_reason)) #16 NAs
 ```
 
 ```
-## 
-##                                                    arrived from wuhan 
-##                                                                     3 
-##                                     arrived from wuhan (asymptomatic) 
-##                                                                    13 
-## asymptomatic but detected a fever during medical screening at airport 
-##                                                                     1 
-##                                                 grace assembly of god 
-##                                                                    22 
-##                                                 grand hyatt singapore 
-##                                                                     3 
-##                                                           life church 
-##                                                                     6 
-##                                             seletar aerospace heights 
-##                                                                     5 
-##                                 via 13, 26 (date of 13 symptom onset) 
-##                                                                     1 
-##                                     via 50 (date of 50 symptom onset) 
-##                                                                     1 
-##                                     via 59 (date of 59 symptom onset) 
-##                                                                     1 
-##                              via 72 via 59 (date of 72 symptom onset) 
-##                                                                     1 
-##                                     via 82 (date of 82 symptom onset) 
-##                                                                     1 
-##                                     via 83,91 at chinese ny gathering 
-##                                                                     1 
-##                                                        yong thai hang 
-##                                                                     8
-```
-
-```r
-sum(is.na(spdata$presumed_reason)) #15 NAs
-```
-
-```
-## [1] 14
+## [1] 16
 ```
 
 ```r
@@ -523,12 +387,18 @@ table(spdata$presumed_reason_group)
 ##     Grace Assembly of God     Grand Hyatt Singapore        Known relationship 
 ##                        22                         3                         6 
 ##               Life Church Seletar Aerospace Heights                   Unknown 
-##                         6                         5                        14 
+##                         6                         5                        16 
 ##              Wuhan travel            Yong Thai Hang 
 ##                        17                         8
 ```
 
+```r
+# Save this object for plotting incidence curve by infection source group (figure 1b)
+#save(spdata, file = "data/Singapore_cleaned_infection_source_groups.rdata")
+```
+
 We also need to make a data frame of the edges (indicating direction of probable transmission) and nodes (the cases).
+
 
 ```r
 # Make data frame of edges, where the cases as the 'earliest' date of symptom onset are labeled as the "from" cases
@@ -537,16 +407,23 @@ fedges = data.frame(from = paste("case", fedges[ ,1], sep=""),
                      to = paste("case", fedges[ ,2], sep=""))
 fedges$arrows <- "to"  
 
+# Save this object so we can use it to plot Fig4 Network diagram
+#save(fedges, file = "data/singapore_edges_for_network_plot.rdata")
+
 # Make data frame of nodes
 nodes.df <- data.frame(id=paste("case",spdata$CaseID,sep=""), label=spdata$CaseID, group=spdata$presumed_reason_group)
+
+# Save this object so in case we can use it to plot Fig4 Network diagram
+#save(nodes.df, file = "data/singapore_nodes_for_network_plot.rdata")
+
 glimpse(nodes.df)
 ```
 
 ```
-## Observations: 81
+## Observations: 83
 ## Variables: 3
 ## $ id    <fct> case1, case2, case3, case4, case5, case6, case7, case8, case9, …
-## $ label <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, …
+## $ label <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 17, 48, …
 ## $ group <fct> Wuhan travel, Wuhan travel, Wuhan travel, Wuhan travel, Wuhan t…
 ```
 
@@ -556,9 +433,10 @@ visNetwork(nodes.df, fedges) %>% visLegend()
 ```
 
 <!--html_preserve--><div id="htmlwidget-51098584d74b8c0b22d4" style="width:672px;height:480px;" class="visNetwork html-widget"></div>
-<script type="application/json" data-for="htmlwidget-51098584d74b8c0b22d4">{"x":{"nodes":{"id":["case1","case2","case3","case4","case5","case6","case7","case8","case9","case10","case11","case12","case13","case14","case16","case17","case18","case19","case20","case21","case24","case25","case27","case29","case30","case31","case32","case33","case34","case35","case36","case37","case38","case39","case40","case41","case42","case43","case44","case46","case47","case48","case49","case50","case51","case52","case53","case54","case55","case56","case57","case58","case59","case60","case61","case62","case63","case64","case66","case67","case68","case69","case70","case71","case72","case73","case74","case77","case78","case79","case80","case81","case82","case83","case84","case85","case86","case88","case89","case90","case91"],"label":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,17,18,19,20,21,24,25,27,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,66,67,68,69,70,71,72,73,74,77,78,79,80,81,82,83,84,85,86,88,89,90,91],"group":["Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Unknown","Grand Hyatt Singapore","Life Church","Unknown","Life Church","Yong Thai Hang","Unknown","Grand Hyatt Singapore","Unknown","Life Church","Grand Hyatt Singapore","Yong Thai Hang","Unknown","Seletar Aerospace Heights","Unknown","Known relationship","Unknown","Seletar Aerospace Heights","Grace Assembly of God","Grace Assembly of God","Unknown","Grace Assembly of God","Seletar Aerospace Heights","Grace Assembly of God","Grace Assembly of God","Unknown","Seletar Aerospace Heights","Grace Assembly of God","Grace Assembly of God","Unknown","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Unknown","Known relationship","Grace Assembly of God","Grace Assembly of God","Seletar Aerospace Heights","Grace Assembly of God","Grace Assembly of God","Known relationship","Grace Assembly of God","Grace Assembly of God","Known relationship","Grace Assembly of God","Known relationship","Grace Assembly of God","Grace Assembly of God","Unknown","Life Church","Grace Assembly of God","Unknown","Known relationship","Grace Assembly of God","Unknown","Life Church","Life Church"]},"edges":{"from":["case1","case1","case2","case4","case8","case8","case8","case8","case8","case12","case2","case19","case19","case19","case19","case20","case20","case30","case36","case20","case13","case50","case54","case54","case59","case59","case61","case66","case66","case66","case66","case68","case68","case68","case42","case47","case52","case70","case71","case72","case51","case82","case66","case66","case91","case31","case20","case34","case25","case55","case58","case83","case91","case69","case71","case91","case13","case19","case27","case26","case50"],"to":["case2","case3","case3","case11","case9","case83","case90","case38","case33","case18","case13","case21","case24","case27","case40","case24","case34","case36","case39","case40","case44","case77","case57","case58","case72","case79","case67","case68","case70","case71","case80","case70","case71","case80","case69","case69","case69","case80","case80","case79","case73","case86","case84","case88","case8","case8","case19","case19","case24","case50","case57","case66","case66","case56","case70","case83","case26","case28","case28","case44","case65"],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false}},"groups":["Wuhan travel","Yong Thai Hang","Unknown","Grand Hyatt Singapore","Life Church","Seletar Aerospace Heights","Known relationship","Grace Assembly of God"],"width":null,"height":null,"idselection":{"enabled":false},"byselection":{"enabled":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","legend":{"width":0.2,"useGroups":true,"position":"left","ncol":1,"stepX":100,"stepY":100,"zoom":true}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
+<script type="application/json" data-for="htmlwidget-51098584d74b8c0b22d4">{"x":{"nodes":{"id":["case1","case2","case3","case4","case5","case6","case7","case8","case9","case10","case11","case12","case13","case14","case16","case18","case17","case48","case49","case51","case53","case54","case57","case58","case60","case61","case62","case63","case67","case68","case70","case71","case73","case74","case78","case80","case81","case84","case88","case30","case36","case39","case31","case33","case38","case83","case90","case91","case29","case32","case35","case37","case41","case43","case46","case50","case55","case59","case64","case82","case85","case89","case92","case93","case42","case47","case52","case56","case69","case44","case77","case72","case79","case86","case66","case19","case20","case21","case24","case25","case27","case34","case40"],"label":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,18,17,48,49,51,53,54,57,58,60,61,62,63,67,68,70,71,73,74,78,80,81,84,88,30,36,39,31,33,38,83,90,91,29,32,35,37,41,43,46,50,55,59,64,82,85,89,92,93,42,47,52,56,69,44,77,72,79,86,66,19,20,21,24,25,27,34,40],"group":["Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grand Hyatt Singapore","Grand Hyatt Singapore","Grand Hyatt Singapore","Life Church","Life Church","Life Church","Life Church","Life Church","Life Church","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Seletar Aerospace Heights","Seletar Aerospace Heights","Seletar Aerospace Heights","Seletar Aerospace Heights","Seletar Aerospace Heights","Known relationship","Known relationship","Known relationship","Known relationship","Known relationship","Known relationship","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang"]},"edges":{"from":["case1","case1","case2","case4","case8","case8","case8","case8","case8","case12","case2","case54","case54","case61","case66","case68","case68","case68","case66","case70","case66","case71","case51","case66","case66","case66","case30","case36","case50","case59","case59","case82","case42","case47","case52","case13","case72","case19","case19","case19","case19","case20","case20","case20","case91","case31","case58","case71","case91","case91","case55","case69","case83","case20","case34","case25","case13","case50","case26","case19","case27"],"to":["case2","case3","case3","case11","case9","case83","case90","case38","case33","case18","case13","case57","case58","case67","case68","case70","case71","case80","case70","case80","case71","case80","case73","case80","case84","case88","case36","case39","case77","case72","case79","case86","case69","case69","case69","case44","case79","case21","case24","case27","case40","case24","case34","case40","case8","case8","case57","case70","case83","case66","case50","case56","case66","case19","case19","case24","case26","case65","case44","case28","case28"],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false}},"groups":["Wuhan travel","Grace Assembly of God","Grand Hyatt Singapore","Life Church","Unknown","Seletar Aerospace Heights","Known relationship","Yong Thai Hang"],"width":null,"height":null,"idselection":{"enabled":false},"byselection":{"enabled":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","legend":{"width":0.2,"useGroups":true,"position":"left","ncol":1,"stepX":100,"stepY":100,"zoom":true}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
 
 Now we estimate the serial interval using the ICC method; for this we first construct a graph. The "interval case to case" data are from identifying a putative first infector each small cluster in the graph, and finding the times between symptom onset in the first observed case and the others. See Vink et al. 
+
 
 ```r
 sgraph = graph_from_edgelist(as.matrix(fedges[,1:2]), directed = FALSE)
@@ -570,19 +448,19 @@ ccs
 ## $membership
 ##  case1  case2  case3  case4 case11  case8  case9 case83 case90 case38 case33 
 ##      1      1      1      2      2      3      3      3      3      3      3 
-## case12 case18 case13 case19 case21 case24 case27 case40 case20 case34 case30 
-##      4      4      1      5      5      5      5      5      5      5      6 
-## case36 case39 case44 case50 case77 case54 case57 case58 case59 case72 case79 
-##      6      6      1      7      7      8      8      8      9      9      9 
-## case61 case67 case66 case68 case70 case71 case80 case42 case69 case47 case52 
-##     10     10      3      3      3      3      3     11     11     11     11 
-## case51 case73 case82 case86 case84 case88 case91 case31 case25 case55 case56 
-##     12     12     13     13      3      3      3      3      5      7     11 
-## case26 case28 case65 
-##      1      5      7 
+## case12 case18 case13 case54 case57 case58 case61 case67 case66 case68 case70 
+##      4      4      1      5      5      5      6      6      3      3      3 
+## case71 case80 case51 case73 case84 case88 case30 case36 case39 case50 case77 
+##      3      3      7      7      3      3      8      8      8      9      9 
+## case59 case72 case79 case82 case86 case42 case69 case47 case52 case44 case19 
+##     10     10     10     11     11     12     12     12     12      1     13 
+## case21 case24 case27 case40 case20 case34 case91 case31 case55 case56 case25 
+##     13     13     13     13     13     13      3      3      9     12     13 
+## case26 case65 case28 
+##      1      9     13 
 ## 
 ## $csize
-##  [1]  6  2 15  2  9  3  4  3  3  2  5  2  2
+##  [1]  6  2 15  2  3  2  2  3  4  3  2  5  9
 ## 
 ## $no
 ## [1] 13
@@ -599,6 +477,7 @@ Now knowing the components of the graph I can extract the ICC intervals.
 I did this in a few ways (commented out lines): taking the first case for each cluster to be the first reported symptoms (I get a 5 day serial interval); the first start exposure time (now there are negative ICCs so I get a 4.5 day serial interval) and the latest end exposure time.
 
 Extract ICC interval data: a function 
+
 
 ```r
 getICCs <- function(thisdata, ccs, K, orderby= "onset" ) {
@@ -1063,106 +942,106 @@ myest_exp= serial_mix_est(data=icc_expose, N=100, startmu=10, startsig =4)
 ```
 
 ```
-## [1] 6.53 3.22
-## [1] 5.29 2.80
-## [1] 4.70 2.49
-## [1] 4.40 2.25
-## [1] 4.25 2.08
-## [1] 4.18 1.96
-## [1] 4.15 1.85
-## [1] 4.15 1.76
-## [1] 4.17 1.68
-## [1] 4.2 1.6
-## [1] 4.23 1.52
-## [1] 4.27 1.44
-## [1] 4.30 1.37
-## [1] 4.32 1.32
-## [1] 4.34 1.27
-## [1] 4.35 1.24
-## [1] 4.36 1.23
-## [1] 4.36 1.21
-## [1] 4.36 1.21
-## [1] 4.36 1.21
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
-## [1] 4.36 1.20
+## [1] 6.69 3.16
+## [1] 5.56 2.85
+## [1] 4.95 2.61
+## [1] 4.60 2.42
+## [1] 4.38 2.28
+## [1] 4.25 2.15
+## [1] 4.16 2.05
+## [1] 4.11 1.96
+## [1] 4.08 1.88
+## [1] 4.07 1.80
+## [1] 4.08 1.73
+## [1] 4.09 1.66
+## [1] 4.12 1.58
+## [1] 4.15 1.50
+## [1] 4.18 1.42
+## [1] 4.21 1.34
+## [1] 4.23 1.28
+## [1] 4.25 1.23
+## [1] 4.25 1.20
+## [1] 4.26 1.18
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
+## [1] 4.26 1.17
 ```
 
 ```r
@@ -1180,7 +1059,7 @@ print(mm[,c(4,3,1,2)])
 ## myest4           Onset                  4 4.17 1.06
 ## myest5           Onset                  5 4.43 1.09
 ## myest6           Onset                  6 4.76 1.15
-## myest_exp LastExposure                  4 4.36 1.20
+## myest_exp LastExposure                  4 4.26 1.17
 ```
 
 
@@ -1197,6 +1076,7 @@ The mean SI is 4.166. The standard deviation of the serial intervals is 1.057.
 
 We need CIs for the mean. For this we use bootstrapping. 
 
+
 ```r
 # bootstrap analysis
 Nboot=100
@@ -1204,15 +1084,15 @@ Nboot=100
 bestimates=myest4 
 
 # NOTE this loop had errors a few times; I just restarted it. 
-for (kk in 61:Nboot) {
+for (kk in 1:Nboot) {
   bdata = sample(x=icc4, size = length(icc4), replace = T)
   bestimates = rbind(bestimates, serial_mix_est(data=bdata, N=100, startmu=10, startsig =4))
   
   print(paste("loop iteration #", kk, sep = ": "))
 }
 
-#bestimates <- bestimates[-1, ] #Remove the non-bootstrapped row (i.e. the myest4 object)
- save(bestimates, file = "data/sing_boots_100.Rdata")
+bestimates <- bestimates[-1, ] #Remove the non-bootstrapped row (i.e. the myest4 object)
+#save(bestimates, file = "data/sing_boots_100.Rdata")
 ```
 
 
@@ -1221,14 +1101,14 @@ load("data/sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE
 hist(bestimates[,1],breaks = 30)
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
 ```r
 bootdf=data.frame(mu=bestimates[,1], sig=bestimates[,2])
 ggplot(bootdf, aes(x=mu, y=sig))+geom_point()
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-18-2.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-16-2.png)<!-- -->
 
 ```r
 ggplot(bootdf, aes(x=mu))+geom_histogram()
@@ -1238,7 +1118,7 @@ ggplot(bootdf, aes(x=mu))+geom_histogram()
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-18-3.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-16-3.png)<!-- -->
 
 ```r
 # ggsave(file = "final_figures/FigS1_bootst_SI_sing.pdf", width = 6, height = 4)
@@ -1251,7 +1131,7 @@ mean(bestimates[,1])
 ```
 
 ```
-## [1] 4.02
+## [1] 3.85
 ```
 
 ```r
@@ -1259,7 +1139,7 @@ median(bestimates[,1])
 ```
 
 ```
-## [1] 4.13
+## [1] 4.03
 ```
 
 ```r
@@ -1267,7 +1147,7 @@ sd(bestimates[,1])
 ```
 
 ```
-## [1] 0.962
+## [1] 0.875
 ```
 
 ```r
@@ -1275,7 +1155,7 @@ mean(bestimates[,2])
 ```
 
 ```
-## [1] 1.23
+## [1] 1.24
 ```
 
 ```r
@@ -1283,14 +1163,15 @@ sd(bestimates[,2])
 ```
 
 ```
-## [1] 0.513
+## [1] 0.538
 ```
-The mean of the mean serial intervals is4.021 days and the standard deviation of these means is 0.962. 
-The 95% range for the mean serial interval is (2.279, 6.052).
+The mean of the mean serial intervals is3.845 days and the standard deviation of these means is 0.875. 
+The 95% range for the mean serial interval is (2.451, 5.88).
 
 
 ## Effect of time on serial interval estimates
 To see the effects of the passage of time on the raw serial intervals, we will plot all possible infector-infectee pairs and the difference in their dates of symptom onset. To do this, we need a dataframe that has (1) case pairs (= 'undir'), (2) dates of symptom onset for both individuals in that pair, and (3) difference in days between those pairs.
+
 
 ```r
 # Add an extra column that groups serial interval based on length 
@@ -1307,7 +1188,9 @@ undir_dates <- mutate(undir_dates, si_groups = factor(case_when(abs_serial_inter
 ```
 
 #### Graphs of raw serial intervals
+
 Now let's turn this into a dot plot and a bar chart so we can see if and how serial interval changes over time. The dates on the x-axis are the earliest date of symptom onset from each infected pair.
+
 
 ```r
 ### A) Histogram - length of serial interval on the y-axis
@@ -1343,7 +1226,7 @@ ggplot(g_dates, aes(x = earliest_sympt_onset, y = serial_interval)) +
        x = "Date of first onset of symptoms within case pairs")
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
 
 ```r
 ### B) Histogram  - count of serial intervals on the y-axis
@@ -1382,10 +1265,10 @@ ggplot(sig_dates, aes(x = earliest_sympt_onset, y = count_sig, fill = serial_int
        x = "Date of first onset of symptoms within case pairs")
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-21-2.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-19-2.png)<!-- -->
 
 ```r
-###~~~~~~~~~~~ C) Cleaveland dotplot of raw serial intervals per possible case pair ~~~~~~~~~~~~~~~~~~~~~~~~~~~~###
+###~~~~~~~~~~~ C) Cleveland dotplot of raw serial intervals per possible case pair ~~~~~~~~~~~~~~~~~~~~~~~~~~~~###
   # This is the plot that has the easiest visual interpretation, so we will use it in our final manuscript
 
 # We want to exclude any case-pairs that have NA for length of serial interval
@@ -1403,7 +1286,7 @@ undir_dotplot <- pivot_longer(undir_dates,
 undir_dotplot$pair_member <- str_replace(undir_dotplot$pair_member, pattern = "from_sympt_date", replacement = "Presumed infector")
 undir_dotplot$pair_member <- str_replace(undir_dotplot$pair_member, pattern = "to_sympt_date", replacement = "Presumed infectee")
 
-#Make the Cleaveland dotplot
+#Make the Cleveland dotplot
 p <- ggplot(undir_dotplot, aes(y = reorder(pairID, earliest_sympt_onset))) +
           geom_segment(aes(x = earliest_sympt_onset, xend = earliest_sympt_onset + abs_serial_interval, yend = pairID), 
                        color = "#404788FF") +
@@ -1426,7 +1309,7 @@ p <- ggplot(undir_dotplot, aes(y = reorder(pairID, earliest_sympt_onset))) +
 p
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-21-3.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-19-3.png)<!-- -->
 
 ```r
 # Write to PDF
@@ -1439,8 +1322,37 @@ p
 # dev.off()
 ```
 
-#### Mean and Median of half the case pairs
-To determine the effect of time on the raw serial intevals, we will split the case-pairs in half, and find the median, mean, and standard deviation for those pairs in the half with the earlier first date of symptom onset ('earliest_sympt_onset') vs. those in the half with the later dates of first symtom onset ('earliest_sympt_onset'). Note that splitting the case-pairs in half does arbitarily split some pairs that have the same date of earliest_sympt_onset into the two different datasets. 
+#### Direct serial interval estimates: all possible case-pairs
+To determine an estimate of the raw serial intevals, we will find the mean, median, and standard deviation of all possible case-pairs. Note that this is the raw data where cases without date of symptom onset have been removed (i.e. NOT imputed!).
+
+```r
+#OLD WAY OF DIRECTLY ESTIMATING S.I. from Singapore data (without imputation)
+#The simplest serial interval estimate we can make with these data is a direct estimate based on the time of symptoms of the presumed infector, and the time of symptoms of the case. However, this does not account for the fact that the presumed infector is not necessarily the infector. There are missing intermediate cases (with reasonable probability), or two cases could both be infected by a third unknown case.
+#directSI = spdata$date_onset_symptoms - spdata$symp_presumed_infector
+#directSI = as.numeric(directSI[!is.na(directSI)])
+#mean(directSI)
+#sd(directSI)
+```
+
+
+
+```r
+### Arrange the dataset by the date of earliest symptom onset for each case pair
+undir_dates <- arrange(undir_dates, earliest_sympt_onset)
+
+### Calculate the mean and median for all possible case-pairs
+all_scp <- undir_dates %>% 
+        summarize(mean_direct_si = mean(abs_serial_interval),
+                  median_direct_si = median(abs_serial_interval),
+                  sd_direct_si = sd(abs_serial_interval))
+```
+
+The mean direct serial interval of the possible case-pairs is 4.054, with a standard deviation of 3.387: giving a confidence interval around the mean of (-2.584, 10.692). The median of the direct serial interval 3.5.
+
+#### Effect of time on direct serial interval estimates: splitting possible case-pairs in half by earliest date of symptom onset
+To determine the effect of time on the raw serial intevals, we will split the case-pairs into early and late, and find the median, mean, and standard deviation. Early cases are those case-pairs where the earlier first date of symptom onset for the pair ('earliest_sympt_onset') is on or before Jan 31, 2020, and late cases are those with earliest_sympt_onset after Jan 31, 2020. 
+Remember that this is the raw data where cases without date of symptom onset have been removed (i.e. NOT imputed data). 
+
 
 ```r
 ### Add a column that specifies if case-pairs are part of "early onset" or "late onset"
@@ -1448,15 +1360,24 @@ To determine the effect of time on the raw serial intevals, we will split the ca
 # Need to arrange the dataset by the date of earliest symptom onset for each case pair
 undir_dates <- arrange(undir_dates, earliest_sympt_onset)
 
-# Define half of the dataset
-half <- nrow(undir_dates) / 2 
+# Define half of the dataset...if just want to split dataset 50:50 by # of case-pairs, rather than by date
+#half <- nrow(undir_dates) / 2 
 
-# Define which pairID fall into the early and later half of the dataset
+# Define which pairID fall into the early and later half of the dataset...if splitting in half, rather than by date
   #***NOTE THAT THIS DOES ARBITARILY SPLIT SOME PAIRS ON THE SAME DAY OF EARLIEST SYMPT ONSET INTO DIFFERENT HALVES***
-early_half <- undir_dates$pairID[1:half] 
+#early_half <- undir_dates$pairID[1:half] 
+#early_half <- droplevels(early_half)
+
+#late_half <- undir_dates$pairID[half+1:nrow(undir_dates)] #as half is even, need to add 1
+#late_half <- droplevels(late_half)
+
+# Define which pairID fall into the early and later half of the dataset; based on dates prior to or on Jan 31st = early
+early_half <- filter(undir_dates, earliest_sympt_onset > "2020-01-31")
+early_half <- early_half$pairID
 early_half <- droplevels(early_half)
 
-late_half <- undir_dates$pairID[half+1:nrow(undir_dates)] #as half is even, need to add 1
+late_half <- filter(undir_dates, earliest_sympt_onset > "2020-01-31")
+late_half <- late_half$pairID
 late_half <- droplevels(late_half)
 
 # Make new column indicating which case-pair belongs to which half of the dataset
@@ -1480,9 +1401,10 @@ l <- undir_dates %>%
                   sd_late = sd(abs_serial_interval))
 ```
 
-The mean serial interval for the **early** half of the case-pairs is 4.071, with a standard deviation of 3.231, and a median of 4. The mean serial interval for the **late** half of the case-pairs is 4.036, with a standard deviation of 3.595, and a median of 3.
+The mean serial interval for the **early** half of the case-pairs is 3.176, with a standard deviation of 2.404, and a median of 3. The mean serial interval for the **late** half of the case-pairs is NaN, with a standard deviation of NA, and a median of NA.
 
 This version of the Cleveland dotplot shows which half of the case-pairs was used to calculate each summary statistic.
+
 
 ```r
 ###  Cleveland dotplot of raw serial intervals, facetted by portion of dataset used to do mean, median and sd calculations
@@ -1513,7 +1435,7 @@ p2 <- ggplot(undir_dotplot2, aes(y = reorder(pairID, earliest_sympt_onset))) +
                 panel.grid.minor.x = element_blank(),
                 panel.grid.major.y = element_line(colour = "grey80", linetype = "dashed"),
                 panel.background = element_rect(fill = "white")) +
-          labs(title = "Serial intervals of possible case pairs from Tianjin, over time",
+          labs(title = "Serial intervals of possible case pairs from Singapore, over time",
                x = "Date of symptom onset",
                y = "Case pairs")
 p2
@@ -1525,7 +1447,7 @@ p2
 # Write to PDF
 # pdf("final_figures/Dotplot_raw_serial_intervals_Singapore_facetted_in_half.pdf", 
      #family = "Times", 
-#     width = 8.5, height = 11)
+#   width = 8.5, height = 11)
 
 # p2
 
@@ -1536,14 +1458,15 @@ p2
 We want to see what the effect of cases with missing dates of symptom onset has on our estimates of serial intervals. To do this, we will impute the missing data by:
 missing date of symptom onset = confirmation date - mean(confirmation data- symptom onset date)...where the mean is taken over the cases that do have a symptom onset date present. We will use the copy made of the original data so that we can repeat the full estimation process using the data with imputed dates of symptom onset.
 
+
 ```r
 # Figure out which cases are missing date of symptom onset
 no_date <- which(is.na(spdata_org$date_onset_symptoms))
-spdata_org$CaseID[no_date]
+spdata_org$CaseID[no_date] # 10 of them
 ```
 
 ```
-##  [1] 15 22 23 26 28 45 65 75 76 87 92 93
+##  [1] 26 45 15 76 87 22 23 75 65 28
 ```
 
 ```r
@@ -1566,7 +1489,7 @@ avg_date_diff   #Notice that this is a 'difftime' class variable; may become imp
 ```
 
 ```
-## Time difference of 7.4 days
+## Time difference of 7.43 days
 ```
 
 ```r
@@ -1579,61 +1502,10 @@ imp_data$dso_imputed = if_else(is.na(imp_data$date_onset_symptoms),
 
 Now we can re-run the serial estimates based on the imputed date of symptom onset column (dso_imputed).
 
-Step 1: make the end_source and start_source columns to indicate possible exposure times. Uses same methods/decision rules as explained with non-imputed data set; except in method 3 and 4 where we use the imputed date of symptom onset instead of date of symptom onset.
-
-```r
-### End source column
-imp_data$end_source = imp_data$last_poss_exposure # method 1 above 
-(method1 <- sum(!is.na(imp_data$end_source))) #28 cases can have date of last possible exposure provided by known end of exposure window
-```
-
-```
-## [1] 28
-```
-
-```r
-eps=4
-hasPresInf = which(is.na(imp_data$last_poss_exposure) & !(is.na(imp_data$symp_presumed_infector))) # method 2 above 
-imp_data$end_source[hasPresInf] = imp_data$presumed_infected_date[hasPresInf]+eps
-length(hasPresInf) #49 cases have date of last possible exposure estimated by method #2
-```
-
-```
-## [1] 49
-```
-
-```r
-#~~~~ Use the imputed date of symptom onset for method 3 this time ~~~~#
-hasNone = which(is.na(imp_data$last_poss_exposure) & is.na(imp_data$symp_presumed_infector)) # method 3 above 
-imp_data$end_source[hasNone] = imp_data$dso_imputed[hasNone]
-length(hasNone) #16 cases have date of last possible exposure estimated by method #3
-```
-
-```
-## [1] 16
-```
-
-```r
-#~~~~ Use the imputed date of symptom onset for method 4 this time ~~~~#
-sum(is.na(imp_data$end_source)) #2 cases remaining that could not be imputed by any other method
-```
-
-```
-## [1] 0
-```
-
-```r
-imp_data$end_source = pmin(imp_data$end_source, imp_data$dso_imputed, na.rm = T) # method 4 
-
-### Start source column
-imp_data$start_source = imp_data$presumed_infected_date - eps # method 1
-imp_data$start_source[is.na(imp_data$presumed_infected_date)] = imp_data$dso_imputed[is.na(imp_data$presumed_infected_date)]-20 # method 2
-
-
-rm(hasNone, hasPresInf, method1)
-```
+Step 1: The start and end source columns have already been calculated and added to the dataset, so no need to re-calculate. 
 
 Step 2: split related cases column so that we can obtain nodes and edges for clusters.
+
 
 ```r
 imp_nodes <- imp_data$CaseID
@@ -1696,6 +1568,7 @@ undir_i = undir_i[-which(undir_i[,1]==undir_i[,2]),]
 
 Step 3: ensure that the "from" cases have the earliest date of symptom onset and the "to" cases have the later date of symptom onset
 
+
 ```r
 # Make a smaller dataset of original imp_data that contains only the CaseID and imputed date of symptom onset
 imp_data_sympt <- select(imp_data, CaseID, dso_imputed)
@@ -1720,6 +1593,7 @@ undir_i_dates <- mutate(undir_i_dates, earliest_sympt_onset = pmin(to_sympt_date
 ```
 
 Now we need to split the dataset apart so that we can switch around the directionality of presumed transmission for case-pairs where the serial interval is negative. Easiest way to do this is to rename columns and then join back to the other parts of the dataset, based on the column names.
+
 
 ```r
 # Split dataset into positive (or 0) serial interval vs. negative vs. NA 
@@ -1769,58 +1643,12 @@ undir_i_dates <- mutate(undir_i_dates, pairID = factor(paste("case", pfrom, "-",
 
 Step 4: make a network diagram. This won't be our manuscript figure (it's not as pretty...) but gives us that picture here without copying that script here too. This involves making a column that gives a cluster group based on the presumed reason of infection.
 
+
 ```r
 # Turn 'presumed_reason' into lower case and get trim any whitespace so don't have issues with case sensitivity, etc
 imp_data$presumed_reason <- str_to_lower(imp_data$presumed_reason)
 imp_data$presumed_reason <- str_trim(imp_data$presumed_reason)
-table(imp_data$presumed_reason)
-```
-
-```
-## 
-##                                                                   arrived from wuhan 
-##                                                                                    4 
-##                                                    arrived from wuhan (asymptomatic) 
-##                                                                                   13 
-##         arrived from wuhan (evacuated when boarded flight, quarantined upon arrival) 
-##                                                                                    1 
-##                asymptomatic but detected a fever during medical screening at airport 
-##                                                                                    1 
-## evacuated from wuhan (asymptomatic when boarded, fever upon arrival and quarantined) 
-##                                                                                    1 
-##           evacuated from wuhan (asymptomatic when boarded, quarantined upon arrival) 
-##                                                                                    2 
-##                        evacuated from wuhan (asymptomatic, quarantined upon arrival) 
-##                                                                                    2 
-##                                                                grace assembly of god 
-##                                                                                   22 
-##                                                                grand hyatt singapore 
-##                                                                                    3 
-##                                                                          life church 
-##                                                                                    6 
-##                                                            seletar aerospace heights 
-##                                                                                    5 
-##                                                via 13, 26 (date of 13 symptom onset) 
-##                                                                                    1 
-##                                                    via 41 (date of 41 symptom onset) 
-##                                                                                    1 
-##                                                    via 50 (date of 50 symptom onset) 
-##                                                                                    1 
-##                                                 via 50,55 (date of 55 symptom onset) 
-##                                                                                    1 
-##                                                    via 59 (date of 59 symptom onset) 
-##                                                                                    1 
-##                                             via 72 via 59 (date of 72 symptom onset) 
-##                                                                                    1 
-##                                                    via 82 (date of 82 symptom onset) 
-##                                                                                    1 
-##                                                    via 83,91 at chinese ny gathering 
-##                                                                                    1 
-##                                                                       yong thai hang 
-##                                                                                    9
-```
-
-```r
+#table(imp_data$presumed_reason)
 sum(is.na(imp_data$presumed_reason)) 
 ```
 
@@ -1868,8 +1696,8 @@ glimpse(nodes.df.i)
 ```
 ## Observations: 93
 ## Variables: 3
-## $ id    <fct> case1, case2, case3, case4, case5, case6, case7, case8, case9, …
-## $ label <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, …
+## $ id    <fct> case1, case2, case3, case26, case4, case5, case6, case7, case8,…
+## $ label <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 45, …
 ## $ group <fct> Wuhan travel, Wuhan travel, Wuhan travel, Wuhan travel, Wuhan t…
 ```
 
@@ -1879,9 +1707,10 @@ visNetwork(nodes.df.i, fedges_i) %>% visLegend()
 ```
 
 <!--html_preserve--><div id="htmlwidget-dddc36365aeeddf74690" style="width:672px;height:480px;" class="visNetwork html-widget"></div>
-<script type="application/json" data-for="htmlwidget-dddc36365aeeddf74690">{"x":{"nodes":{"id":["case1","case2","case3","case4","case5","case6","case7","case8","case9","case10","case11","case12","case13","case14","case15","case16","case17","case18","case19","case20","case21","case22","case23","case24","case25","case26","case27","case28","case29","case30","case31","case32","case33","case34","case35","case36","case37","case38","case39","case40","case41","case42","case43","case44","case45","case46","case47","case48","case49","case50","case51","case52","case53","case54","case55","case56","case57","case58","case59","case60","case61","case62","case63","case64","case65","case66","case67","case68","case69","case70","case71","case72","case73","case74","case75","case76","case77","case78","case79","case80","case81","case82","case83","case84","case85","case86","case87","case88","case89","case90","case91","case92","case93"],"label":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93],"group":["Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Wuhan travel","Wuhan travel","Yong Thai Hang","Yong Thai Hang","Wuhan travel","Yong Thai Hang","Yong Thai Hang","Unknown","Grand Hyatt Singapore","Life Church","Unknown","Life Church","Yong Thai Hang","Unknown","Grand Hyatt Singapore","Unknown","Life Church","Grand Hyatt Singapore","Yong Thai Hang","Unknown","Seletar Aerospace Heights","Unknown","Known relationship","Wuhan travel","Unknown","Seletar Aerospace Heights","Grace Assembly of God","Grace Assembly of God","Unknown","Grace Assembly of God","Seletar Aerospace Heights","Grace Assembly of God","Grace Assembly of God","Unknown","Seletar Aerospace Heights","Grace Assembly of God","Grace Assembly of God","Unknown","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Unknown","Known relationship","Known relationship","Grace Assembly of God","Grace Assembly of God","Seletar Aerospace Heights","Grace Assembly of God","Grace Assembly of God","Known relationship","Grace Assembly of God","Grace Assembly of God","Known relationship","Wuhan travel","Known relationship","Grace Assembly of God","Known relationship","Grace Assembly of God","Grace Assembly of God","Unknown","Life Church","Grace Assembly of God","Unknown","Known relationship","Wuhan travel","Grace Assembly of God","Unknown","Life Church","Life Church","Unknown","Unknown"]},"edges":{"from":["case1","case1","case2","case4","case8","case8","case8","case8","case8","case12","case13","case2","case19","case19","case19","case19","case19","case20","case22","case20","case30","case36","case20","case13","case26","case50","case50","case54","case54","case59","case59","case61","case55","case66","case66","case66","case66","case68","case68","case68","case42","case47","case52","case70","case71","case72","case51","case41","case82","case66","case76","case66","case91","case31","case20","case34","case25","case28","case55","case58","case83","case91","case69","case71","case91"],"to":["case2","case3","case3","case11","case9","case83","case90","case38","case33","case18","case26","case13","case21","case24","case27","case28","case40","case24","case23","case34","case36","case39","case40","case44","case44","case65","case77","case57","case58","case72","case79","case67","case65","case68","case70","case71","case80","case70","case71","case80","case69","case69","case69","case80","case80","case79","case73","case75","case86","case84","case87","case88","case8","case8","case19","case19","case24","case27","case50","case57","case66","case66","case56","case70","case83"],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false}},"groups":["Wuhan travel","Yong Thai Hang","Unknown","Grand Hyatt Singapore","Life Church","Seletar Aerospace Heights","Known relationship","Grace Assembly of God"],"width":null,"height":null,"idselection":{"enabled":false},"byselection":{"enabled":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","legend":{"width":0.2,"useGroups":true,"position":"left","ncol":1,"stepX":100,"stepY":100,"zoom":true}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
+<script type="application/json" data-for="htmlwidget-dddc36365aeeddf74690">{"x":{"nodes":{"id":["case1","case2","case3","case26","case4","case5","case6","case7","case8","case9","case10","case11","case12","case13","case14","case16","case18","case45","case17","case15","case76","case87","case22","case23","case48","case49","case51","case53","case54","case57","case58","case60","case61","case62","case63","case67","case68","case70","case71","case73","case74","case78","case80","case81","case84","case88","case30","case36","case39","case31","case33","case38","case83","case90","case91","case29","case32","case35","case37","case41","case43","case46","case50","case55","case59","case64","case82","case85","case89","case92","case93","case42","case47","case52","case56","case69","case44","case75","case77","case65","case72","case79","case86","case66","case19","case20","case21","case24","case25","case27","case28","case34","case40"],"label":[1,2,3,26,4,5,6,7,8,9,10,11,12,13,14,16,18,45,17,15,76,87,22,23,48,49,51,53,54,57,58,60,61,62,63,67,68,70,71,73,74,78,80,81,84,88,30,36,39,31,33,38,83,90,91,29,32,35,37,41,43,46,50,55,59,64,82,85,89,92,93,42,47,52,56,69,44,75,77,65,72,79,86,66,19,20,21,24,25,27,28,34,40],"group":["Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grand Hyatt Singapore","Grand Hyatt Singapore","Grand Hyatt Singapore","Life Church","Life Church","Life Church","Life Church","Life Church","Life Church","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Seletar Aerospace Heights","Seletar Aerospace Heights","Seletar Aerospace Heights","Seletar Aerospace Heights","Seletar Aerospace Heights","Known relationship","Known relationship","Known relationship","Known relationship","Known relationship","Known relationship","Known relationship","Known relationship","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang"]},"edges":{"from":["case1","case1","case2","case13","case4","case8","case8","case8","case8","case8","case12","case2","case76","case22","case54","case54","case61","case66","case68","case68","case68","case66","case70","case66","case71","case51","case66","case66","case66","case30","case36","case50","case50","case59","case59","case82","case42","case47","case52","case13","case26","case41","case55","case72","case19","case19","case19","case19","case19","case20","case20","case20","case91","case31","case58","case71","case91","case91","case55","case69","case83","case20","case34","case25","case28"],"to":["case2","case3","case3","case26","case11","case9","case83","case90","case38","case33","case18","case13","case87","case23","case57","case58","case67","case68","case70","case71","case80","case70","case80","case71","case80","case73","case80","case84","case88","case36","case39","case65","case77","case72","case79","case86","case69","case69","case69","case44","case44","case75","case65","case79","case21","case24","case27","case28","case40","case24","case34","case40","case8","case8","case57","case70","case83","case66","case50","case56","case66","case19","case19","case24","case27"],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false}},"groups":["Wuhan travel","Grace Assembly of God","Grand Hyatt Singapore","Life Church","Unknown","Seletar Aerospace Heights","Known relationship","Yong Thai Hang"],"width":null,"height":null,"idselection":{"enabled":false},"byselection":{"enabled":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","legend":{"width":0.2,"useGroups":true,"position":"left","ncol":1,"stepX":100,"stepY":100,"zoom":true}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
 
 Step 5: determine the ICC intervals by extracting the components of the network graph list. Need to update the 'getICC' function defined earlier so it uses the column with imputed date of symptom onset (or else get NAs!).
+
 
 ```r
 sgraph_i = graph_from_edgelist(as.matrix(fedges_i[,1:2]), directed = FALSE)
@@ -1891,21 +1720,21 @@ ccs_imp
 
 ```
 ## $membership
-##  case1  case2  case3  case4 case11  case8  case9 case83 case90 case38 case33 
-##      1      1      1      2      2      3      3      3      3      3      3 
-## case12 case18 case13 case26 case19 case21 case24 case27 case28 case40 case20 
-##      4      4      1      1      5      5      5      5      5      5      5 
-## case22 case23 case34 case30 case36 case39 case44 case50 case65 case77 case54 
-##      6      6      5      7      7      7      1      8      8      8      9 
-## case57 case58 case59 case72 case79 case61 case67 case55 case66 case68 case70 
-##      9      9     10     10     10     11     11      8      3      3      3 
-## case71 case80 case42 case69 case47 case52 case51 case73 case41 case75 case82 
-##      3      3     12     12     12     12     13     13     14     14     15 
-## case86 case84 case76 case87 case88 case91 case31 case25 case56 
-##     15      3     16     16      3      3      3      5     12 
+##  case1  case2  case3 case13 case26  case4 case11  case8  case9 case83 case90 
+##      1      1      1      1      1      2      2      3      3      3      3 
+## case38 case33 case12 case18 case76 case87 case22 case23 case54 case57 case58 
+##      3      3      4      4      5      5      6      6      7      7      7 
+## case61 case67 case66 case68 case70 case71 case80 case51 case73 case84 case88 
+##      8      8      3      3      3      3      3      9      9      3      3 
+## case30 case36 case39 case50 case65 case77 case59 case72 case79 case82 case86 
+##     10     10     10     11     11     11     12     12     12     13     13 
+## case42 case69 case47 case52 case44 case41 case75 case55 case19 case21 case24 
+##     14     14     14     14      1     15     15     11     16     16     16 
+## case27 case28 case40 case20 case34 case91 case31 case56 case25 
+##     16     16     16     16     16      3      3     14     16 
 ## 
 ## $csize
-##  [1]  6  2 15  2  9  2  3  4  3  3  2  5  2  2  2  2
+##  [1]  6  2 15  2  2  2  3  2  2  3  4  3  2  5  2  9
 ## 
 ## $no
 ## [1] 16
@@ -1942,6 +1771,7 @@ icc_expose_i = getICCs_imputed(imp_data, ccs_imp, 4, orderby ="exposure")
 ```
 
 Step 6: determine the serial interval estimates by using the method from Vink et al. Use the 'serial_mix_est' function sourced earlier.
+
 
 ```r
 myest3_i = serial_mix_est(data=icc3_i, N=100, startmu=10, startsig =4)
@@ -2376,106 +2206,106 @@ myest_exp_i = serial_mix_est(data=icc_expose_i, N=100, startmu=10, startsig =4)
 ```
 
 ```
-## [1] 6.46 3.19
-## [1] 5.37 2.86
-## [1] 4.86 2.67
-## [1] 4.59 2.56
-## [1] 4.43 2.49
-## [1] 4.34 2.44
-## [1] 4.28 2.41
-## [1] 4.24 2.39
-## [1] 4.22 2.38
-## [1] 4.20 2.37
-## [1] 4.19 2.36
-## [1] 4.18 2.36
-## [1] 4.18 2.35
-## [1] 4.18 2.35
-## [1] 4.18 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
-## [1] 4.17 2.35
+## [1] 6.78 2.96
+## [1] 5.91 2.67
+## [1] 5.47 2.52
+## [1] 5.21 2.42
+## [1] 5.03 2.36
+## [1] 4.91 2.31
+## [1] 4.83 2.28
+## [1] 4.77 2.25
+## [1] 4.72 2.23
+## [1] 4.69 2.21
+## [1] 4.67 2.20
+## [1] 4.65 2.18
+## [1] 4.64 2.17
+## [1] 4.63 2.16
+## [1] 4.62 2.16
+## [1] 4.62 2.15
+## [1] 4.61 2.14
+## [1] 4.61 2.14
+## [1] 4.61 2.13
+## [1] 4.61 2.13
+## [1] 4.61 2.13
+## [1] 4.61 2.12
+## [1] 4.61 2.12
+## [1] 4.61 2.12
+## [1] 4.61 2.12
+## [1] 4.61 2.12
+## [1] 4.61 2.11
+## [1] 4.61 2.11
+## [1] 4.61 2.11
+## [1] 4.61 2.11
+## [1] 4.61 2.11
+## [1] 4.61 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
+## [1] 4.62 2.11
 ```
 
 ```r
@@ -2493,7 +2323,7 @@ print(mm[,c(4,3,1,2)])
 ## myest4_i           Onset                  4 4.27 1.036
 ## myest5_i           Onset                  5 4.41 0.981
 ## myest6_i           Onset                  6 4.71 1.080
-## myest_exp_i LastExposure                  4 4.17 2.348
+## myest_exp_i LastExposure                  4 4.62 2.107
 ```
 
 
@@ -2507,7 +2337,7 @@ ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) +
     ggtitle("ICC estimate of the Singapore cluster serial interval \nwith imputed data")
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
 
 ```r
 # ggsave(file="final_figures/sing_serialint_imputed.pdf", height = 4, width = 6)
@@ -2516,6 +2346,7 @@ The mean SI is 4.275. The standard deviation of the serial intervals is 1.036.
 
 
 Step 7: determine the 95% confidence intervals for the mean serial estimate through bootstrapping.
+
 
 ```r
 # bootstrap analysis
@@ -2541,14 +2372,14 @@ load("data/sing_boots_100_imputed.Rdata") # in case in Rmd with above evals set 
 hist(bestimates_i[ ,1], breaks = 30)
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
 
 ```r
 bootdf_i = data.frame(mu=bestimates_i[,1], sig=bestimates_i[,2])
 ggplot(bootdf_i, aes(x=mu, y=sig)) + geom_point()
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-32-2.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-31-2.png)<!-- -->
 
 ```r
 ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
@@ -2558,7 +2389,7 @@ ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-32-3.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-31-3.png)<!-- -->
 
 ```r
 # ggsave(file = "final_figures/bootst_SI_sing_imputed.pdf", width = 6, height = 4)
@@ -2571,7 +2402,7 @@ mean(bestimates_i[,1])
 ```
 
 ```
-## [1] 4.31
+## [1] 4.4
 ```
 
 ```r
@@ -2579,7 +2410,7 @@ median(bestimates_i[,1])
 ```
 
 ```
-## [1] 4.19
+## [1] 4.3
 ```
 
 ```r
@@ -2587,7 +2418,7 @@ sd(bestimates_i[,1])
 ```
 
 ```
-## [1] 1.15
+## [1] 1.2
 ```
 
 ```r
@@ -2595,7 +2426,7 @@ mean(bestimates_i[,2])
 ```
 
 ```
-## [1] 1.42
+## [1] 1.49
 ```
 
 ```r
@@ -2603,8 +2434,50 @@ sd(bestimates_i[,2])
 ```
 
 ```
-## [1] 0.54
+## [1] 0.6
 ```
-The mean of the mean serial intervals with imputed dates of symptom onset is4.309 days and the standard deviation of these means is 1.147. 
-The 95% range for the mean serial interval with imputed dates of symptom onset is (2.027, 6.523).
 
+The mean of the mean serial intervals with imputed dates of symptom onset is4.402 days and the standard deviation of these means is 1.203. 
+The 95% range for the mean serial interval with imputed dates of symptom onset is (1.918, 6.632).
+
+
+## Presymptomatic transmission from original submission code
+Currently not run and have not done associated trouble-shooting to ensure works for revised manuscript.
+#### R0 estimation 
+We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equation $R=\exp{r \mu - 1/2 r^2 \sigma^2}$. To obtain CIs for R, we could use our bootstrap estimates of $\mu$ and $\sigma^2$ and simply resample R using this equation. 
+
+Jung et al Scenario 1
+
+
+```r
+myrate=0.15
+
+Rs=0*(1:100) 
+for (n in 1:100) {
+  Rs[n]= exp(myrate*bestimates[n,1] - 0.5*(myrate)^2*bestimates[n,2]^2)
+}
+hist(Rs,breaks = 30)
+mean(Rs)
+sd(Rs)
+quantile(Rs, probs = c(0.025, 0.975))
+```
+
+
+```r
+#This should NOT be in R code, but rather in rmd text BUT I've done this so I can hash it out or the file won't knit
+
+#The mean R is `r mean(Rs)` and the range is (`r mean(Rs)-1.96*sd(Rs)`, `r mean(Rs)+1.96*sd(Rs)`), based on the 1.96 standard deviations from the mean.  This agrees closely with the above quantiles. 
+```
+
+#### Additional (uninteresting we think)  - Jung et al Scenario 2 (faster doubling time, higher R values ) 
+
+```r
+myrate=0.29
+Rs=0*(1:100) 
+for (n in 1:100) {
+  Rs[n]= exp(myrate*bestimates[n,1] - 0.5*(myrate)^2*bestimates[n,2]^2)
+}
+hist(Rs,breaks = 30)
+mean(Rs)
+quantile(Rs, probs = c(0.025, 0.975))
+```

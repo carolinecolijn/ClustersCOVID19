@@ -98,13 +98,13 @@ What happens when we look at the incidence plots for each source of infection? C
 #~~~~~~~~~~~~~~ A) Using 'indicidence package' and base graphics plotting ; NOT for manuscript ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
   #Downside is that I can't match the virdis color scheme and graphing style used in the rest of our manuscript very easily
 
-s.grouped <- incidence(s.sympt$date_onset_symptoms,
-                       interval = 1,
-                       groups = s.sympt$presumed_reason_group)
-s.grouped
-plot(s.grouped,
+#s.grouped <- incidence(s.sympt$date_onset_symptoms,
+#                       interval = 1,
+#                       groups = s.sympt$presumed_reason_group)
+#s.grouped
+#plot(s.grouped,
     # stacked = TRUE,
-     border = "grey")
+#     border = "grey")
   #Hmmm, kinda hard to read with so many groups
  
 #Using the presumed_reason_group2 column to group cases is better to look at but less informative, so we will just leave out
@@ -176,8 +176,8 @@ s.gg <- bind_rows(s.gg, s.missing.zeros) #Note that the presumed_reason_group is
 
 ### Plot with ggplot
 #Define a colour palatte
-show_col(viridis_pal(option = "inferno") (8))
-viridisLite::inferno(n = 8)
+#show_col(viridis_pal(option = "inferno") (8))
+#viridisLite::inferno(n = 8)
 
 s.cols <- c("Wuhan travel" = "#000004FF", #Use the same as Singapore plot, as are using the same criteria
 #            "Wuhan travel" = "#280B54FF",  #Pretty dark, kinda hard to distinguish from the black
@@ -190,9 +190,9 @@ s.cols <- c("Wuhan travel" = "#000004FF", #Use the same as Singapore plot, as ar
             "Unknown" = "#FCFFA4FF")
 
 #Write to PDF
-pdf("final_figures/Fig 1b_Singapore incidence by source of infection.pdf", 
+#pdf("final_figures/Fig 1b_Singapore incidence by source of infection.pdf", 
      #family = "Times", 
-     width = 8, height = 6)
+#     width = 8, height = 6)
 
 s <- ggplot(s.gg, aes(x = date_onset_symptoms, y = n_daily, fill = presumed_reason_group)) +
         geom_col(color = "grey") +
@@ -208,7 +208,8 @@ s <- ggplot(s.gg, aes(x = date_onset_symptoms, y = n_daily, fill = presumed_reas
         theme(panel.background = element_rect(fill = "white"))
 s 
 
-dev.off()
+#dev.off()
+
 
 ```
 
@@ -281,13 +282,13 @@ t.gg <- bind_rows(t.gg, t.missing.zeros) #Note that the presumed_reason_group is
 
 ### Plot with ggplot
 #Define a colour palatte
-show_col(viridis_pal(option = "inferno") (7))
-viridisLite::inferno(n = 7)
+#show_col(viridis_pal(option = "inferno") (7))
+#viridisLite::inferno(n = 7)
 
 #Write to PDF
-pdf("final_figures/Fig 2b_Tianjin incidence by source of infection_revised.pdf", 
+#pdf("final_figures/Fig 2b_Tianjin incidence by source of infection_revised.pdf", 
      #family = "Times", 
-     width = 8, height = 6)
+#     width = 8, height = 6)
 
 t.cols <- c("Wuhan and Hubei" = "#000004FF", #Use the same as Singapore plot, as are using the same criteria
             "Mall" = "#404788FF",
@@ -312,7 +313,7 @@ t <- ggplot(t.gg, aes(x = symptom_onset, y = n_daily, fill = source_group)) +
 
 t 
 
-dev.off()
+#dev.off()
                                               
 ```
 

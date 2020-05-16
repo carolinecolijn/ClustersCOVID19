@@ -215,7 +215,7 @@ From this edge list we can use visNetwork to visualise the graph. Make 'group' b
 # Turn 'presumed_reason' into lower case and get trim any whitespace so don't have issues with case sensitivity, etc
 spdata$presumed_reason <- str_to_lower(spdata$presumed_reason)
 spdata$presumed_reason <- str_trim(spdata$presumed_reason)
-table(spdata$presumed_reason)
+#table(spdata$presumed_reason)
 sum(is.na(spdata$presumed_reason)) #16 NAs
 # Make a new column where we group the 'presumed_reason' under a label (known relationship, gathering, wuhan travel) for each of the above three groups
 spdata <- mutate(spdata, presumed_reason_group = case_when(!is.na(str_match(presumed_reason, "wuhan|airport")) ~ "Wuhan travel", 
@@ -231,7 +231,7 @@ spdata <- mutate(spdata, presumed_reason_group = case_when(!is.na(str_match(pres
 table(spdata$presumed_reason_group)
 
 # Save this object for plotting incidence curve by infection source group (figure 1b)
-save(spdata, file = "data/Singapore_cleaned_infection_source_groups.rdata")
+#save(spdata, file = "data/Singapore_cleaned_infection_source_groups.rdata")
 ```
 
 We also need to make a data frame of the edges (indicating direction of probable transmission) and nodes (the cases).
@@ -244,13 +244,13 @@ fedges = data.frame(from = paste("case", fedges[ ,1], sep=""),
 fedges$arrows <- "to"  
 
 # Save this object so we can use it to plot Fig4 Network diagram
-save(fedges, file = "data/singapore_edges_for_network_plot.rdata")
+#save(fedges, file = "data/singapore_edges_for_network_plot.rdata")
 
 # Make data frame of nodes
 nodes.df <- data.frame(id=paste("case",spdata$CaseID,sep=""), label=spdata$CaseID, group=spdata$presumed_reason_group)
 
 # Save this object so in case we can use it to plot Fig4 Network diagram
-save(nodes.df, file = "data/singapore_nodes_for_network_plot.rdata")
+#save(nodes.df, file = "data/singapore_nodes_for_network_plot.rdata")
 
 glimpse(nodes.df)
 spdata$graphID = paste("case",spdata$CaseID,sep="")
@@ -338,15 +338,15 @@ Nboot=100
 bestimates=myest4 
 
 # NOTE this loop had errors a few times; I just restarted it. 
-for (kk in 61:Nboot) {
+for (kk in 1:Nboot) {
   bdata = sample(x=icc4, size = length(icc4), replace = T)
   bestimates = rbind(bestimates, serial_mix_est(data=bdata, N=100, startmu=10, startsig =4))
   
   print(paste("loop iteration #", kk, sep = ": "))
 }
 
-#bestimates <- bestimates[-1, ] #Remove the non-bootstrapped row (i.e. the myest4 object)
- save(bestimates, file = "data/sing_boots_100.Rdata")
+bestimates <- bestimates[-1, ] #Remove the non-bootstrapped row (i.e. the myest4 object)
+#save(bestimates, file = "data/sing_boots_100.Rdata")
 ```
 
 ```{r, eval=TRUE}
@@ -481,7 +481,7 @@ undir_dotplot <- pivot_longer(undir_dates,
 undir_dotplot$pair_member <- str_replace(undir_dotplot$pair_member, pattern = "from_sympt_date", replacement = "Presumed infector")
 undir_dotplot$pair_member <- str_replace(undir_dotplot$pair_member, pattern = "to_sympt_date", replacement = "Presumed infectee")
 
-#Make the Cleaveland dotplot
+#Make the Cleveland dotplot
 p <- ggplot(undir_dotplot, aes(y = reorder(pairID, earliest_sympt_onset))) +
           geom_segment(aes(x = earliest_sympt_onset, xend = earliest_sympt_onset + abs_serial_interval, yend = pairID), 
                        color = "#404788FF") +
@@ -630,7 +630,7 @@ p2
 # Write to PDF
 # pdf("final_figures/Dotplot_raw_serial_intervals_Singapore_facetted_in_half.pdf", 
      #family = "Times", 
-#     width = 8.5, height = 11)
+#   width = 8.5, height = 11)
 
 # p2
 
@@ -666,13 +666,7 @@ imp_data$dso_imputed = if_else(is.na(imp_data$date_onset_symptoms),
 
 Now we can re-run the serial estimates based on the imputed date of symptom onset column (dso_imputed).
 
-Step 1: All end_source entries are already complete, but the some of the imputed symptom onset individuals don't have a start_source. We use the same rules as with the non-imputed dataset with the imputed symptom onsets, and set the start source as the symptom onset - 20 in the absence of other data.
-
-```{r}
-### Start source column
-imp_data$start_source[is.na(imp_data$start_source)] = imp_data$dso_imputed[is.na(imp_data$start_source)]-20 
-
-```
+Step 1: The start and end source columns have already been calculated and added to the dataset, so no need to re-calculate. 
 
 Step 2: split related cases column so that we can obtain nodes and edges for clusters.
 
@@ -790,7 +784,7 @@ Step 4: make a network diagram. This won't be our manuscript figure (it's not as
 # Turn 'presumed_reason' into lower case and get trim any whitespace so don't have issues with case sensitivity, etc
 imp_data$presumed_reason <- str_to_lower(imp_data$presumed_reason)
 imp_data$presumed_reason <- str_trim(imp_data$presumed_reason)
-table(imp_data$presumed_reason)
+#table(imp_data$presumed_reason)
 sum(is.na(imp_data$presumed_reason)) 
 
 # Make a new column where we group the 'presumed_reason' under a label (known relationship, gathering, wuhan travel) for each of the above three groups
