@@ -560,7 +560,7 @@ undir_dates <- arrange(undir_dates, earliest_sympt_onset)
 #late_half <- droplevels(late_half)
 
 # Define which pairID fall into the early and later half of the dataset; based on dates prior to or on Jan 31st = early
-early_half <- filter(undir_dates, earliest_sympt_onset > "2020-01-31")
+early_half <- filter(undir_dates, earliest_sympt_onset <= "2020-01-31")
 early_half <- early_half$pairID
 early_half <- droplevels(early_half)
 

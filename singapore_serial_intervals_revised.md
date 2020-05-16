@@ -1372,7 +1372,7 @@ undir_dates <- arrange(undir_dates, earliest_sympt_onset)
 #late_half <- droplevels(late_half)
 
 # Define which pairID fall into the early and later half of the dataset; based on dates prior to or on Jan 31st = early
-early_half <- filter(undir_dates, earliest_sympt_onset > "2020-01-31")
+early_half <- filter(undir_dates, earliest_sympt_onset <= "2020-01-31")
 early_half <- early_half$pairID
 early_half <- droplevels(early_half)
 
@@ -1401,7 +1401,7 @@ l <- undir_dates %>%
                   sd_late = sd(abs_serial_interval))
 ```
 
-The mean serial interval for the **early** half of the case-pairs is 3.176, with a standard deviation of 2.404, and a median of 3. The mean serial interval for the **late** half of the case-pairs is NaN, with a standard deviation of NA, and a median of NA.
+The mean serial interval for the **early** half of the case-pairs is 4.436, with a standard deviation of 3.698, and a median of 4. The mean serial interval for the **late** half of the case-pairs is 3.176, with a standard deviation of 2.404, and a median of 3.
 
 This version of the Cleveland dotplot shows which half of the case-pairs was used to calculate each summary statistic.
 
