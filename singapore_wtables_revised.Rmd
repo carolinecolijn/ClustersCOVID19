@@ -84,6 +84,12 @@ spdata$maxIncTimes <- spdata$date_onset_symptoms - spdata$start_source
 ```
 
 
+REMOVE THIS EVENTUALLY 
+```{r}
+spdata = filter(spdata, maxIncTimes > 2)
+spdata$minIncTimes = pmax(1, spdata$minIncTimes)
+```
+
 JS UPDATED TO HERE - DATA FORMATTING
 
 We use survival analysis in the icenReg package to make parametric estimates, and we use the regular survival package to estimate the time to onset of symptoms. 
@@ -269,9 +275,12 @@ ggsp$plot+geom_line(data = pdata, aes(x = days, y = fitsurv, color=distn))
 Finally, we want to do this all again but stratifying the data between early occurring cases and late. 
 
 
+
+
 ```{r}
-earlydata = spcopy[which(spcopy$has_last ==TRUE),]
-latedata=spcopy[which(spcopy$has_last==FALSE),]
+spcopy$is_early = (spdata$date_onset_symptoms < ymd("2020-02-01"))
+earlydata = spcopy[which(spcopy$is_early==TRUE),]
+latedata=spcopy[which(spcopy$is_early==FALSE),]
 ```
 
 
@@ -479,8 +488,8 @@ icc6 = getICCs(spdata,ccs,6)
 icc_expose = getICCs(spdata, ccs, 4, orderby ="exposure")
 ```
 
-```{r}
-source("TianjinSI_VinkWallinga_CC.R")
+```{r,eval=FALSE}
+source("~/ClustersCOVID19/TianjinSI_VinkWallinga_CC.R")
 myest3 = serial_mix_est(data=icc3, N=50, startmu=10, startsig =4)
 myest4 = serial_mix_est(data=icc4, N=50, startmu=10, startsig =4)
 myest5 = serial_mix_est(data=icc5, N=50, startmu=10, startsig =4)
@@ -507,7 +516,7 @@ ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) + 
 I note that the serial interval gets longer if we include more cases per cluster (because the mixture of 4 pathways in Vink et al does not include longer transmission chains, which forces the assumption that everyone in the cluster was infected by the initial case, which in turn lengthens the estimated serial interval). We do not know the true infection pathways but it is reasonable not to constrain the model to enforce that most are infected by the first few cases. 
 
 
-The mean SI is `r myest4[1]`. The standard deviation of the serial intervals is `r myest4[2]`.
+The mean SI is UNAVAILALBE. The standard deviation of the serial intervals is  myest4[2].
 
 We need CIs for the mean. For this we use bootstrapping. 
 
@@ -524,7 +533,7 @@ bestimates = rbind(bestimates, serial_mix_est(data=bdata, N=50, startmu=10, star
 
 ```
 
-```{r, eval=TRUE}
+```{r, eval=FALSE}
 load("sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE 
 hist(bestimates[,1],breaks = 30)
 bootdf=data.frame(mu=bestimates[,1], sig=bestimates[,2])
@@ -534,7 +543,7 @@ ggsave(file = "final_figures/FigS1_bootst_SI_sing.pdf", width = 6, height = 4)
 ```
 
 
-```{r,eval=TRUE} 
+```{r,eval=FALSE} 
 #load("sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE 
 mean(bestimates[,1]) 
 median(bestimates[,1])
@@ -545,7 +554,7 @@ sd(bestimates[,2])
 ```
 
 
-The 95% range for the mean serial interval is (`r myest4[1]-1.96*sd(bestimates[,1])`, `r myest4[1]+1.96*sd(bestimates[,1])`).
+The 95% range for the mean serial interval is (r myest4[1]-1.96*sd(bestimates[,1]), r myest4[1]+1.96*sd(bestimates[,1])).
 
 ## Presymptomatic transmission 
 
@@ -556,7 +565,7 @@ We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equat
 
 Jung et al Scenario 1
 
-```{r,eval=TRUE}
+```{r,eval=FALSE}
 
 myrate=0.15
 
@@ -571,7 +580,7 @@ quantile(Rs, probs = c(0.025, 0.975))
 ```
 
 
-The mean R is `r mean(Rs)` and the range is (`r mean(Rs)-1.96*sd(Rs)`, `r mean(Rs)+1.96*sd(Rs)`), based on the 1.96 standard deviations from the mean.  This agrees closely with the above quantiles. 
+The mean R is r mean(Rs) and the range is (r mean(Rs)-1.96*sd(Rs), r mean(Rs)+1.96*sd(Rs)), based on the 1.96 standard deviations from the mean.  This agrees closely with the above quantiles. 
 
 
 

@@ -91,6 +91,12 @@ spdata$minIncTimes <- spdata$date_onset_symptoms - spdata$end_source
 spdata$maxIncTimes <- spdata$date_onset_symptoms - spdata$start_source
 ```
 
+REMOVE THIS EVENTUALLY 
+```{r}
+spdata = filter(spdata, maxIncTimes > 2)
+spdata$minIncTimes = pmax(1, spdata$minIncTimes)
+```
+
 JS UPDATED TO HERE - DATA FORMATTING
 
 From here this file diverges from the ..wtables Rmd files .
