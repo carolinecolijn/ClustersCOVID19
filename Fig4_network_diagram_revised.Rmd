@@ -24,7 +24,7 @@ library(paletteer)
 
 load up all the links we have (just the first two column of the dataframe expanded)
 ```{r}
-ncov_sing = read.csv("data/COVID-19_Singapore_formated_dates.csv")
+ncov_sing1 = read.csv("data/COVID-19_Singapore_formated_dates.csv")
 ```
 
 ## You can use the sript below to create a weighted network plot. This allows us to have everything arranged spatially but only maintain the links in the `Related Cases` column when rendering the visualization. 
@@ -33,7 +33,7 @@ Trying to make weighted edges
 
 ```{r}
 #make a list so that we can supply weights to the edges 
-w_edge=ncov_sing[,c(1:3)]#only need these from the pain dataset 
+w_edge=ncov_sing1[,c(1:3)]#only need these from the pain dataset 
 names(w_edge)=c("CaseID","2","1")#change the names 
 w_edge[w_edge==""] <- NA# make the blanks into NAs for better sorting 
 
@@ -45,19 +45,16 @@ w_edge_long=pivot_longer(w_edge,cols=c("2","1"),names_to="weight")%>% #pivot lon
   filter(weight=="1")#just use weight-1 (these are just to help get things laid out poroperly during plotting, these won't actually show up in the figure. The ones that show up in the figure come later.)
 
 names(w_edge_long)=c("from","to","weight")#change names so things will merge 
+w_edge_long$to=str_squish(w_edge_long$to)
 
 #using fedges fom the singapore_serial_intervals_revised.Rmd 
 load("data/singapore_edges_for_network_plot.rdata")
 
-fedges_weighted=fedges%>%select(-arrows)
-fedges_weighted$weight=2
-fedges_weighted$from=as.character(str_extract_all(fedges_weighted$from,"\\(?[0-9,.]+\\)?"))
-fedges_weighted$to=as.character(str_extract_all(fedges_weighted$to,"\\(?[0-9,.]+\\)?"))
-plot_edges=rbind(w_edge_long,fedges_weighted)
-plot_edges$test=plot_edges$to %in% ncov_sing$CaseID
-plot_edges=plot_edges%>%
-  filter(test=="TRUE")%>%#remove nodes that don't exist in the ncov_sing due to missing data (they still exist inthe relationships column which is why they showed up)
-  select(from,to,weight)#select just the columns we need. 
+fedges_weighted=fedges%>%select(-arrows) #don't need the information in the 
+fedges_weighted$weight=2 #assign the more important weight 
+fedges_weighted$from=as.character(str_extract_all(fedges_weighted$from,"\\(?[0-9,.]+\\)?"))#get just the numeric so that it can match with the other df and with the nodes df
+fedges_weighted$to=as.character(str_extract_all(fedges_weighted$to,"\\(?[0-9,.]+\\)?"))#get just the numeric so that it can match with the other df and with the nodes df
+plot_edges=rbind(w_edge_long,fedges_weighted) #attach it to the edges we use just to get the plotting laid out nicely 
 
 #write.csv(eg_edges2,"data/sing_edges_eg.csv")
 ```
@@ -67,6 +64,17 @@ plot_edges=plot_edges%>%
 #Load nodes from Singapore
 load("data/singapore_nodes_for_network_plot.rdata")
 nodes_sing <- nodes.df
+plot_edges$test_to=plot_edges$to %in% nodes_sing$label #test to see if there are edges that don't have any node data 
+plot_edges$test_from=plot_edges$from %in% nodes_sing$label#test to see if there are edges that don't have any node data 
+
+plot_edges=plot_edges%>%
+  filter(test_to=="TRUE")%>%
+  filter(test_from=="TRUE")%>%
+  #remove nodes that don't exist in the nodes_sing due to missing data (they still exist inthe relationships column which is why they showed up)
+  select(from,to,weight)
+
+names(nodes_sing)=c("label","id","group")#change the names of the columns to better reflect what we'll use them for 
+nodes_sing=nodes_sing%>%select(id,label,group)#rearrange because id (just the number) needs to be the first column 
 
 cov_weighted=graph_from_data_frame(plot_edges, vertices = nodes_sing, directed = FALSE)
 cov_net_weight=ggnetwork(cov_weighted)
@@ -78,9 +86,9 @@ cov_net_weight=ggnetwork(cov_weighted)
 #cov_net_weight=read.csv(("data/singapore_weighted_network_0504.csv"))
 cov_net_w = ggplot(cov_net_weight, aes(x = x, y = y, xend = xend, yend = yend)) +
   geom_edges(aes(), subset(cov_net_weight,weight==2),linetype="solid") +
-  geom_nodes(aes(color=cluster),size=8) +
+  geom_nodes(aes(color=group),size=8) +
   geom_text(aes(label=name),check_overlap = TRUE) +
-  geom_text(aes(label=name),subset(cov_net_weight, cluster == "Grace Assembly of God"),colour="white",check_overlap = TRUE) +
+  geom_text(aes(label=name),subset(cov_net_weight, group == "Grace Assembly of God"),colour="white",check_overlap = TRUE) +
   guides(colour = guide_legend(title.position="top", title.hjust = 0.5, override.aes = list(size=3))) +
   scale_colour_viridis_d(na.value="lightgrey") +
   labs(color="Cluster")+
@@ -96,7 +104,7 @@ cov_net_w = ggplot(cov_net_weight, aes(x = x, y = y, xend = xend, yend = yend)) 
         legend.direction = "horizontal")
 cov_net_w
 
-ggsave("final_figures/Fig4_singapore_cov_network_revised_0505.pdf",plot=cov_net_w,device="pdf",height=8,width=11,units="in")
+ggsave("final_figures/Fig4_singapore_cov_network_revised_0517.pdf",plot=cov_net_w,device="pdf",height=8,width=11,units="in")
 ```
 
 
@@ -158,5 +166,10 @@ ggsave("final_figures/Fig4_tianjin_cov_network_revised.pdf",plot=tj_cov_net,devi
 ```
 
 
-
+##May 16th 
+ˆ
+```{r}
+fedges$in_nodes_from=fedges$from %in% nodes.df$id
+fedges$in_nodes_to=fedges$to %in% nodes.df$id
+```
 
