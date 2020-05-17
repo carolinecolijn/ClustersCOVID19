@@ -1,7 +1,7 @@
 ---
 title: "Testing incubation with intermediate"
 author: "Caroline Colijn"
-date: "2020-05-16"
+date: "2020-05-17"
 output: 
   html_document:
     keep_md: TRUE
@@ -270,15 +270,14 @@ spdata$minIncTimes <- spdata$date_onset_symptoms - spdata$end_source
 spdata$maxIncTimes <- spdata$date_onset_symptoms - spdata$start_source
 ```
 
-REMOVE THIS EVENTUALLY 
+We assume that incubation times have to be at least 1 day, based on prior knowledge. We set the maximum incubation times as at least 3 days, to take into account some uncertainty on symptom onset reporting.
+
 
 ```r
 #spdata = filter(spdata, maxIncTimes > 2)
 spdata$maxIncTimes = pmax(3, spdata$maxIncTimes)
 spdata$minIncTimes = pmax(1, spdata$minIncTimes)
 ```
-
-JS UPDATED TO HERE - DATA FORMATTING
 
 From here this file diverges from the ..wtables Rmd files .
 
@@ -337,8 +336,7 @@ l_optim <- function( twopars, allmaxtimes, allmintimes, allrtTimes,
 ```
 
 
-
-Testing: seems to work *except* if max and min times are the same; then 
+Testing: seems to work *except* if max and min times are the same, so we correct for this by adding a small noise term in those cases; then 
 
 
 ```r
@@ -407,7 +405,7 @@ We can test for sensitivity to rate r - the number of intermediates 'arriving' p
 ```r
 # current MLEs: gen time shape 1.65, incubation period shape 2.23, for r=0.1
 
-r_cur = c(seq(0.01, 0.25, length.out=20))
+r_cur = c(seq(0.02, 0.25, length.out=20))
 rec<-matrix(NA, length(r_cur), 2)
 for (i in 1:length(r_cur)){
   ans <- optim(c(1,2), l_optim, allmaxtimes = spdata$maxIncTimes, allmintime=spdata$minIncTimes,
@@ -444,10 +442,16 @@ grid.arrange(plot1, plot2, ncol=2)
 # on the same plot
 df5 <- data.frame(r=r_cur, "Mean generation time"=rec[,1]*2.1, "Mean incubation period"=rec[,2]*2.1)
 
-ggplot(df5) + geom_line(color="maroon4", aes(x=r, y=Mean.generation.time))+ geom_point(color="maroon4", aes(x=r, y=Mean.generation.time)) + theme_minimal() + geom_line(color="royalblue4", aes(x=r, y=Mean.incubation.period))+ geom_point(color="royalblue4", aes(x=r, y=Mean.incubation.period)) + ylab("Time (days)")
+ggplot(df5) + geom_line(aes(x=r, y=Mean.generation.time, color="Mean generation time",))+ geom_point(color="maroon4", aes(x=r, y=Mean.generation.time)) + theme_minimal() + geom_line(aes(x=r, y=Mean.incubation.period, color="Mean incubation period"))+ geom_point(color="royalblue4", aes(x=r, y=Mean.incubation.period)) + ylab("Time (days)") +
+  scale_color_manual(values = c("Mean generation time" = 'maroon4','Mean incubation period' = 'royalblue4')) +
+  labs(color = ' ')
 ```
 
 ![](incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-12-3.png)<!-- -->
+
+```r
+ggsave(filename = "final_figures/incubation_generation_sing.pdf", width = 8, height = 6)
+```
 
 
 CC: I think we need some kind of uncertainty estimate around the parameters - having looked at it I suspect that the bootstrap is likely to be the best bet. 
