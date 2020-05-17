@@ -183,7 +183,7 @@ Now we need to split the dataset apart so that we can switch around the directio
   #A negative serial interval means our "to" and "from" cases are mixed up
 pos <- filter(undir_dates, raw_serial_interval >= 0)
 neg <- filter(undir_dates, raw_serial_interval < 0)
-onlyone <- filter(undir_dates, is.na(raw_serial_interval))
+onlyone <- filter(undir_dates, is.na(raw_serial_interval)) #Keep to make columns for graphs later
 
 # Negative dataset needs the column headers changed to reflect that the 'from' and 'to' columns are backwards
   #as we are assuming that the 'case with the earliest onset of symptoms would have been infected first, 
@@ -238,7 +238,9 @@ We also need to make a data frame of the edges (indicating direction of probable
 
 ```{r}
 # Make data frame of edges, where the cases as the 'earliest' date of symptom onset are labeled as the "from" cases
-fedges <- select(undir_dates, from, to)
+  #First need to remove any cases missing date of symptom onset that were added back in from the 'related_cases' column
+fedges <- filter(undir_dates, !is.na(raw_serial_interval))
+fedges <- select(fedges, from, to)
 fedges = data.frame(from = paste("case", fedges[ ,1], sep=""), 
                      to = paste("case", fedges[ ,2], sep=""))
 fedges$arrows <- "to"  
@@ -345,8 +347,8 @@ for (kk in 1:Nboot) {
   print(paste("loop iteration #", kk, sep = ": "))
 }
 
-bestimates <- bestimates[-1, ] #Remove the non-bootstrapped row (i.e. the myest4 object)
-#save(bestimates, file = "data/sing_boots_100.Rdata")
+#bestimates <- bestimates[-1, ] #Remove the non-bootstrapped row (i.e. the myest4 object)
+save(bestimates, file = "data/sing_boots_100.Rdata")
 ```
 
 ```{r, eval=TRUE}
@@ -800,7 +802,7 @@ imp_data <- mutate(imp_data, presumed_reason_group = case_when(!is.na(str_match(
                                                            TRUE ~ "other")) #should not be any other, so is just a double check this has run correctly, especially as dataset grows
 table(imp_data$presumed_reason_group)
 
-# Make data frame of edges
+# Make data frame of edges; no missing dates (all imputed) so no NAs to filter out first
 fedges_i <- select(undir_i_dates, from, to)
 fedges_i = data.frame(from = paste("case", fedges_i[ ,1], sep=""), 
                      to = paste("case", fedges_i[ ,2], sep=""))

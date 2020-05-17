@@ -1,7 +1,7 @@
 ---
 title: "Singapore Serial Intervals - Revisions"
 author: "Caroline Colijn, Michelle Coombe, and Manu Saraswat"
-date: "2020-05-16"
+date: "2020-05-17"
 output: 
   html_document:  
     keep_md: TRUE
@@ -309,7 +309,7 @@ Now we need to split the dataset apart so that we can switch around the directio
   #A negative serial interval means our "to" and "from" cases are mixed up
 pos <- filter(undir_dates, raw_serial_interval >= 0)
 neg <- filter(undir_dates, raw_serial_interval < 0)
-onlyone <- filter(undir_dates, is.na(raw_serial_interval))
+onlyone <- filter(undir_dates, is.na(raw_serial_interval)) #Keep to make columns for graphs later
 
 # Negative dataset needs the column headers changed to reflect that the 'from' and 'to' columns are backwards
   #as we are assuming that the 'case with the earliest onset of symptoms would have been infected first, 
@@ -402,7 +402,9 @@ We also need to make a data frame of the edges (indicating direction of probable
 
 ```r
 # Make data frame of edges, where the cases as the 'earliest' date of symptom onset are labeled as the "from" cases
-fedges <- select(undir_dates, from, to)
+  #First need to remove any cases missing date of symptom onset that were added back in from the 'related_cases' column
+fedges <- filter(undir_dates, !is.na(raw_serial_interval))
+fedges <- select(fedges, from, to)
 fedges = data.frame(from = paste("case", fedges[ ,1], sep=""), 
                      to = paste("case", fedges[ ,2], sep=""))
 fedges$arrows <- "to"  
@@ -433,7 +435,7 @@ visNetwork(nodes.df, fedges) %>% visLegend()
 ```
 
 <!--html_preserve--><div id="htmlwidget-51098584d74b8c0b22d4" style="width:672px;height:480px;" class="visNetwork html-widget"></div>
-<script type="application/json" data-for="htmlwidget-51098584d74b8c0b22d4">{"x":{"nodes":{"id":["case1","case2","case3","case4","case5","case6","case7","case8","case9","case10","case11","case12","case13","case14","case16","case18","case17","case48","case49","case51","case53","case54","case57","case58","case60","case61","case62","case63","case67","case68","case70","case71","case73","case74","case78","case80","case81","case84","case88","case30","case36","case39","case31","case33","case38","case83","case90","case91","case29","case32","case35","case37","case41","case43","case46","case50","case55","case59","case64","case82","case85","case89","case92","case93","case42","case47","case52","case56","case69","case44","case77","case72","case79","case86","case66","case19","case20","case21","case24","case25","case27","case34","case40"],"label":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,18,17,48,49,51,53,54,57,58,60,61,62,63,67,68,70,71,73,74,78,80,81,84,88,30,36,39,31,33,38,83,90,91,29,32,35,37,41,43,46,50,55,59,64,82,85,89,92,93,42,47,52,56,69,44,77,72,79,86,66,19,20,21,24,25,27,34,40],"group":["Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grand Hyatt Singapore","Grand Hyatt Singapore","Grand Hyatt Singapore","Life Church","Life Church","Life Church","Life Church","Life Church","Life Church","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Seletar Aerospace Heights","Seletar Aerospace Heights","Seletar Aerospace Heights","Seletar Aerospace Heights","Seletar Aerospace Heights","Known relationship","Known relationship","Known relationship","Known relationship","Known relationship","Known relationship","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang"]},"edges":{"from":["case1","case1","case2","case4","case8","case8","case8","case8","case8","case12","case2","case54","case54","case61","case66","case68","case68","case68","case66","case70","case66","case71","case51","case66","case66","case66","case30","case36","case50","case59","case59","case82","case42","case47","case52","case13","case72","case19","case19","case19","case19","case20","case20","case20","case91","case31","case58","case71","case91","case91","case55","case69","case83","case20","case34","case25","case13","case50","case26","case19","case27"],"to":["case2","case3","case3","case11","case9","case83","case90","case38","case33","case18","case13","case57","case58","case67","case68","case70","case71","case80","case70","case80","case71","case80","case73","case80","case84","case88","case36","case39","case77","case72","case79","case86","case69","case69","case69","case44","case79","case21","case24","case27","case40","case24","case34","case40","case8","case8","case57","case70","case83","case66","case50","case56","case66","case19","case19","case24","case26","case65","case44","case28","case28"],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false}},"groups":["Wuhan travel","Grace Assembly of God","Grand Hyatt Singapore","Life Church","Unknown","Seletar Aerospace Heights","Known relationship","Yong Thai Hang"],"width":null,"height":null,"idselection":{"enabled":false},"byselection":{"enabled":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","legend":{"width":0.2,"useGroups":true,"position":"left","ncol":1,"stepX":100,"stepY":100,"zoom":true}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
+<script type="application/json" data-for="htmlwidget-51098584d74b8c0b22d4">{"x":{"nodes":{"id":["case1","case2","case3","case4","case5","case6","case7","case8","case9","case10","case11","case12","case13","case14","case16","case18","case17","case48","case49","case51","case53","case54","case57","case58","case60","case61","case62","case63","case67","case68","case70","case71","case73","case74","case78","case80","case81","case84","case88","case30","case36","case39","case31","case33","case38","case83","case90","case91","case29","case32","case35","case37","case41","case43","case46","case50","case55","case59","case64","case82","case85","case89","case92","case93","case42","case47","case52","case56","case69","case44","case77","case72","case79","case86","case66","case19","case20","case21","case24","case25","case27","case34","case40"],"label":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,16,18,17,48,49,51,53,54,57,58,60,61,62,63,67,68,70,71,73,74,78,80,81,84,88,30,36,39,31,33,38,83,90,91,29,32,35,37,41,43,46,50,55,59,64,82,85,89,92,93,42,47,52,56,69,44,77,72,79,86,66,19,20,21,24,25,27,34,40],"group":["Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Wuhan travel","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grace Assembly of God","Grand Hyatt Singapore","Grand Hyatt Singapore","Grand Hyatt Singapore","Life Church","Life Church","Life Church","Life Church","Life Church","Life Church","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Unknown","Seletar Aerospace Heights","Seletar Aerospace Heights","Seletar Aerospace Heights","Seletar Aerospace Heights","Seletar Aerospace Heights","Known relationship","Known relationship","Known relationship","Known relationship","Known relationship","Known relationship","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang","Yong Thai Hang"]},"edges":{"from":["case1","case1","case2","case4","case8","case8","case8","case8","case8","case12","case2","case54","case54","case61","case66","case68","case68","case68","case66","case70","case66","case71","case51","case66","case66","case66","case30","case36","case50","case59","case59","case82","case42","case47","case52","case13","case72","case19","case19","case19","case19","case20","case20","case20","case91","case31","case58","case71","case91","case91","case55","case69","case83","case20","case34","case25"],"to":["case2","case3","case3","case11","case9","case83","case90","case38","case33","case18","case13","case57","case58","case67","case68","case70","case71","case80","case70","case80","case71","case80","case73","case80","case84","case88","case36","case39","case77","case72","case79","case86","case69","case69","case69","case44","case79","case21","case24","case27","case40","case24","case34","case40","case8","case8","case57","case70","case83","case66","case50","case56","case66","case19","case19","case24"],"arrows":["to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to","to"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false}},"groups":["Wuhan travel","Grace Assembly of God","Grand Hyatt Singapore","Life Church","Unknown","Seletar Aerospace Heights","Known relationship","Yong Thai Hang"],"width":null,"height":null,"idselection":{"enabled":false},"byselection":{"enabled":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)","legend":{"width":0.2,"useGroups":true,"position":"left","ncol":1,"stepX":100,"stepY":100,"zoom":true}},"evals":[],"jsHooks":[]}</script><!--/html_preserve-->
 
 Now we estimate the serial interval using the ICC method; for this we first construct a graph. The "interval case to case" data are from identifying a putative first infector each small cluster in the graph, and finding the times between symptom onset in the first observed case and the others. See Vink et al. 
 
@@ -456,11 +458,9 @@ ccs
 ##     10     10     10     11     11     12     12     12     12      1     13 
 ## case21 case24 case27 case40 case20 case34 case91 case31 case55 case56 case25 
 ##     13     13     13     13     13     13      3      3      9     12     13 
-## case26 case65 case28 
-##      1      9     13 
 ## 
 ## $csize
-##  [1]  6  2 15  2  3  2  2  3  4  3  2  5  9
+##  [1]  5  2 15  2  3  2  2  3  3  3  2  5  8
 ## 
 ## $no
 ## [1] 13
@@ -1091,8 +1091,8 @@ for (kk in 1:Nboot) {
   print(paste("loop iteration #", kk, sep = ": "))
 }
 
-bestimates <- bestimates[-1, ] #Remove the non-bootstrapped row (i.e. the myest4 object)
-#save(bestimates, file = "data/sing_boots_100.Rdata")
+#bestimates <- bestimates[-1, ] #Remove the non-bootstrapped row (i.e. the myest4 object)
+save(bestimates, file = "data/sing_boots_100.Rdata")
 ```
 
 
@@ -1131,7 +1131,7 @@ mean(bestimates[,1])
 ```
 
 ```
-## [1] 3.85
+## [1] 3.83
 ```
 
 ```r
@@ -1139,7 +1139,7 @@ median(bestimates[,1])
 ```
 
 ```
-## [1] 4.03
+## [1] 4
 ```
 
 ```r
@@ -1147,7 +1147,7 @@ sd(bestimates[,1])
 ```
 
 ```
-## [1] 0.875
+## [1] 0.882
 ```
 
 ```r
@@ -1165,8 +1165,8 @@ sd(bestimates[,2])
 ```
 ## [1] 0.538
 ```
-The mean of the mean serial intervals is3.845 days and the standard deviation of these means is 0.875. 
-The 95% range for the mean serial interval is (2.451, 5.88).
+The mean of the mean serial intervals is3.83 days and the standard deviation of these means is 0.882. 
+The 95% range for the mean serial interval is (2.438, 5.894).
 
 
 ## Effect of time on serial interval estimates
@@ -1682,7 +1682,7 @@ table(imp_data$presumed_reason_group)
 ```
 
 ```r
-# Make data frame of edges
+# Make data frame of edges; no missing dates (all imputed) so no NAs to filter out first
 fedges_i <- select(undir_i_dates, from, to)
 fedges_i = data.frame(from = paste("case", fedges_i[ ,1], sep=""), 
                      to = paste("case", fedges_i[ ,2], sep=""))
@@ -2355,7 +2355,7 @@ Nboot=100
 bestimates_i = myest4_i 
 
 # NOTE this loop had errors a few times; I just restarted it. 
-for (kk in 1:Nboot) {
+for (kk in 47:Nboot) {
   bdata = sample(x=icc4_i, size = length(icc4_i), replace = T)
   bestimates_i = rbind(bestimates_i, serial_mix_est(data=bdata, N=100, startmu=10, startsig =4))
   
@@ -2402,7 +2402,7 @@ mean(bestimates_i[,1])
 ```
 
 ```
-## [1] 4.4
+## [1] 4.31
 ```
 
 ```r
@@ -2418,7 +2418,7 @@ sd(bestimates_i[,1])
 ```
 
 ```
-## [1] 1.2
+## [1] 1.03
 ```
 
 ```r
@@ -2426,7 +2426,7 @@ mean(bestimates_i[,2])
 ```
 
 ```
-## [1] 1.49
+## [1] 1.5
 ```
 
 ```r
@@ -2434,11 +2434,11 @@ sd(bestimates_i[,2])
 ```
 
 ```
-## [1] 0.6
+## [1] 0.629
 ```
 
-The mean of the mean serial intervals with imputed dates of symptom onset is4.402 days and the standard deviation of these means is 1.203. 
-The 95% range for the mean serial interval with imputed dates of symptom onset is (1.918, 6.632).
+The mean of the mean serial intervals with imputed dates of symptom onset is4.311 days and the standard deviation of these means is 1.031. 
+The 95% range for the mean serial interval with imputed dates of symptom onset is (2.253, 6.297).
 
 
 ## Presymptomatic transmission from original submission code
