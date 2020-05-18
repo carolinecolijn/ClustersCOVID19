@@ -12,9 +12,9 @@
 
 ```{r setup, include=FALSE}
 library(tidyverse)
-
+library(here)
 # data<-read.table("data/COVID-19_Singapore_Heatmap-table.tsv", header = TRUE, sep = "\t")
-data <- read.csv("data/COVID-19_Singapore_Heatmap-table.csv")
+data_pre <- read.csv("data/COVID-19_Singapore_Heatmap-table.csv")
 data$case <- gsub('Case ', '', data$case)
 
 data_long <- data %>% gather(key=date, value=status, starts_with("X"))
@@ -28,13 +28,13 @@ data_long$date <- as.Date(data_long$date, "%m/%d/%Y")
 ```
 
 #Plotting
-
+Emma G just used from this junk downwards, didn't do any of the above preprocessing because I edited COVID-19_Singapore_Heatmap_long_26-02-2020.csv
 ```{r }
 library(ggplot2)
 library(viridis)
 library(plotly)
 
-data <- read.csv("data/COVID-19_Singapore_Heatmap_long_26-02-2020.csv")
+data <- read.csv("../data/COVID-19_Singapore_Heatmap_long_18-05-2020.csv")
 data$date <- factor(data$date, levels=unique(data$date))
 data$case <- factor(data$case, levels=unique(data$case))
 
@@ -100,7 +100,7 @@ p_static=ggplot(
 
 p_static
 
-#ggsave("final_figures/Fig1c_heatmap_singapore.pdf",plot=p_static, device="pdf",width = 12,height = 8,units="in")
+ggsave("../final_figures/Fig1c_heatmap_singapore.pdf",plot=p_static, device="pdf",width = 12,height = 8,units="in")
 
 ```
  
