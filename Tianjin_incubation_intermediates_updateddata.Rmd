@@ -211,15 +211,15 @@ df5 <- data.frame(r=r_cur, "Mean generation time"=rec[,1]*2.2, "Mean incubation 
 ggplot(df5) + geom_line(aes(x=r, y=Mean.generation.time, color="Mean generation time",))+ geom_point(color="maroon4", aes(x=r, y=Mean.generation.time)) + theme_minimal() + geom_line(aes(x=r, y=Mean.incubation.period, color="Mean incubation period"))+ geom_point(color="royalblue4", aes(x=r, y=Mean.incubation.period)) + ylab("Time (days)") +
   scale_color_manual(values = c("Mean generation time" = 'maroon4','Mean incubation period' = 'royalblue4')) +
   labs(color = ' ')
-ggsave(filename = "final_figures/incubation_generation_tianjin.pdf", width = 8, height = 6)
+#ggsave(filename = "final_figures/incubation_generation_tianjin_woboot.pdf", width = 8, height = 6)
 
 
 ```
 
 
-CC: I think we need some kind of uncertainty estimate around the parameters - having looked at it I suspect that the bootstrap is likely to be the best bet. 
+Some kind of uncertainty estimate around the parameters would be helpful 
 
-Based on these plots I would say $r=0.05, r=0.1, r=0.15$ to start; we resample the data using bootstrapping, and get empirical 90% CIs for example around the $ai$ and $ag$ parameters. 
+We explore this at $r=0.05, r=0.1, r=0.15$ to start; we resample the data using bootstrapping, and get empirical 90% CIs for example around the $ai$ and $ag$ parameters. 
 
 ```{r eval=FALSE}
 nboot = 200
@@ -245,7 +245,53 @@ save(boot1, boot2, boot3, boot4, file = "interbooty2_tianjin.Rdata")
 
 ```
 
+We overlay the previous plots with boxplots for the bootstraps
+
 ```{r}
+
+load("interbooty2_tianjin.Rdata")
+
+value <- c(boot1[,1], boot2[,1], boot3[,1], boot4[,1])
+group <- c(boot1[,3], boot2[,3], boot3[,3], boot4[,3])
+gen_bootdata <- data.frame(value, r=group)
+
+value <- c(boot1[,2], boot2[,2], boot3[,2], boot4[,2])
+group <- c(boot1[,3], boot2[,3], boot3[,3], boot4[,3])
+inc_bootdata <- data.frame(value, r=group)
+
+# Plot a_g and a_i
+
+df1 <- data.frame(r=r_cur, ag=rec[,1])
+df2 <- data.frame(r=r_cur, ai=rec[,2])
+
+plot1 <- ggplot(df1, aes(x=r, y=ag)) + geom_boxplot(data = gen_bootdata, aes(group=r, y=value), fill = 'lavender', colour = 'plum4', alpha = 0.7) + geom_line(color="maroon4")+ geom_point(color="maroon4") + theme_minimal() +  scale_y_continuous(name = "Generation time shape parameter") +  scale_x_continuous(name = "Number of intermediate cases per day, r")
+plot2 <- ggplot(df2, aes(x=r, y=ai)) + geom_boxplot(data = inc_bootdata, aes(group=r, y=value), fill = 'lightblue2', colour = 'skyblue4', alpha = 0.7) + geom_line(color="royalblue4")+ geom_point(color="royalblue4") + theme_minimal() +  scale_y_continuous(name = "Incubation period shape parameter") +  scale_x_continuous(name = "Number of intermediate cases per day, r")
+
+grid.arrange(plot1, plot2, ncol=2)
+#save
+g <- arrangeGrob(plot1, plot2, ncol=2) #generates g
+ggsave(filename = "final_figures/incgen_tianjin_shapes.pdf", g, width = 10, height = 6)
+
+
+# Plot mean estimates instead (scale b=2.1)
+
+value <- c(boot1[,1]*b, boot2[,1]*b, boot3[,1]*b, boot4[,1]*b)
+group <- c(boot1[,3], boot2[,3], boot3[,3], boot4[,3])
+gen_bootdata <- data.frame(value, r=group)
+
+value <- c(boot1[,2]*b, boot2[,2]*b, boot3[,2]*b, boot4[,2]*b)
+group <- c(boot1[,3], boot2[,3], boot3[,3], boot4[,3])
+inc_bootdata <- data.frame(value, r=group)
+
+df5 <- data.frame(r=r_cur, "Mean generation time"=rec[,1]*b, "Mean incubation period"=rec[,2]*b)
+
+ggplot(df5, aes(x=r, y=Mean.generation.time)) + geom_boxplot(data = gen_bootdata, aes(group=r, y=value), fill = 'lavender', colour = 'plum4', alpha = 0.7) + geom_boxplot(data = inc_bootdata, aes(group=r, y=value), fill = 'lightblue2', colour = 'skyblue4', alpha = 0.7) + geom_line(aes(x=r, y=Mean.generation.time, color="Mean generation time",)) + geom_point(color="maroon4", aes(x=r, y=Mean.generation.time)) + theme_minimal() + geom_line(aes(x=r, y=Mean.incubation.period, color="Mean incubation period"))+ geom_point(color="royalblue4", aes(x=r, y=Mean.incubation.period)) + ylab("Time (days)") +
+  scale_color_manual(values = c("Mean generation time" = 'maroon4','Mean incubation period' = 'royalblue4')) +
+  labs(color = ' ') +  scale_x_continuous(name = "Number of intermediate cases per day, r")
+
+ggsave(filename = "final_figures/incgen_tianjin_means.pdf", width = 10, height = 6)
+
+
 ```
 
 Then the remaining question is to see if we want to handle right truncation without intermediate cases. And the uncertainty and so on there. There, we could continue to do the 3 models (gamma, Weibull, lognormal) because without intermediate cases, it's just the CDFs (which we have access to in R). 
