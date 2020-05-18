@@ -403,7 +403,7 @@ We can test for sensitivity to rate r - the number of intermediates 'arriving' p
 
 
 ```r
-# current MLEs: gen time shape 1.65, incubation period shape 2.23, for r=0.1
+# current MLEs: gen time shape 1.37, incubation period shape 2.12, for r=0.1
 
 r_cur = c(seq(0.02, 0.25, length.out=20))
 rec<-matrix(NA, length(r_cur), 2)
@@ -481,6 +481,7 @@ boot3=getBootstraps(nboot, spdata,therate = 0.15)
 boot4=getBootstraps(nboot, spdata,therate = 0.2) 
 save(boot1, boot2, boot3, boot4, file = "interbooty2.Rdata")
 ```
+
 
 
 Then the remaining question is to see if we want to handle right truncation without intermediate cases. And the uncertainty and so on there. There, we could continue to do the 3 models (gamma, Weibull, lognormal) because without intermediate cases, it's just the CDFs (which we have access to in R). 
