@@ -75,7 +75,7 @@ undir=data.frame(from = pmin(singedges[,1],singedges[,2]),
 undir = unique(undir)
 undir = undir[-which(undir[,1]==undir[,2]),]
 
-spdata_sympt <- select(spdata_org, CaseID, date_onset_symptoms)
+spdata_sympt <- select(spdata, CaseID, date_onset_symptoms)
 
 names(spdata_sympt) <- str_replace(names(spdata_sympt), "CaseID", "from")
 undir_dates <- left_join(undir, spdata_sympt, by = "from")
