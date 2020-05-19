@@ -99,8 +99,9 @@ tdata$Infection_source_dup <- str_replace(tdata$Infection_source_dup,
 #Note that the order the data are selected in is VERY important to which case goes into which source_group category
   #For those that meet multiple criteria (e.g. wuhan; tj1), the str_match which is highest in the case_when call (i.e. "wuhan|hubei") will have priority over those matching later 
   #so that the 'source' column contain "wuhan; tj1" would be labelled as infection from a "wuhan" rather than from a "known relationship" origin 
+  #There are only a small number of cases for which this matters (n = 12)
 
-#See what happens when we emphasize the wuhan and travel cases over known relationships
+#We will emphasize the wuhan and travel cases over known relationships
   #This seems logical, given that the epicenter of the outbreak was Wuhan
 tdata <- mutate(tdata, source_group = case_when(!is.na(str_match(Infection_source_dup, "wuhan|hubei")) ~ "Wuhan and Hubei", #Priority 1
                                                   !is.na(str_match(Infection_source_dup, "mall|store|shopper|shopping")) ~ "Mall", #Priority 1
@@ -282,6 +283,8 @@ icc6 = getICCs(tdata,ccs,6)
 icc_expose = getICCs(tdata, ccs, 4, orderby ="exposure")
 ```
 
+#### Serial inteval estimates here 
+Note that the first 4 rows is with 3 to 6 cases per cluster, based on ordering by date of symptom onset; while the last row is with 4 cases per cluster, but ordered by date in the 'end_source' (end of presumed exposure window) column instead.
 
 Perform the estimate using the Vink et al method, and display the result:
 
@@ -301,7 +304,7 @@ mm$ordering = c("Onset","Onset","Onset","Onset","LastExposure")
 print(mm[,c(4,3,1,2)]) 
 ```
 
-The mean SI is `r myest4[1]`. The standard deviation of the serial intervals is `r myest4[2]`.
+**The mean SI (using 4 cases per cluster) is `r myest4[1]`. The standard deviation of the serial intervals is `r myest4[2]`.**
 
 ```{r}
 ### Make a density plot of the ICC estimate
@@ -314,7 +317,8 @@ ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) +
 # ggsave(file="final_figures/tianjin_serialint.pdf", height = 4, width = 6)
 ```
 
-We need CIs for the mean. For this we use bootstrapping. 
+#### Determining the confidence interval for the mean serial interval 
+We need CIs for the mean. For this we use bootstrapping. The bootstrapping is done on the serial interval estimate with 4 cases per cluster and ordered by date of symptom onset.
 
 Bootstrap analysis code - have left it set to eval=FALSE in the Rmd because it takes time. Bootstraps are saved in the data folder and named "tianjin_bootstraps_100.Rdata". 
 ```{r, eval=FALSE}
@@ -335,11 +339,12 @@ bestimates_tj <- bestimates_tj[-1, ] #Remove the non-bootstrapped row (i.e. the 
 load("data/tianjin_boots_100.Rdata")
 mean(bestimates_tj[,1]) # mean of the mean serial intervals
 median(bestimates_tj[,1])
-mean(bestimates_tj[,2]) # sd of the sd serial intervals 
 sd(bestimates_tj[,1]) # sd of the MEAN serial intervals 
+mean(bestimates_tj[,2]) # mean of the sd serial intervals 
+sd(bestimates_tj[ ,2]) #sd of the sd serial intervals
 ```
 
-The 95% range for the mean serial interval is (`r myest4[1]-1.96*sd(bestimates_tj[,1])`, `r myest4[1]+1.96*sd(bestimates_tj[,1])`).
+**The 95% range for the mean serial interval is (`r myest4[1]-1.96*sd(bestimates_tj[,1])`, `r myest4[1]+1.96*sd(bestimates_tj[,1])`).**
 
 The following makes a histogram of the bootstrapped mean serial interval (using a cluster size of 4).
 ```{r, eval=TRUE}
@@ -756,7 +761,7 @@ mm$ordering = c("Onset","Onset","Onset","Onset","LastExposure")
 print(mm[,c(4,3,1,2)]) 
 ```
 
-The mean SI is `r myest4_i[1]`. The standard deviation of the serial intervals is `r myest4_i[2]`.
+**The mean SI using imputed date of symptom onset (estimated with 4 cases per cluster) is `r myest4_i[1]`. The standard deviation of the serial intervals is `r myest4_i[2]`.**
 ```{r}
 ### Make a density plot of the ICC estimate
 days = seq(from=0, to=10, by=0.1) 
@@ -792,7 +797,7 @@ mean(tbestimates_i[,2]) # sd of the sd serial intervals
 sd(tbestimates_i[,1]) # sd of the MEAN serial intervals 
 ```
 
-The 95% range for the mean serial interval is (`r myest4_i[1]-1.96*sd(tbestimates_i[,1])`, `r myest4[1]+1.96*sd(tbestimates_i[,1])`).
+**The 95% range for the mean serial interval is (`r myest4_i[1]-1.96*sd(tbestimates_i[,1])`, `r myest4_i[1]+1.96*sd(tbestimates_i[,1])`). This is using imputed date of symptom onset and estimated with 4 cases per cluster.**
 
 The following makes a histogram of the bootstrapped mean serial interval (using a cluster size of 4).
 ```{r, eval=TRUE}

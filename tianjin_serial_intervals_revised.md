@@ -1,7 +1,7 @@
 ---
 title: "Tianjin serial intervals - Revisions"
 author: "Caroline Colijn, Michelle Coombe, and Manu Saraswat"
-date: "2020-05-17"
+date: "2020-05-18"
 output: 
   html_document:  
     keep_md: TRUE
@@ -133,8 +133,9 @@ tdata$Infection_source_dup <- str_replace(tdata$Infection_source_dup,
 #Note that the order the data are selected in is VERY important to which case goes into which source_group category
   #For those that meet multiple criteria (e.g. wuhan; tj1), the str_match which is highest in the case_when call (i.e. "wuhan|hubei") will have priority over those matching later 
   #so that the 'source' column contain "wuhan; tj1" would be labelled as infection from a "wuhan" rather than from a "known relationship" origin 
+  #There are only a small number of cases for which this matters (n = 12)
 
-#See what happens when we emphasize the wuhan and travel cases over known relationships
+#We will emphasize the wuhan and travel cases over known relationships
   #This seems logical, given that the epicenter of the outbreak was Wuhan
 tdata <- mutate(tdata, source_group = case_when(!is.na(str_match(Infection_source_dup, "wuhan|hubei")) ~ "Wuhan and Hubei", #Priority 1
                                                   !is.na(str_match(Infection_source_dup, "mall|store|shopper|shopping")) ~ "Mall", #Priority 1
@@ -366,6 +367,8 @@ icc6 = getICCs(tdata,ccs,6)
 icc_expose = getICCs(tdata, ccs, 4, orderby ="exposure")
 ```
 
+#### Serial inteval estimates here 
+Note that the first 4 rows is with 3 to 6 cases per cluster, based on ordering by date of symptom onset; while the last row is with 4 cases per cluster, but ordered by date in the 'end_source' (end of presumed exposure window) column instead.
 
 Perform the estimate using the Vink et al method, and display the result:
 
@@ -924,7 +927,7 @@ print(mm[,c(4,3,1,2)])
 ## myest_exp LastExposure                  4 5.09 1.270
 ```
 
-The mean SI is 4.314. The standard deviation of the serial intervals is 0.935.
+**The mean SI (using 4 cases per cluster) is 4.314. The standard deviation of the serial intervals is 0.935.**
 
 
 ```r
@@ -943,7 +946,8 @@ ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) +
 # ggsave(file="final_figures/tianjin_serialint.pdf", height = 4, width = 6)
 ```
 
-We need CIs for the mean. For this we use bootstrapping. 
+#### Determining the confidence interval for the mean serial interval 
+We need CIs for the mean. For this we use bootstrapping. The bootstrapping is done on the serial interval estimate with 4 cases per cluster and ordered by date of symptom onset.
 
 Bootstrap analysis code - have left it set to eval=FALSE in the Rmd because it takes time. Bootstraps are saved in the data folder and named "tianjin_bootstraps_100.Rdata". 
 
@@ -980,14 +984,6 @@ median(bestimates_tj[,1])
 ```
 
 ```r
-mean(bestimates_tj[,2]) # sd of the sd serial intervals 
-```
-
-```
-## [1] 0.995
-```
-
-```r
 sd(bestimates_tj[,1]) # sd of the MEAN serial intervals 
 ```
 
@@ -995,7 +991,23 @@ sd(bestimates_tj[,1]) # sd of the MEAN serial intervals
 ## [1] 0.716
 ```
 
-The 95% range for the mean serial interval is (2.911, 5.717).
+```r
+mean(bestimates_tj[,2]) # mean of the sd serial intervals 
+```
+
+```
+## [1] 0.995
+```
+
+```r
+sd(bestimates_tj[ ,2]) #sd of the sd serial intervals
+```
+
+```
+## [1] 0.307
+```
+
+**The 95% range for the mean serial interval is (2.911, 5.717).**
 
 The following makes a histogram of the bootstrapped mean serial interval (using a cluster size of 4).
 
@@ -2056,7 +2068,7 @@ print(mm[,c(4,3,1,2)])
 ## myest_exp_i LastExposure                  4 4.81 0.948
 ```
 
-The mean SI is 4.403. The standard deviation of the serial intervals is 0.864.
+**The mean SI using imputed date of symptom onset (estimated with 4 cases per cluster) is 4.403. The standard deviation of the serial intervals is 0.864.**
 
 ```r
 ### Make a density plot of the ICC estimate
@@ -2125,7 +2137,7 @@ sd(tbestimates_i[,1]) # sd of the MEAN serial intervals
 ## [1] 0.585
 ```
 
-The 95% range for the mean serial interval is (3.257, 5.46).
+**The 95% range for the mean serial interval is (3.257, 5.549). This is using imputed date of symptom onset and estimated with 4 cases per cluster.**
 
 The following makes a histogram of the bootstrapped mean serial interval (using a cluster size of 4).
 
