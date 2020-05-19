@@ -23,33 +23,33 @@ glimpse(spdata)
 ```
 
 ```
-## Observations: 93
-## Variables: 25
-## $ CaseID                 <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, ...
-## $ `Related cases`        <chr> "2,3", "1,3", "1,2", "13", "11", NA, NA...
-## $ `Cluster links`        <chr> NA, NA, NA, NA, NA, NA, NA, NA, "9,31,3...
-## $ `Relationship notes`   <chr> NA, NA, "Son of 1", "Daughter of 13", N...
-## $ Case                   <chr> "Case 1, 66M, Wuhan", "Case 2, 53F, Wuh...
-## $ age                    <dbl> 66, 53, 37, 42, 36, 56, 56, 35, 56, 56,...
-## $ sex                    <chr> "M", "F", "M", "F", "M", "F", "M", "M",...
-## $ country                <chr> "Singapore", "Singapore", "Singapore", ...
-## $ hospital               <chr> "Singapore General Hospital", "National...
-## $ presumed_infected_date <dttm> 2020-01-20, 2020-01-20, 2020-01-20, 20...
-## $ presumed_reason        <chr> "Arrived from Wuhan", "Arrived from Wuh...
-## $ last_poss_exposure     <date> 2020-01-20, 2020-01-20, 2020-01-20, 20...
-## $ contact_based_exposure <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
-## $ start_source           <date> 2019-12-31, 2020-01-01, 2020-01-03, NA...
-## $ end_source             <date> 2020-01-20, 2020-01-20, 2020-01-20, 20...
-## $ date_onset_symptoms    <date> 2020-01-20, 2020-01-21, 2020-01-23, NA...
-## $ date_quarantine        <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
-## $ date_hospital          <date> 2020-01-22, 2020-01-22, 2020-01-23, 20...
-## $ date_confirmation      <date> 2020-01-23, 2020-01-24, 2020-01-24, 20...
-## $ outcome                <chr> "Discharged", "Discharged", "Discharged...
-## $ date_discharge         <date> 2020-02-19, 2020-02-07, 2020-02-21, 20...
-## $ travel_history         <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wu...
-## $ additional_information <chr> "Travelled with Case 3 (son) and M1 (wi...
-## $ cluster                <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wu...
-## $ citizenship            <chr> "China", "China", "China", "China", "Ch...
+## Rows: 93
+## Columns: 25
+## $ CaseID                 <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,…
+## $ `Related cases`        <chr> "2,3", "1,3", "1,2", "13", "11", NA, NA, NA, "…
+## $ `Cluster links`        <chr> NA, NA, NA, NA, NA, NA, NA, NA, "9,31,33,38,83…
+## $ `Relationship notes`   <chr> NA, NA, "Son of 1", "Daughter of 13", NA, NA, …
+## $ Case                   <chr> "Case 1, 66M, Wuhan", "Case 2, 53F, Wuhan", "C…
+## $ age                    <dbl> 66, 53, 37, 42, 36, 56, 56, 35, 56, 56, 56, 31…
+## $ sex                    <chr> "M", "F", "M", "F", "M", "F", "M", "M", "F", "…
+## $ country                <chr> "Singapore", "Singapore", "Singapore", "Singap…
+## $ hospital               <chr> "Singapore General Hospital", "National Centre…
+## $ presumed_infected_date <dttm> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
+## $ presumed_reason        <chr> "Arrived from Wuhan", "Arrived from Wuhan", "A…
+## $ last_poss_exposure     <date> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
+## $ contact_based_exposure <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ start_source           <date> 2019-12-31, 2020-01-01, 2020-01-03, NA, 2020-…
+## $ end_source             <date> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
+## $ date_onset_symptoms    <date> 2020-01-20, 2020-01-21, 2020-01-23, NA, 2020-…
+## $ date_quarantine        <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 2…
+## $ date_hospital          <date> 2020-01-22, 2020-01-22, 2020-01-23, 2020-01-2…
+## $ date_confirmation      <date> 2020-01-23, 2020-01-24, 2020-01-24, 2020-02-0…
+## $ outcome                <chr> "Discharged", "Discharged", "Discharged", "Dis…
+## $ date_discharge         <date> 2020-02-19, 2020-02-07, 2020-02-21, 2020-02-0…
+## $ travel_history         <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wuhan", "…
+## $ additional_information <chr> "Travelled with Case 3 (son) and M1 (wife) ;MO…
+## $ cluster                <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wuhan", "…
+## $ citizenship            <chr> "China", "China", "China", "China", "China", "…
 ```
 
 ```r
@@ -482,12 +482,91 @@ boot4=getBootstraps(nboot, spdata,therate = 0.2)
 save(boot1, boot2, boot3, boot4, file = "interbooty2.Rdata")
 ```
 
-We overlay the previous plots with boxplots for the bootstraps
+Table of quantile information for the incubation period
+
 
 
 ```r
 load("interbooty2.Rdata")
 
+quantile(boot1$isboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  4.35  4.91  5.69
+```
+
+```r
+quantile(boot2$isboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  4.03  4.43  5.26
+```
+
+```r
+quantile(boot3$isboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  3.72  4.12  4.75
+```
+
+```r
+quantile(boot4$isboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  3.51  3.89  4.49
+```
+And quantile information for the generation time 
+
+
+```r
+quantile(boot1$gsboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  2.36  3.71  4.91
+```
+
+```r
+quantile(boot2$gsboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  1.79  2.80  3.73
+```
+
+```r
+quantile(boot3$gsboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  1.84  2.49  3.20
+```
+
+```r
+quantile(boot4$gsboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  1.65  2.28  3.00
+```
+
+
+We overlay the previous plots with boxplots for the bootstraps
+
+
+```r
 value <- c(boot1[,1], boot2[,1], boot3[,1], boot4[,1])
 group <- c(boot1[,3], boot2[,3], boot3[,3], boot4[,3])
 gen_bootdata <- data.frame(value, r=group)
@@ -507,7 +586,7 @@ plot2 <- ggplot(df2, aes(x=r, y=ai)) + geom_boxplot(data = inc_bootdata, aes(gro
 grid.arrange(plot1, plot2, ncol=2)
 ```
 
-![](incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+![](incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
 
 ```r
 #save
@@ -532,7 +611,7 @@ ggplot(df5, aes(x=r, y=Mean.generation.time)) + geom_boxplot(data = gen_bootdata
   labs(color = ' ') +  scale_x_continuous(name = "Number of intermediate cases per day, r")
 ```
 
-![](incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-14-2.png)<!-- -->
+![](incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-16-2.png)<!-- -->
 
 ```r
 ggsave(filename = "final_figures/incgen_sing_means.pdf", width = 10, height = 6)

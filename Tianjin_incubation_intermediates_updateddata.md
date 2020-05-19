@@ -1,7 +1,7 @@
 ---
 title: "Testing incubation with intermediate"
 author: "Caroline Colijn, Jessica Stockdale"
-date: "2020-05-17"
+date: "2020-05-18"
 output: 
   html_document:
     keep_md: TRUE
@@ -79,12 +79,11 @@ tdata$maxIncTimes
 
 ```
 ## Time differences in days
-##   [1]  9 20 20 20 20 20 20  4 20  6 20 20 20 20 20 20 20  7  4 20  9 20 20
-##  [24] 20 20 20  8 20 11  9  5 20 20  8 20 20  9  7 11 11 20  3 20 20 20  6
-##  [47] 15 11  7  7 20 20 20  8  9  6 20 20  9 20 20 20 14 11  6  9 20 20  6
-##  [70] 20  3  6 13 12 20  3 11 10 20 20 20 20 20 20 13 20 20 20 20  7 20 20
-##  [93] 20 20 20 20 20 16 20 11 20 20 20 20  3 11 20 19 16 20 17 20 11 20 20
-## [116]  6 19 20 20 14 20 16 20 20 20
+##   [1]  9 20 20 20 20 20 20  4 20  6 20 20 20 20 20 20 20  7  4 20  9 20 20 20 20
+##  [26] 20  8 20 11  9  5 20 20  8 20 20  9  7 11 11 20  3 20 20 20  6 15 11  7  7
+##  [51] 20 20 20  8  9  6 20 20  9 20 20 20 14 11  6  9 20 20  6 20  3  6 13 12 20
+##  [76]  3 11 10 20 20 20 20 20 20 13 20 20 20 20  7 20 20 20 20 20 20 20 16 20 11
+## [101] 20 20 20 20  3 11 20 19 16 20 17 20 11 20 20  6 19 20 20 14 20 16 20 20 20
 ```
 
 ```r
@@ -93,12 +92,11 @@ tdata$minIncTimes
 
 ```
 ## Time differences in days
-##   [1]  0  0  0  0  0  0  1  1  7  4  0  0  0  6  2  0  7  7  4  7  2  3  3
-##  [24] 12  8  5  8  0  7  5  2  3  4  0  4  1  8  1  5  5  0  0  4  1  5  6
-##  [47]  9 11  7  0  8  3  7  8  9  6 14  0  0  0  0  0  1  8  0  9  0  0  6
-##  [70]  0  3  6 12  1  0  3 11 10  0  0  0  0  0  0 13  0 12  0  0  7  0  0
-##  [93]  0  0  0  0  0 16  0  4  0  0  0  0  3 11  0  0  0  0 17  0  4  0  0
-## [116]  6 19  0  0 11  6 16 11  0  2
+##   [1]  0  0  0  0  0  0  1  1  7  4  0  0  0  6  2  0  7  7  4  7  2  3  3 12  8
+##  [26]  5  8  0  7  5  2  3  4  0  4  1  8  1  5  5  0  0  4  1  5  6  9 11  7  0
+##  [51]  8  3  7  8  9  6 14  0  0  0  0  0  1  8  0  9  0  0  6  0  3  6 12  1  0
+##  [76]  3 11 10  0  0  0  0  0  0 13  0 12  0  0  7  0  0  0  0  0  0  0 16  0  4
+## [101]  0  0  0  0  3 11  0  0  0  0 17  0  4  0  0  6 19  0  0 11  6 16 11  0  2
 ```
 
 Define the maximum and minimum exposure times based on these assumptions. These are the times $t_{min}^i$ and $t_{max}^i$ in the notation. 
@@ -285,13 +283,13 @@ ggplot(df5) + geom_line(aes(x=r, y=Mean.generation.time, color="Mean generation 
 ![](Tianjin_incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-11-3.png)<!-- -->
 
 ```r
-ggsave(filename = "final_figures/incubation_generation_tianjin.pdf", width = 8, height = 6)
+#ggsave(filename = "final_figures/incubation_generation_tianjin_woboot.pdf", width = 8, height = 6)
 ```
 
 
-CC: I think we need some kind of uncertainty estimate around the parameters - having looked at it I suspect that the bootstrap is likely to be the best bet. 
+Some kind of uncertainty estimate around the parameters would be helpful 
 
-Based on these plots I would say $r=0.05, r=0.1, r=0.15$ to start; we resample the data using bootstrapping, and get empirical 90% CIs for example around the $ai$ and $ag$ parameters. 
+We explore this at $r=0.05, r=0.1, r=0.15$ to start; we resample the data using bootstrapping, and get empirical 90% CIs for example around the $ai$ and $ag$ parameters. 
 
 
 ```r
@@ -317,7 +315,141 @@ boot4=getBootstraps(nboot, tdata,therate = 0.2)
 save(boot1, boot2, boot3, boot4, file = "interbooty2_tianjin.Rdata")
 ```
 
+Table of quantile information
 
+
+```r
+load("interbooty2_tianjin.Rdata")
+
+quantile(boot1$isboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  6.76  7.54  8.56
+```
+
+```r
+quantile(boot2$isboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  6.02  6.89  8.01
+```
+
+```r
+quantile(boot3$isboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  5.47  6.30  7.45
+```
+
+```r
+quantile(boot4$isboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  5.10  5.91  7.17
+```
+
+And quantile information for the generation time 
+
+
+
+```r
+quantile(boot1$gsboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  1.83  2.82  3.52
+```
+
+```r
+quantile(boot2$gsboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  1.63  2.40  3.13
+```
+
+```r
+quantile(boot3$gsboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  1.73  2.26  2.84
+```
+
+```r
+quantile(boot4$gsboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  1.65  2.20  2.67
+```
+
+
+We overlay the previous plots with boxplots for the bootstraps
+
+
+```r
+value <- c(boot1[,1], boot2[,1], boot3[,1], boot4[,1])
+group <- c(boot1[,3], boot2[,3], boot3[,3], boot4[,3])
+gen_bootdata <- data.frame(value, r=group)
+
+value <- c(boot1[,2], boot2[,2], boot3[,2], boot4[,2])
+group <- c(boot1[,3], boot2[,3], boot3[,3], boot4[,3])
+inc_bootdata <- data.frame(value, r=group)
+
+# Plot a_g and a_i
+
+df1 <- data.frame(r=r_cur, ag=rec[,1])
+df2 <- data.frame(r=r_cur, ai=rec[,2])
+
+plot1 <- ggplot(df1, aes(x=r, y=ag)) + geom_boxplot(data = gen_bootdata, aes(group=r, y=value), fill = 'lavender', colour = 'plum4', alpha = 0.7) + geom_line(color="maroon4")+ geom_point(color="maroon4") + theme_minimal() +  scale_y_continuous(name = "Generation time shape parameter") +  scale_x_continuous(name = "Number of intermediate cases per day, r")
+plot2 <- ggplot(df2, aes(x=r, y=ai)) + geom_boxplot(data = inc_bootdata, aes(group=r, y=value), fill = 'lightblue2', colour = 'skyblue4', alpha = 0.7) + geom_line(color="royalblue4")+ geom_point(color="royalblue4") + theme_minimal() +  scale_y_continuous(name = "Incubation period shape parameter") +  scale_x_continuous(name = "Number of intermediate cases per day, r")
+
+grid.arrange(plot1, plot2, ncol=2)
+```
+
+![](Tianjin_incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+
+```r
+#save
+g <- arrangeGrob(plot1, plot2, ncol=2) #generates g
+ggsave(filename = "final_figures/incgen_tianjin_shapes.pdf", g, width = 10, height = 6)
+
+
+# Plot mean estimates instead (scale b=2.1)
+
+value <- c(boot1[,1]*b, boot2[,1]*b, boot3[,1]*b, boot4[,1]*b)
+group <- c(boot1[,3], boot2[,3], boot3[,3], boot4[,3])
+gen_bootdata <- data.frame(value, r=group)
+
+value <- c(boot1[,2]*b, boot2[,2]*b, boot3[,2]*b, boot4[,2]*b)
+group <- c(boot1[,3], boot2[,3], boot3[,3], boot4[,3])
+inc_bootdata <- data.frame(value, r=group)
+
+df5 <- data.frame(r=r_cur, "Mean generation time"=rec[,1]*b, "Mean incubation period"=rec[,2]*b)
+
+ggplot(df5, aes(x=r, y=Mean.generation.time)) + geom_boxplot(data = gen_bootdata, aes(group=r, y=value), fill = 'lavender', colour = 'plum4', alpha = 0.7) + geom_boxplot(data = inc_bootdata, aes(group=r, y=value), fill = 'lightblue2', colour = 'skyblue4', alpha = 0.7) + geom_line(aes(x=r, y=Mean.generation.time, color="Mean generation time",)) + geom_point(color="maroon4", aes(x=r, y=Mean.generation.time)) + theme_minimal() + geom_line(aes(x=r, y=Mean.incubation.period, color="Mean incubation period"))+ geom_point(color="royalblue4", aes(x=r, y=Mean.incubation.period)) + ylab("Time (days)") +
+  scale_color_manual(values = c("Mean generation time" = 'maroon4','Mean incubation period' = 'royalblue4')) +
+  labs(color = ' ') +  scale_x_continuous(name = "Number of intermediate cases per day, r")
+```
+
+![](Tianjin_incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-15-2.png)<!-- -->
+
+```r
+ggsave(filename = "final_figures/incgen_tianjin_means.pdf", width = 10, height = 6)
+```
 
 Then the remaining question is to see if we want to handle right truncation without intermediate cases. And the uncertainty and so on there. There, we could continue to do the 3 models (gamma, Weibull, lognormal) because without intermediate cases, it's just the CDFs (which we have access to in R). 
 
@@ -404,7 +536,7 @@ plot2 <- ggplot(dfbi, aes(x=b, y=ai)) + geom_line(color="royalblue4")+ geom_poin
 grid.arrange(plot1, plot2, ncol=2)
 ```
 
-![](Tianjin_incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+![](Tianjin_incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
 
 ```r
 plot1 <- ggplot(dfbg2, aes(x=b, y=Mean.generation.time)) + geom_line(color="maroon4")+ geom_point(color="maroon4") + theme_minimal()
@@ -413,7 +545,7 @@ plot2 <- ggplot(dfbi2, aes(x=b, y=Mean.incubation.period)) + geom_line(color="ro
 grid.arrange(plot1, plot2, ncol=2)
 ```
 
-![](Tianjin_incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-15-2.png)<!-- -->
+![](Tianjin_incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-17-2.png)<!-- -->
 
 ```r
 # on the same plot
@@ -422,4 +554,4 @@ df_together <- data.frame(b=seq(10/20,100/20,length.out=91), "Mean generation ti
 ggplot(df_together) + geom_line(color="maroon4", aes(x=b, y=Mean.generation.time))+ geom_point(color="maroon4", aes(x=b, y=Mean.generation.time)) + theme_minimal() + geom_line(color="royalblue4", aes(x=b, y=Mean.incubation.period))+ geom_point(color="royalblue4", aes(x=b, y=Mean.incubation.period)) + ylab("Time (days)")
 ```
 
-![](Tianjin_incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-15-3.png)<!-- -->
+![](Tianjin_incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-17-3.png)<!-- -->
