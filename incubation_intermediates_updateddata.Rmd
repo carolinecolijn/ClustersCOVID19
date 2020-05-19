@@ -262,11 +262,33 @@ save(boot1, boot2, boot3, boot4, file = "interbooty2.Rdata")
 
 ```
 
+Table of quantile information for the incubation period
+
+
+```{r}
+load("interbooty2.Rdata")
+
+quantile(boot1$isboots*b, p=c(0.025, 0.5, 0.975))
+quantile(boot2$isboots*b, p=c(0.025, 0.5, 0.975))
+quantile(boot3$isboots*b, p=c(0.025, 0.5, 0.975))
+quantile(boot4$isboots*b, p=c(0.025, 0.5, 0.975))
+
+```
+And quantile information for the generation time 
+
+```{r}
+quantile(boot1$gsboots*b, p=c(0.025, 0.5, 0.975))
+quantile(boot2$gsboots*b, p=c(0.025, 0.5, 0.975))
+quantile(boot3$gsboots*b, p=c(0.025, 0.5, 0.975))
+quantile(boot4$gsboots*b, p=c(0.025, 0.5, 0.975))
+
+```
+
+
 We overlay the previous plots with boxplots for the bootstraps
 
 ```{r}
 
-load("interbooty2.Rdata")
 
 value <- c(boot1[,1], boot2[,1], boot3[,1], boot4[,1])
 group <- c(boot1[,3], boot2[,3], boot3[,3], boot4[,3])

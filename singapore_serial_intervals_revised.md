@@ -1,7 +1,7 @@
 ---
 title: "Singapore Serial Intervals - Revisions"
 author: "Caroline Colijn, Michelle Coombe, and Manu Saraswat"
-date: "2020-05-17"
+date: "2020-05-18"
 output: 
   html_document:  
     keep_md: TRUE
@@ -506,6 +506,8 @@ icc6 = getICCs(spdata,ccs,6)
 icc_expose = getICCs(spdata, ccs, 4, orderby ="exposure")
 ```
 
+#### Serial inteval estimates here 
+Note that the first 4 rows is with 3 to 6 cases per cluster, based on ordering by date of symptom onset; while the last row is with 4 cases per cluster, but ordered by date in the 'end_source' (end of presumed exposure window) column instead.
 
 ```r
 source("TianjinSI_VinkWallinga_CC.R")
@@ -1070,11 +1072,12 @@ ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) + 
 #ggsave(file="final_figures/sing_serialint.pdf", height = 4, width = 6)
 ```
 
-I note that the serial interval gets longer if we include more cases per cluster (because the mixture of 4 pathways in Vink et al does not include longer transmission chains, which forces the assumption that everyone in the cluster was infected by the initial case, which in turn lengthens the estimated serial interval). We do not know the true infection pathways but it is reasonable not to constrain the model to enforce that most are infected by the first few cases. 
+I noticed that the serial interval gets longer if we include more cases per cluster (because the mixture of 4 pathways in Vink et al does not include longer transmission chains, which forces the assumption that everyone in the cluster was infected by the initial case, which in turn lengthens the estimated serial interval). We do not know the true infection pathways but it is reasonable not to constrain the model to enforce that most are infected by the first few cases. 
 
-The mean SI is 4.166. The standard deviation of the serial intervals is 1.057.
+**The mean SI (using 4 cases per cluster) is 4.166. The standard deviation of the serial intervals is 1.057.**
 
-We need CIs for the mean. For this we use bootstrapping. 
+#### Determining the confidence interval for the mean serial interval 
+We need CIs for the mean. For this we use bootstrapping. The bootstrapping is done on the serial interval estimate with 4 cases per cluster and ordered by date of symptom onset.
 
 
 ```r
@@ -1127,7 +1130,7 @@ ggplot(bootdf, aes(x=mu))+geom_histogram()
 
 ```r
 #load("sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE 
-mean(bestimates[,1]) 
+mean(bestimates[,1])  # mean of the mean serial intervals
 ```
 
 ```
@@ -1143,7 +1146,7 @@ median(bestimates[,1])
 ```
 
 ```r
-sd(bestimates[,1])
+sd(bestimates[,1]) # sd of the MEAN serial intervals 
 ```
 
 ```
@@ -1151,7 +1154,7 @@ sd(bestimates[,1])
 ```
 
 ```r
-mean(bestimates[,2])
+mean(bestimates[,2]) # mean of the sd serial intervals
 ```
 
 ```
@@ -1159,7 +1162,7 @@ mean(bestimates[,2])
 ```
 
 ```r
-sd(bestimates[,2])
+sd(bestimates[,2]) #sd of the sd serial intervals
 ```
 
 ```
@@ -2342,7 +2345,7 @@ ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) +
 ```r
 # ggsave(file="final_figures/sing_serialint_imputed.pdf", height = 4, width = 6)
 ```
-The mean SI is 4.275. The standard deviation of the serial intervals is 1.036.
+**The mean SI using imputed date of symptom onset (estimated with 4 cases per cluster) is 4.275. The standard deviation of the serial intervals is 1.036.**
 
 
 Step 7: determine the 95% confidence intervals for the mean serial estimate through bootstrapping.
@@ -2355,7 +2358,7 @@ Nboot=100
 bestimates_i = myest4_i 
 
 # NOTE this loop had errors a few times; I just restarted it. 
-for (kk in 47:Nboot) {
+for (kk in 1:Nboot) {
   bdata = sample(x=icc4_i, size = length(icc4_i), replace = T)
   bestimates_i = rbind(bestimates_i, serial_mix_est(data=bdata, N=100, startmu=10, startsig =4))
   
@@ -2438,7 +2441,7 @@ sd(bestimates_i[,2])
 ```
 
 The mean of the mean serial intervals with imputed dates of symptom onset is4.311 days and the standard deviation of these means is 1.031. 
-The 95% range for the mean serial interval with imputed dates of symptom onset is (2.253, 6.297).
+**The 95% range for the mean serial interval with imputed dates of symptom onset is (2.253, 6.297). This is using imputed date of symptom onset and estimated with 4 cases per cluster.**
 
 
 ## Presymptomatic transmission from original submission code
