@@ -8,11 +8,8 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(viridis)
-library(survminer)
-library(survival)
 library(tidyverse)
 library(lubridate)
-library(icenReg)
 options(digits=3)
 set.seed(3456)
 ```
