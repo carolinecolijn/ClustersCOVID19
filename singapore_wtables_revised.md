@@ -203,7 +203,8 @@ spdata$maxIncTimes <- spdata$date_onset_symptoms - spdata$start_source
 ```
 
 
-REMOVE THIS EVENTUALLY 
+We assume that incubation times have to be at least 1 day, based on prior knowledge. We set the maximum incubation times as at least 3 days, to take into account some uncertainty on symptom onset reporting.
+
 
 ```r
 #spdata = filter(spdata, maxIncTimes > 2)
@@ -211,7 +212,6 @@ spdata$maxIncTimes = pmax(3, spdata$maxIncTimes)
 spdata$minIncTimes = pmax(1, spdata$minIncTimes)
 ```
 
-JS UPDATED TO HERE - DATA FORMATTING
 
 We use survival analysis in the icenReg package to make parametric estimates, and we use the regular survival package to estimate the time to onset of symptoms. 
 

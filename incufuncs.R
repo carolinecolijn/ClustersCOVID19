@@ -6,8 +6,8 @@ Fk <- function(t, ninters, genshape, incshape , comscale) {
                 scale = comscale))}
 
 #Li under right trunctation with k intermediates (Lirt k from eq 1 in C's notes) 
-lirtk <- function(maxtime, mintime,k, rtTime, genshape, incshape, comscale) {
-  if (maxtime == mintime) {maxtime = mintime + 0.5} 
+lirtk <- function(maxtime, mintime,k, rtTime, genshape, incshape, comscale, delta = 0.5) {
+  if (maxtime == mintime) {maxtime = mintime + delta} # to avoid issues whwne max = min
   Top1 = Fk(maxtime, ninters = k, genshape, incshape, comscale)
   Top2 = Fk(mintime,  ninters = k, genshape, incshape, comscale)
   Bottom = Fk(rtTime, ninters = k, genshape, incshape, comscale)

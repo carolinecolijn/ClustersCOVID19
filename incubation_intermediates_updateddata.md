@@ -1,7 +1,7 @@
 ---
 title: "Testing incubation with intermediate"
 author: "Caroline Colijn"
-date: "2020-05-16"
+date: "2020-05-18"
 output: 
   html_document:
     keep_md: TRUE
@@ -23,33 +23,33 @@ glimpse(spdata)
 ```
 
 ```
-## Observations: 93
-## Variables: 25
-## $ CaseID                 <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, ...
-## $ `Related cases`        <chr> "2,3", "1,3", "1,2", "13", "11", NA, NA...
-## $ `Cluster links`        <chr> NA, NA, NA, NA, NA, NA, NA, NA, "9,31,3...
-## $ `Relationship notes`   <chr> NA, NA, "Son of 1", "Daughter of 13", N...
-## $ Case                   <chr> "Case 1, 66M, Wuhan", "Case 2, 53F, Wuh...
-## $ age                    <dbl> 66, 53, 37, 42, 36, 56, 56, 35, 56, 56,...
-## $ sex                    <chr> "M", "F", "M", "F", "M", "F", "M", "M",...
-## $ country                <chr> "Singapore", "Singapore", "Singapore", ...
-## $ hospital               <chr> "Singapore General Hospital", "National...
-## $ presumed_infected_date <dttm> 2020-01-20, 2020-01-20, 2020-01-20, 20...
-## $ presumed_reason        <chr> "Arrived from Wuhan", "Arrived from Wuh...
-## $ last_poss_exposure     <date> 2020-01-20, 2020-01-20, 2020-01-20, 20...
-## $ contact_based_exposure <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
-## $ start_source           <date> 2019-12-31, 2020-01-01, 2020-01-03, NA...
-## $ end_source             <date> 2020-01-20, 2020-01-20, 2020-01-20, 20...
-## $ date_onset_symptoms    <date> 2020-01-20, 2020-01-21, 2020-01-23, NA...
-## $ date_quarantine        <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
-## $ date_hospital          <date> 2020-01-22, 2020-01-22, 2020-01-23, 20...
-## $ date_confirmation      <date> 2020-01-23, 2020-01-24, 2020-01-24, 20...
-## $ outcome                <chr> "Discharged", "Discharged", "Discharged...
-## $ date_discharge         <date> 2020-02-19, 2020-02-07, 2020-02-21, 20...
-## $ travel_history         <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wu...
-## $ additional_information <chr> "Travelled with Case 3 (son) and M1 (wi...
-## $ cluster                <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wu...
-## $ citizenship            <chr> "China", "China", "China", "China", "Ch...
+## Rows: 93
+## Columns: 25
+## $ CaseID                 <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,…
+## $ `Related cases`        <chr> "2,3", "1,3", "1,2", "13", "11", NA, NA, NA, "…
+## $ `Cluster links`        <chr> NA, NA, NA, NA, NA, NA, NA, NA, "9,31,33,38,83…
+## $ `Relationship notes`   <chr> NA, NA, "Son of 1", "Daughter of 13", NA, NA, …
+## $ Case                   <chr> "Case 1, 66M, Wuhan", "Case 2, 53F, Wuhan", "C…
+## $ age                    <dbl> 66, 53, 37, 42, 36, 56, 56, 35, 56, 56, 56, 31…
+## $ sex                    <chr> "M", "F", "M", "F", "M", "F", "M", "M", "F", "…
+## $ country                <chr> "Singapore", "Singapore", "Singapore", "Singap…
+## $ hospital               <chr> "Singapore General Hospital", "National Centre…
+## $ presumed_infected_date <dttm> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
+## $ presumed_reason        <chr> "Arrived from Wuhan", "Arrived from Wuhan", "A…
+## $ last_poss_exposure     <date> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
+## $ contact_based_exposure <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ start_source           <date> 2019-12-31, 2020-01-01, 2020-01-03, NA, 2020-…
+## $ end_source             <date> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
+## $ date_onset_symptoms    <date> 2020-01-20, 2020-01-21, 2020-01-23, NA, 2020-…
+## $ date_quarantine        <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 2…
+## $ date_hospital          <date> 2020-01-22, 2020-01-22, 2020-01-23, 2020-01-2…
+## $ date_confirmation      <date> 2020-01-23, 2020-01-24, 2020-01-24, 2020-02-0…
+## $ outcome                <chr> "Discharged", "Discharged", "Discharged", "Dis…
+## $ date_discharge         <date> 2020-02-19, 2020-02-07, 2020-02-21, 2020-02-0…
+## $ travel_history         <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wuhan", "…
+## $ additional_information <chr> "Travelled with Case 3 (son) and M1 (wife) ;MO…
+## $ cluster                <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wuhan", "…
+## $ citizenship            <chr> "China", "China", "China", "China", "China", "…
 ```
 
 ```r
@@ -270,15 +270,14 @@ spdata$minIncTimes <- spdata$date_onset_symptoms - spdata$end_source
 spdata$maxIncTimes <- spdata$date_onset_symptoms - spdata$start_source
 ```
 
-REMOVE THIS EVENTUALLY 
+We assume that incubation times have to be at least 1 day, based on prior knowledge. We set the maximum incubation times as at least 3 days, to take into account some uncertainty on symptom onset reporting.
+
 
 ```r
 #spdata = filter(spdata, maxIncTimes > 2)
 spdata$maxIncTimes = pmax(3, spdata$maxIncTimes)
 spdata$minIncTimes = pmax(1, spdata$minIncTimes)
 ```
-
-JS UPDATED TO HERE - DATA FORMATTING
 
 From here this file diverges from the ..wtables Rmd files .
 
@@ -337,8 +336,7 @@ l_optim <- function( twopars, allmaxtimes, allmintimes, allrtTimes,
 ```
 
 
-
-Testing: seems to work *except* if max and min times are the same; then 
+Testing: seems to work *except* if max and min times are the same, so we correct for this by adding a small noise term in those cases; then 
 
 
 ```r
@@ -405,9 +403,9 @@ We can test for sensitivity to rate r - the number of intermediates 'arriving' p
 
 
 ```r
-# current MLEs: gen time shape 1.65, incubation period shape 2.23, for r=0.1
+# current MLEs: gen time shape 1.37, incubation period shape 2.12, for r=0.1
 
-r_cur = c(seq(0.01, 0.25, length.out=20))
+r_cur = c(seq(0.02, 0.25, length.out=20))
 rec<-matrix(NA, length(r_cur), 2)
 for (i in 1:length(r_cur)){
   ans <- optim(c(1,2), l_optim, allmaxtimes = spdata$maxIncTimes, allmintime=spdata$minIncTimes,
@@ -444,15 +442,21 @@ grid.arrange(plot1, plot2, ncol=2)
 # on the same plot
 df5 <- data.frame(r=r_cur, "Mean generation time"=rec[,1]*2.1, "Mean incubation period"=rec[,2]*2.1)
 
-ggplot(df5) + geom_line(color="maroon4", aes(x=r, y=Mean.generation.time))+ geom_point(color="maroon4", aes(x=r, y=Mean.generation.time)) + theme_minimal() + geom_line(color="royalblue4", aes(x=r, y=Mean.incubation.period))+ geom_point(color="royalblue4", aes(x=r, y=Mean.incubation.period)) + ylab("Time (days)")
+ggplot(df5) + geom_line(aes(x=r, y=Mean.generation.time, color="Mean generation time",))+ geom_point(color="maroon4", aes(x=r, y=Mean.generation.time)) + theme_minimal() + geom_line(aes(x=r, y=Mean.incubation.period, color="Mean incubation period"))+ geom_point(color="royalblue4", aes(x=r, y=Mean.incubation.period)) + ylab("Time (days)") +
+  scale_color_manual(values = c("Mean generation time" = 'maroon4','Mean incubation period' = 'royalblue4')) +
+  labs(color = ' ')
 ```
 
 ![](incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-12-3.png)<!-- -->
 
+```r
+#ggsave(filename = "final_figures/incubation_generation_sing_woboot.pdf", width = 8, height = 6)
+```
 
-CC: I think we need some kind of uncertainty estimate around the parameters - having looked at it I suspect that the bootstrap is likely to be the best bet. 
 
-Based on these plots I would say $r=0.05, r=0.1, r=0.15$ to start; we resample the data using bootstrapping, and get empirical 90% CIs for example around the $ai$ and $ag$ parameters. 
+Some kind of uncertainty estimate around the parameters would be helpful 
+
+We explore this at $r=0.05, r=0.1, r=0.15$ to start; we resample the data using bootstrapping, and get empirical 90% CIs for example around the $ai$ and $ag$ parameters. 
 
 
 ```r
@@ -478,6 +482,140 @@ boot4=getBootstraps(nboot, spdata,therate = 0.2)
 save(boot1, boot2, boot3, boot4, file = "interbooty2.Rdata")
 ```
 
+Table of quantile information for the incubation period
+
+
+
+```r
+load("interbooty2.Rdata")
+
+quantile(boot1$isboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  4.35  4.91  5.69
+```
+
+```r
+quantile(boot2$isboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  4.03  4.43  5.26
+```
+
+```r
+quantile(boot3$isboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  3.72  4.12  4.75
+```
+
+```r
+quantile(boot4$isboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  3.51  3.89  4.49
+```
+And quantile information for the generation time 
+
+
+```r
+quantile(boot1$gsboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  2.36  3.71  4.91
+```
+
+```r
+quantile(boot2$gsboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  1.79  2.80  3.73
+```
+
+```r
+quantile(boot3$gsboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  1.84  2.49  3.20
+```
+
+```r
+quantile(boot4$gsboots*b, p=c(0.025, 0.5, 0.975))
+```
+
+```
+##  2.5%   50% 97.5% 
+##  1.65  2.28  3.00
+```
+
+
+We overlay the previous plots with boxplots for the bootstraps
+
+
+```r
+value <- c(boot1[,1], boot2[,1], boot3[,1], boot4[,1])
+group <- c(boot1[,3], boot2[,3], boot3[,3], boot4[,3])
+gen_bootdata <- data.frame(value, r=group)
+
+value <- c(boot1[,2], boot2[,2], boot3[,2], boot4[,2])
+group <- c(boot1[,3], boot2[,3], boot3[,3], boot4[,3])
+inc_bootdata <- data.frame(value, r=group)
+
+# Plot a_g and a_i
+
+df1 <- data.frame(r=r_cur, ag=rec[,1])
+df2 <- data.frame(r=r_cur, ai=rec[,2])
+
+plot1 <- ggplot(df1, aes(x=r, y=ag)) + geom_boxplot(data = gen_bootdata, aes(group=r, y=value), fill = 'lavender', colour = 'plum4', alpha = 0.7) + geom_line(color="maroon4")+ geom_point(color="maroon4") + theme_minimal() +  scale_y_continuous(name = "Generation time shape parameter") +  scale_x_continuous(name = "Number of intermediate cases per day, r")
+plot2 <- ggplot(df2, aes(x=r, y=ai)) + geom_boxplot(data = inc_bootdata, aes(group=r, y=value), fill = 'lightblue2', colour = 'skyblue4', alpha = 0.7) + geom_line(color="royalblue4")+ geom_point(color="royalblue4") + theme_minimal() +  scale_y_continuous(name = "Incubation period shape parameter") +  scale_x_continuous(name = "Number of intermediate cases per day, r")
+
+grid.arrange(plot1, plot2, ncol=2)
+```
+
+![](incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
+
+```r
+#save
+g <- arrangeGrob(plot1, plot2, ncol=2) #generates g
+ggsave(filename = "final_figures/incgen_sing_shapes.pdf", g, width = 10, height = 6)
+
+
+# Plot mean estimates instead (scale b=2.1)
+
+value <- c(boot1[,1]*b, boot2[,1]*b, boot3[,1]*b, boot4[,1]*b)
+group <- c(boot1[,3], boot2[,3], boot3[,3], boot4[,3])
+gen_bootdata <- data.frame(value, r=group)
+
+value <- c(boot1[,2]*b, boot2[,2]*b, boot3[,2]*b, boot4[,2]*b)
+group <- c(boot1[,3], boot2[,3], boot3[,3], boot4[,3])
+inc_bootdata <- data.frame(value, r=group)
+
+df5 <- data.frame(r=r_cur, "Mean generation time"=rec[,1]*b, "Mean incubation period"=rec[,2]*b)
+
+ggplot(df5, aes(x=r, y=Mean.generation.time)) + geom_boxplot(data = gen_bootdata, aes(group=r, y=value), fill = 'lavender', colour = 'plum4', alpha = 0.7) + geom_boxplot(data = inc_bootdata, aes(group=r, y=value), fill = 'lightblue2', colour = 'skyblue4', alpha = 0.7) + geom_line(aes(x=r, y=Mean.generation.time, color="Mean generation time",)) + geom_point(color="maroon4", aes(x=r, y=Mean.generation.time)) + theme_minimal() + geom_line(aes(x=r, y=Mean.incubation.period, color="Mean incubation period"))+ geom_point(color="royalblue4", aes(x=r, y=Mean.incubation.period)) + ylab("Time (days)") +
+  scale_color_manual(values = c("Mean generation time" = 'maroon4','Mean incubation period' = 'royalblue4')) +
+  labs(color = ' ') +  scale_x_continuous(name = "Number of intermediate cases per day, r")
+```
+
+![](incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-16-2.png)<!-- -->
+
+```r
+ggsave(filename = "final_figures/incgen_sing_means.pdf", width = 10, height = 6)
+```
 
 Then the remaining question is to see if we want to handle right truncation without intermediate cases. And the uncertainty and so on there. There, we could continue to do the 3 models (gamma, Weibull, lognormal) because without intermediate cases, it's just the CDFs (which we have access to in R). 
 
