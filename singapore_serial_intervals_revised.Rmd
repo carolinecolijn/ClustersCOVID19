@@ -929,6 +929,7 @@ The mean of the mean serial intervals with imputed dates of symptom onset is`r m
 
 ## Presymptomatic transmission from original submission code
 Currently not run and have not done associated trouble-shooting to ensure works for revised manuscript.
+
 #### R0 estimation 
 We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equation $R=\exp{r \mu - 1/2 r^2 \sigma^2}$. To obtain CIs for R, we could use our bootstrap estimates of $\mu$ and $\sigma^2$ and simply resample R using this equation. 
 
