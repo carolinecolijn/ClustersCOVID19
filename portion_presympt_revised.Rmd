@@ -16,49 +16,49 @@ library(ggplot2)
 
 The mean of (incubation time - serial interval) is the difference in means if the two are sampled independently. While this is a big assumption, we don't know the covariance. 
 
-Mean differences in Tianjin: 7.11 - 4.22 = 2.89. 
+Mean differences in Tianjin: 8.89 - 4.31 = 4.58. 
 
-Early:  7.01-4.22 = 2.79
+Early:  6.83-4.31 = 2.52
 
-Late: 12.4-4.22 = 8.18
+Late: 12.5-4.31 = 8.19
 
-Mean differences in Singapore:  7.11-4.56 = 2.55
+Mean differences in Singapore:  6.18 - 4.17 = 2.01
 
-Early: 5.71-4.56 = 1.15
+Early: 5.92-4.17 = 1.75
 
-Late: 7.86-4.56 = 3.3
+Late: 6.30-4.17 = 2.13
 
 
 Finally - let's sample the distribution of the time between symptom onset of a case to its infecting others (the distribution of  serial interval minus incubation time). The proportion of this duration that is negative gives the proportion of infections caused before symptom onset, which is per Fraser et al. PNAS 2004 one of the key factors that determines if an outbreak is controllable by non-pharmaceutical measures. Here we use either the conservative estimate of the incubation period 
 
-We'll use estimates in the manuscript for all distributions. These are: serial interval mean 4.220 (sd .4) for Tianjin and mean 4.56 (sd 1.16), and for incubation period we have  Weibull distributions:
+We'll use estimates in the manuscript for all distributions. These are: serial interval mean 4.31 (sd 0.935) for Tianjin and mean 4.17 (sd 1.057) for Singapore, and for incubation period we have Weibull distributions:
 
 Tianjin 
 
-* Early median 6.9 shape 2.73  (2.01, 3.43) scale 7.85 (6.85, 8.94)
+* Early median 6.73 shape 2.88  (2.16, 3.48) scale 7.643 (6.735, 8.553)
 
-* Late median 12.43 shape 3.95 (2.66, 4.97) scale 13.64 (11.99, 15.51)
+* Late median 12.6 shape 4.34 (3.10, 5.24) scale 13.661 (12.245,15.289)
 
-* unstratified 8.62 shape 2.25 (1.79, 2.83) scale 10.15 (8.9, 11.6)) 
+* unstratified 8.59 shape 2.41 (1.99, 2.90) scale 10.01 (8.94, 11.20)) 
 
 Singapore 
 
-* Early median 5.46 shape 2.35 (1.5,3.0) scale 6.38 (5.14,7.43) 
+* Early median 5.51 shape 2.05 (1.34,2.58) scale 6.587 (5.077,7.897) 
 
-* Late median 7.27 shape 1.93 (1.43,2.46) scale 8.79 (7.35,10.23)
+* Late median 5.67 shape 1.75 (1.29,2.21) scale 6.989 (5.048,8.38)
 
-* unstratified median 6.55 shape 1.88 (1.47,2.39 ) scale 7.97 (6.84,9.27)
+* unstratified median 5.66 shape 1.83 (1.45,2.30 ) scale 6.91 (5.77,8.29)
 
 ```{r}
 tianjin=list()
-tianjin[[1]]=list(median=6.9, shape=2.73, minshape=2.01, maxshape=3.43, scale=7.85, minscale=6.85, maxscale=8.94)
-tianjin[[2]]=list(median=12.43, shape=3.95, minshape=2.66, maxshape=4.97, scale=13.64, minscale=11.99, maxscale=15.51)
-tianjin[[3]]=list(median= 8.62, shape= 2.25, minshape=1.79, maxshape=2.83, scale =10.15, minscale=8.9, maxscale=11.6)  # actually I won't need all of that information here 
+tianjin[[1]]=list(median=6.73,shape=2.88,minshape=2.16, maxshape=3.48, scale=7.643, minscale=6.735, maxscale=8.553)
+tianjin[[2]]=list(median=12.6,shape=4.34,minshape=3.1,maxshape=5.24,scale=13.661, minscale=12.245, maxscale=15.289)
+tianjin[[3]]=list(median= 8.59, shape= 2.41, minshape=1.99, maxshape=2.9,scale =10.01,minscale=8.94, maxscale=11.2)  # actually I won't need all of that information here 
 
 singapore=list()
-singapore[[1]]=list(median= 5.46, shape= 2.35, scale= 6.38)
-singapore[[2]]=list(median= 7.27, shape= 1.93, scale= 8.79)
-singapore[[3]]=list(median=6.55 , shape=1.88 , scale =7.97)
+singapore[[1]]=list(median= 5.51, shape= 2.05, scale= 6.587)
+singapore[[2]]=list(median= 5.67, shape= 1.75, scale= 6.989)
+singapore[[3]]=list(median=5.66 , shape=1.83 , scale =6.91)
 ```
 
 We will perform 6 experiments: Tianjin early, late, unstratified; Singapore early, late, unstratified.
@@ -72,7 +72,7 @@ inctimesL = rweibull(Nsamp, shape = tianjin[[2]]$shape, scale = tianjin[[2]]$sca
 inctimesU = rweibull(Nsamp, shape = tianjin[[3]]$shape, scale = tianjin[[3]]$scale)
 
 
-sertimes= rnorm(Nsamp, mean = 4.22, sd = 0.40)
+sertimes= rnorm(Nsamp, mean = 4.31 , sd = 0.935)
 
 d1=data.frame(TimeDiff=sertimes-inctimesE, group="Early")
 d2=data.frame(TimeDiff=sertimes-inctimesL, group="Late")
@@ -107,7 +107,7 @@ inctimesL = rweibull(Nsamp, shape = singapore[[2]]$shape, scale = singapore[[2]]
 inctimesU = rweibull(Nsamp, shape = singapore[[3]]$shape, scale = singapore[[3]]$scale)
 
 
-sertimes= rnorm(Nsamp, mean = 4.56, sd = 0.953)
+sertimes= rnorm(Nsamp, mean = 4.17, sd = 1.057) 
 
 d1=data.frame(TimeDiff=sertimes-inctimesE, group="Early")
 d2=data.frame(TimeDiff=sertimes-inctimesL, group="Late")
