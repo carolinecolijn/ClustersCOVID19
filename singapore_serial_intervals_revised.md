@@ -1,7 +1,7 @@
 ---
 title: "Singapore Serial Intervals - Revisions"
 author: "Caroline Colijn, Michelle Coombe, and Manu Saraswat"
-date: "2020-05-18"
+date: "2020-05-20"
 output: 
   html_document:  
     keep_md: TRUE
@@ -506,8 +506,9 @@ icc6 = getICCs(spdata,ccs,6)
 icc_expose = getICCs(spdata, ccs, 4, orderby ="exposure")
 ```
 
-#### Serial inteval estimates here 
-Note that the first 4 rows is with 3 to 6 cases per cluster, based on ordering by date of symptom onset; while the last row is with 4 cases per cluster, but ordered by date in the 'end_source' (end of presumed exposure window) column instead.
+#### Serial inteval estimates (Table 1 and Table S3) 
+Note that the first 4 rows is with using the first 3 to 6 cases per cluster, based on ordering by date of symptom onset; while the last row is with 4 cases per cluster, but ordered by date in the 'end_source' (end of presumed exposure window) column instead.
+
 
 ```r
 source("TianjinSI_VinkWallinga_CC.R")
@@ -1072,9 +1073,9 @@ ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) + 
 #ggsave(file="final_figures/sing_serialint.pdf", height = 4, width = 6)
 ```
 
-I noticed that the serial interval gets longer if we include more cases per cluster (because the mixture of 4 pathways in Vink et al does not include longer transmission chains, which forces the assumption that everyone in the cluster was infected by the initial case, which in turn lengthens the estimated serial interval). We do not know the true infection pathways but it is reasonable not to constrain the model to enforce that most are infected by the first few cases. 
+CC noticed that the serial interval gets longer if we include more cases per cluster (because the mixture of 4 pathways in Vink et al does not include longer transmission chains, which forces the assumption that everyone in the cluster was infected by the initial case, which in turn lengthens the estimated serial interval). We do not know the true infection pathways but it is reasonable not to constrain the model to enforce that most are infected by the first few cases. 
 
-**The mean SI (using 4 cases per cluster) is 4.166. The standard deviation of the serial intervals is 1.057.**
+**The mean SI (using first 4 cases per cluster) is 4.166.** The standard deviation of the serial intervals is 1.057.
 
 #### Determining the confidence interval for the mean serial interval 
 We need CIs for the mean. For this we use bootstrapping. The bootstrapping is done on the serial interval estimate with 4 cases per cluster and ordered by date of symptom onset.
@@ -1129,7 +1130,7 @@ ggplot(bootdf, aes(x=mu))+geom_histogram()
 
 
 ```r
-#load("sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE 
+#load("data/sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE 
 mean(bestimates[,1])  # mean of the mean serial intervals
 ```
 
@@ -1168,8 +1169,8 @@ sd(bestimates[,2]) #sd of the sd serial intervals
 ```
 ## [1] 0.538
 ```
-The mean of the mean serial intervals is3.83 days and the standard deviation of these means is 0.882. 
-The 95% range for the mean serial interval is (2.438, 5.894).
+The mean of the mean serial intervals is 3.83 days and the standard deviation of these means is 0.882. 
+**The bootstrapped 95% range for the mean serial interval is (2.438, 5.894).**
 
 
 ## Effect of time on serial interval estimates
@@ -1457,7 +1458,7 @@ p2
 # dev.off()
 ```
 
-## Imputataion of missing data
+## Imputataion of missing data (Supplementary materials and Table S5)
 We want to see what the effect of cases with missing dates of symptom onset has on our estimates of serial intervals. To do this, we will impute the missing data by:
 missing date of symptom onset = confirmation date - mean(confirmation data- symptom onset date)...where the mean is taken over the cases that do have a symptom onset date present. We will use the copy made of the original data so that we can repeat the full estimation process using the data with imputed dates of symptom onset.
 
@@ -1496,12 +1497,31 @@ avg_date_diff   #Notice that this is a 'difftime' class variable; may become imp
 ```
 
 ```r
+# Distribution of dates of confirmation for imputed cases
+missing_rng <- range(spdata_org$date_confirmation[no_date])
+table(spdata_org$date_confirmation[no_date])
+```
+
+```
+## 
+## 2020-01-31 2020-02-03 2020-02-04 2020-02-05 2020-02-10 2020-02-14 2020-02-16 
+##          1          2          1          1          1          1          2 
+## 2020-02-21 
+##          1
+```
+
+```r
+# Range of dates of confirmation for original analysis
+org_rng <- range(spdata$date_confirmation)
+
+
 # Impute the missing date of symptom onset values by each cases' date of confirmation - avg_date_diff
 imp_data <- spdata_org
 imp_data$dso_imputed = if_else(is.na(imp_data$date_onset_symptoms),
                                      imp_data$date_confirmation - avg_date_diff,
                                      imp_data$date_onset_symptoms) 
 ```
+**The average difference between date of confirmation and date of symptom onset (for cases in the original analysis aka those cases WITH date of symptom onset) is 7.434. The range of date of confirmation for cases in the original analysis is 2020-01-23, 2020-02-26, while range of date of confirmation for cases missing date of symptom onset (aka imputed cases) is 2020-01-31, 2020-02-21.**
 
 Now we can re-run the serial estimates based on the imputed date of symptom onset column (dso_imputed).
 
@@ -2345,7 +2365,7 @@ ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) +
 ```r
 # ggsave(file="final_figures/sing_serialint_imputed.pdf", height = 4, width = 6)
 ```
-**The mean SI using imputed date of symptom onset (estimated with 4 cases per cluster) is 4.275. The standard deviation of the serial intervals is 1.036.**
+**The mean SI using imputed date of symptom onset (estimated with first 4 cases per cluster) is 4.275.** The standard deviation of the serial intervals is 1.036.
 
 
 Step 7: determine the 95% confidence intervals for the mean serial estimate through bootstrapping.
@@ -2400,8 +2420,8 @@ ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
 
 
 ```r
-#load("sing_boots_100_imputed.Rdata") # in case in Rmd with above evals set to FALSE 
-mean(bestimates_i[,1]) 
+#load("data/sing_boots_100_imputed.Rdata") # in case in Rmd with above evals set to FALSE 
+mean(bestimates_i[,1])  # mean of the MEAN serial intervals (with imputed dates of symptom onset)
 ```
 
 ```
@@ -2417,7 +2437,7 @@ median(bestimates_i[,1])
 ```
 
 ```r
-sd(bestimates_i[,1])
+sd(bestimates_i[,1]) # sd of the MEAN serial intervals (with imputed dates of symptom onset)
 ```
 
 ```
@@ -2425,7 +2445,7 @@ sd(bestimates_i[,1])
 ```
 
 ```r
-mean(bestimates_i[,2])
+mean(bestimates_i[,2]) # mean of the SD serial intervals (with imputed dates of symptom onset)
 ```
 
 ```
@@ -2433,7 +2453,7 @@ mean(bestimates_i[,2])
 ```
 
 ```r
-sd(bestimates_i[,2])
+sd(bestimates_i[,2]) #sd of the SD serial intervals (with imputed dates of symptom onset)
 ```
 
 ```
@@ -2441,11 +2461,12 @@ sd(bestimates_i[,2])
 ```
 
 The mean of the mean serial intervals with imputed dates of symptom onset is4.311 days and the standard deviation of these means is 1.031. 
-**The 95% range for the mean serial interval with imputed dates of symptom onset is (2.253, 6.297). This is using imputed date of symptom onset and estimated with 4 cases per cluster.**
+**The bootstrapped 95% range for the mean serial interval with imputed dates of symptom onset is (2.253, 6.297). This is using imputed date of symptom onset and estimated with first 4 cases per cluster.**
 
 
 ## Presymptomatic transmission from original submission code
 Currently not run and have not done associated trouble-shooting to ensure works for revised manuscript.
+
 #### R0 estimation 
 We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equation $R=\exp{r \mu - 1/2 r^2 \sigma^2}$. To obtain CIs for R, we could use our bootstrap estimates of $\mu$ and $\sigma^2$ and simply resample R using this equation. 
 
@@ -2453,6 +2474,7 @@ Jung et al Scenario 1
 
 
 ```r
+load("data/sing_boots_100.Rdata")
 myrate=0.15
 
 Rs=0*(1:100) 
@@ -2460,17 +2482,36 @@ for (n in 1:100) {
   Rs[n]= exp(myrate*bestimates[n,1] - 0.5*(myrate)^2*bestimates[n,2]^2)
 }
 hist(Rs,breaks = 30)
+```
+
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
+
+```r
 mean(Rs)
+```
+
+```
+## [1] 1.76
+```
+
+```r
 sd(Rs)
+```
+
+```
+## [1] 0.232
+```
+
+```r
 quantile(Rs, probs = c(0.025, 0.975))
 ```
 
-
-```r
-#This should NOT be in R code, but rather in rmd text BUT I've done this so I can hash it out or the file won't knit
-
-#The mean R is `r mean(Rs)` and the range is (`r mean(Rs)-1.96*sd(Rs)`, `r mean(Rs)+1.96*sd(Rs)`), based on the 1.96 standard deviations from the mean.  This agrees closely with the above quantiles. 
 ```
+##  2.5% 97.5% 
+##  1.30  2.17
+```
+
+The mean R is 1.756 and the range is (1.301, 2.211), based on the 1.96 standard deviations from the mean. This agrees closely with the above quantiles. 
 
 #### Additional (uninteresting we think)  - Jung et al Scenario 2 (faster doubling time, higher R values ) 
 

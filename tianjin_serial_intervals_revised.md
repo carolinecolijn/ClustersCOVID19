@@ -1,7 +1,7 @@
 ---
 title: "Tianjin serial intervals - Revisions"
 author: "Caroline Colijn, Michelle Coombe, and Manu Saraswat"
-date: "2020-05-18"
+date: "2020-05-20"
 output: 
   html_document:  
     keep_md: TRUE
@@ -367,8 +367,8 @@ icc6 = getICCs(tdata,ccs,6)
 icc_expose = getICCs(tdata, ccs, 4, orderby ="exposure")
 ```
 
-#### Serial inteval estimates here 
-Note that the first 4 rows is with 3 to 6 cases per cluster, based on ordering by date of symptom onset; while the last row is with 4 cases per cluster, but ordered by date in the 'end_source' (end of presumed exposure window) column instead.
+#### Serial inteval estimates (Table 1 and Table S3) 
+Note that the first 4 rows is with using the first 3 to 6 cases per cluster, based on ordering by date of symptom onset; while the last row is with 4 cases per cluster, but ordered by date in the 'end_source' (end of presumed exposure window) column instead.
 
 Perform the estimate using the Vink et al method, and display the result:
 
@@ -927,7 +927,7 @@ print(mm[,c(4,3,1,2)])
 ## myest_exp LastExposure                  4 5.09 1.270
 ```
 
-**The mean SI (using 4 cases per cluster) is 4.314. The standard deviation of the serial intervals is 0.935.**
+**The mean SI (using first 4 cases per cluster) is 4.314.** The standard deviation of the serial intervals is 0.935.
 
 
 ```r
@@ -947,7 +947,7 @@ ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) +
 ```
 
 #### Determining the confidence interval for the mean serial interval 
-We need CIs for the mean. For this we use bootstrapping. The bootstrapping is done on the serial interval estimate with 4 cases per cluster and ordered by date of symptom onset.
+We need CIs for the mean. For this we use bootstrapping. The bootstrapping is done on the serial interval estimate with the first 4 cases per cluster and ordered by date of symptom onset.
 
 Bootstrap analysis code - have left it set to eval=FALSE in the Rmd because it takes time. Bootstraps are saved in the data folder and named "tianjin_bootstraps_100.Rdata". 
 
@@ -968,7 +968,7 @@ bestimates_tj <- bestimates_tj[-1, ] #Remove the non-bootstrapped row (i.e. the 
 
 ```r
 load("data/tianjin_boots_100.Rdata")
-mean(bestimates_tj[,1]) # mean of the mean serial intervals
+mean(bestimates_tj[,1]) # mean of the MEAN serial intervals (with imputed dates of symptom onset)
 ```
 
 ```
@@ -984,7 +984,7 @@ median(bestimates_tj[,1])
 ```
 
 ```r
-sd(bestimates_tj[,1]) # sd of the MEAN serial intervals 
+sd(bestimates_tj[,1]) # sd of the MEAN serial intervals (with imputed dates of symptom onset)
 ```
 
 ```
@@ -992,7 +992,7 @@ sd(bestimates_tj[,1]) # sd of the MEAN serial intervals
 ```
 
 ```r
-mean(bestimates_tj[,2]) # mean of the sd serial intervals 
+mean(bestimates_tj[,2]) # mean of the SD serial intervals (with imputed dates of symptom onset)
 ```
 
 ```
@@ -1000,14 +1000,14 @@ mean(bestimates_tj[,2]) # mean of the sd serial intervals
 ```
 
 ```r
-sd(bestimates_tj[ ,2]) #sd of the sd serial intervals
+sd(bestimates_tj[ ,2]) #sd of the SD serial intervals (with imputed dates of symptom onset)
 ```
 
 ```
 ## [1] 0.307
 ```
 
-**The 95% range for the mean serial interval is (2.911, 5.717).**
+**The bootstrapped 95% range for the mean serial interval is (2.911, 5.717).**
 
 The following makes a histogram of the bootstrapped mean serial interval (using a cluster size of 4).
 
@@ -1219,7 +1219,7 @@ p2
 # dev.off()
 ```
 
-## Imputataion of missing data
+## Imputataion of missing data (Supplementary materials and Table S5)
 We want to see what the effect of cases with missing dates of symptom onset has on our estimates of serial intervals. To do this, we will impute the missing data by:
 missing date of symptom onset = confirmation date - mean(confirmation data- symptom onset date)...where the mean is taken over the cases that do have a symptom onset date present. We will use the copy made of the original data so that we can repeat the full estimation process using the data with imputed dates of symptom onset.
 
@@ -1259,12 +1259,28 @@ avg_date_diff   #Notice that this is a 'difftime' class variable; may become imp
 ```
 
 ```r
+# Distribution of dates of confirmation for imputed cases
+missing_rng <- range(tdata_org$confirm_date[no_date])
+table(tdata_org$confirm_date[no_date])
+```
+
+```
+## 
+## 2020-02-01 2020-02-10 2020-02-11 2020-02-16 2020-02-17 2020-02-19 2020-02-22 
+##          2          2          2          1          1          1          1
+```
+
+```r
+# Range of dates of confirmation for original analysis
+org_rng <- range(tdata$confirm_date)
+
 # Impute the missing date of symptom onset values by each cases' date of confirmation - avg_date_diff
 imp_tdata <- tdata_org
 imp_tdata$dso_imputed = if_else(is.na(imp_tdata$symptom_onset),
                                      imp_tdata$confirm_date - avg_date_diff,
                                      imp_tdata$symptom_onset) 
 ```
+**The average difference between date of confirmation and date of symptom onset (for cases in the original analysis aka those cases WITH date of symptom onset) is 5.232. The range of date of confirmation for cases in the original analysis is 2020-01-21, 2020-02-22, while range of date of confirmation for cases missing date of symptom onset (aka imputed cases) is 2020-02-01, 2020-02-22.**
 
 Now we can re-run the serial estimates based on the imputed date of symptom onset column (dso_imputed).
 
@@ -2068,7 +2084,7 @@ print(mm[,c(4,3,1,2)])
 ## myest_exp_i LastExposure                  4 4.81 0.948
 ```
 
-**The mean SI using imputed date of symptom onset (estimated with 4 cases per cluster) is 4.403. The standard deviation of the serial intervals is 0.864.**
+**The mean SI using imputed date of symptom onset (estimated with first 4 cases per cluster) is 4.403.** The standard deviation of the serial intervals is 0.864.
 
 ```r
 ### Make a density plot of the ICC estimate
@@ -2122,14 +2138,6 @@ median(tbestimates_i[,1])
 ```
 
 ```r
-mean(tbestimates_i[,2]) # sd of the sd serial intervals 
-```
-
-```
-## [1] 0.941
-```
-
-```r
 sd(tbestimates_i[,1]) # sd of the MEAN serial intervals 
 ```
 
@@ -2137,7 +2145,23 @@ sd(tbestimates_i[,1]) # sd of the MEAN serial intervals
 ## [1] 0.585
 ```
 
-**The 95% range for the mean serial interval is (3.257, 5.549). This is using imputed date of symptom onset and estimated with 4 cases per cluster.**
+```r
+mean(tbestimates_i[,2]) # mean of the sd serial intervals 
+```
+
+```
+## [1] 0.941
+```
+
+```r
+sd(tbestimates_i[,2]) # sd of the sd serial intervals 
+```
+
+```
+## [1] 0.358
+```
+
+**The bootstrapped 95% range for the mean serial interval is (3.257, 5.549). This is using imputed date of symptom onset and estimated with 4 cases per cluster.**
 
 The following makes a histogram of the bootstrapped mean serial interval (using a cluster size of 4).
 
@@ -2170,6 +2194,7 @@ ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
 ```
 
 ## Presymptomatic transmission from original submission code
+
 Currently not run and have not done associated trouble-shooting to ensure works for revised manuscript.
 #### R0 estimation
 We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equation $R=\exp{r \mu - 1/2 r^2 \sigma^2}$. To obtain CIs for R, we use our bootstrap estimates of $\mu$ and $\sigma^2$ and simply resample R using this equation. 
@@ -2178,26 +2203,50 @@ Jung et al Scenario 1
 
 
 ```r
- load("tianjin_bootstraps.Rdata") # in case in Rmd with above evals set to FALSE 
+load("data/tianjin_boots_100.Rdata") # in case in Rmd with above evals set to FALSE 
 myrate=0.15
 
 Rs=0*(1:100) 
 for (n in 1:100) {
-  Rs[n]= exp(myrate*bestimates[n,1] - 0.5*(myrate)^2*bestimates[n,2]^2)
+  Rs[n]= exp(myrate*bestimates_tj[n,1] - 0.5*(myrate)^2*bestimates_tj[n,2]^2)
 }
 hist(Rs,breaks = 30)
+```
+
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+
+```r
 mean(Rs)
+```
+
+```
+## [1] 1.95
+```
+
+```r
 sd(Rs)
+```
+
+```
+## [1] 0.235
+```
+
+```r
 hist(Rs)
+```
+
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-31-2.png)<!-- -->
+
+```r
 quantile(Rs, probs = c(0.025, 0.975))
 ```
 
-
-```r
-#This should NOT be in R code, but rather in rmd text BUT I've done this so I can hash it out or the file won't knit
-
-#The mean R is `r mean(Rs)` and the range is (`r mean(Rs)-1.96*sd(Rs)`, `r mean(Rs)+1.96*sd(Rs)`), based on the 1.96 standard deviations from the mean.  This agrees closely with the above quantiles. 
 ```
+##  2.5% 97.5% 
+##  1.72  2.47
+```
+
+The mean R is 1.948 and the range is (1.487, 2.408), based on the 1.96 standard deviations from the mean. This agrees closely with the above quantiles.
 
 #### Additional (uninteresting, we think) points we explored: 
 The direct infections from case 34 according to the figure at https://mp.weixin.qq.com/s/x4HBXGFw5vnWU7nXXdyWVg. These were not included in the paper because the links were compiled by volunteers and they differed from the offical reports. 
