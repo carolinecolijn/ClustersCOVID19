@@ -208,11 +208,148 @@ hist(mysamps[,1]-mysamps[,2],breaks = 30)
 length(which(mysamps[,1]-mysamps[,2] <0))/nrow(mysamps)
 ```
 
-Those are high numbers. We could use the shape, scale info for the incubation period and the mean, variance for the serial intervals, resampling and so on, to estimate this. I would like to know how this number depends on the covariance. It will also depend on the difference in means - if the means are too different, no matter what the covariance the fraction is high .. 
-I will pick this up later. 
+Those are high numbers. We could use the shape, scale info for the incubation period and the mean, variance for the serial intervals, resampling and so on, to estimate this. I would like to know how this number depends on the covariance. It will also depend on the difference in means - if the means are too different, no matter what the covariance the fraction is high. 
 
+In this file I'll look at the estimates from the main text: (1) the early and (2) late incubation period without intermediates plus the serial intervals from the ICC, and then (3) kind of as above, the generation time and the serial interval. 
+
+The first issue is that I have estimated covariance of inc period and si, but in (3) we estimated the generation time (not incubation period) and SI. The next issue is that I did not estimate a gamma distributed SI from the ICC method; it was normally distributed. I could use a gamma with the same mean and variance, or find a way to sample a joint distribution where there is a gamma on one margin and normal on another. Weird. However, allowing the SI to have slightly higher variance than a normal distribution and positive support seems completely reasonable so I will proceed with a gamma assumption. 
+
+TABLE S2 in the paper: 
+Incubation period: 
+
+Early: median 6.48 shape 6.01 (3.61, 7.26) scale 1.140 (0.66,1.276)
+
+Late median 12.11 shape  7.78 (9.52, 21.47) scale 0.695 (0.379,0.778)
+
+Serial interval: 4.31 with sigma = 0.934 (w 4 cases per cluster) 
+
+To get an approximately similar (same mean and variance) gamma distribution, I need the mean 4.31 to be $a \theta$  and the variance to be $a \theta^2$ where $a$ is the shape and $\theta$ is the scale. This gives two equations and two unknowns: $a \theta = 4.31$, $a\theta^2$ = variance is $\sigma^2 = 0.874. THis gives $\theta = a\theta^2 / a\theta = 0.874/4.31 = 0.203$, and $a = 4.31/0.203 = 21.2$. 
 
 ```{r}
-
+mean(rgamma(n=10000, shape = 21.2, scale=0.203))
+var(rgamma(n=10000, shape = 21.2, scale=0.203))
 ```
 
+
+Good enough. 
+
+Now, I don't have certainty about these estimates. And for the sake of this analysis I'll just use point estimates in the middle because, well, honestly. 
+
+EARLY: histogram and one sample
+
+```{r}
+mysamps = rmvgamma(n=5000, shape=c(6.01,21.2), rate=c(1/1.14,1/0.203), corr=matrix(c(1, 0.263, 0.263, 1), nrow = 2))
+plot(mysamps[,1],mysamps[,2])
+hist(mysamps[,1]-mysamps[,2],breaks = 30)
+length(which(mysamps[,1]-mysamps[,2] <0))/nrow(mysamps)
+```
+
+EARLY : resample from the gamma fit for the incubation period, and a little from the 21, 0.2 from the SI, and create a histogram for pre-symp transmission. This could go in the paper. 
+
+```{r}
+load("~/ClustersCOVID19/tianjin_inc_fits.Rdata")
+incparsamps = exp(rmvnorm(n=100,
+                          mean = Eallthree$myfit_gamma$coefficients,
+                          sigma=Eallthree$myfit$var))
+simeansamps = rnorm(100, mean=21, sd=1)
+bigsamps = lapply(1:100, function(x) 
+  rmvgamma(n=500, shape=c(incparsamps[x,1], simeansamps[x]), 
+           rate=c(incparsamps[x,2], 1/0.203),
+           corr = matrix(c(1, 0.263, 0.263, 1), nrow = 2)))
+bigsamps = do.call(rbind, bigsamps)
+hist( bigsamps[,1] - bigsamps[,2])
+```
+
+Functional version 
+
+```{r}
+getMyDiffs = function(statfit, cormean=0.29) {
+  # choose shape and scale according to our fits 
+  incparsamps = exp(rmvnorm(n=100,
+                          mean = statfit$coefficients,
+                          sigma=statfit$var))
+  # choose mean SI with a bit of uncertainty too, but not too much 
+simeansamps = rnorm(100, mean=21, sd=1)
+# we don't really even know the correlation between inc and si
+corvals = rnorm(100, mean=cormean, sd = 0.04)
+# sample: 
+bigsamps = lapply(1:100, function(x) 
+  rmvgamma(n=500, shape=c(incparsamps[x,1], simeansamps[x]), 
+           rate=c(1/incparsamps[x,2], 1/0.203),
+           corr = matrix(c(1, corvals[x], corvals[x], 1), nrow = 2)))
+bigsamps = do.call(rbind, bigsamps)
+return(data.frame(incs=bigsamps[,1], sis=bigsamps[,2],diffs= bigsamps[,2] - bigsamps[,1]))
+}
+earlydiffs = getMyDiffs(Eallthree$myfit_gamma)
+anydiffs=getMyDiffs(allthree$myfit_gamma)
+latediffs= getMyDiffs(Lallthree$myfit_gamma)
+
+
+d1=data.frame(TimeDiff=earlydiffs$diffs, group="Early")
+d2=data.frame(TimeDiff=latediffs$diffs, group="Late")
+d3=data.frame(TimeDiff=anydiffs$diffs, group="Unstratified")
+
+df=rbind(d1,d2, d3) 
+
+
+ggplot(data=df, aes(x=TimeDiff, fill=group))+geom_histogram(position="dodge", bins=30)+theme_bw()+ggtitle("Tianjin")
+```
+
+
+
+
+EARLY: dependence of fraction pre on the estimate correlation 
+
+```{r} 
+
+fracpresym <- function(n, shape, rate, corval ) {
+  mysamps = rmvgamma(n=5000, shape=c(6.01,21.2), rate=c(1/1.14,1/0.203),   corr=matrix(c(1, corval,corval, 1), nrow = 2))
+return(length(which(mysamps[,1]-mysamps[,2] <0))/n)
+}
+
+corvec = seq(0.001, 0.4, by=0.01)
+fpre = vapply(corvec,function(x) 
+  fracpresym(5000, shape=c(6.01,21.2), rate=c(1/1.14,1/0.203),
+             corval = x), 
+  FUN.VALUE = 1)
+
+plot(corvec, fpre) # in this region it is not as sensitive to the correlation as to the difference in means 
+```
+
+
+EARLY: dependence on the scale of the gamma for incubation period
+
+
+```{r} 
+shape1vec = seq(4, 8, by=0.1)
+fpre = vapply(shape1vec,function(x) 
+  fracpresym(5000, shape=c(x,21.2), rate=c(1/1.14,1/0.203),
+             corval = 0.263), 
+  FUN.VALUE = 1)
+
+plot(shape1vec, fpre) # in this region it is not as sensitive to the correlation as to the difference in means 
+```
+This is great -- if I did the naive thing and subtracted independent samples for the SI from the incubation period i get about 20% pre-symp transmission 
+
+```{r}
+sum(rgamma(1000, shape = 6, scale = 1.14) - rnorm(1000, mean = 4.31, sd = 0.93) < 0)
+```
+
+which is consistent and shows that the correlation decreases this a little.
+
+For the late Tianjin estimate with a mean of 12, pretty much all of the transmission will have to be pre-symptomatic, but then, we don't really believe a median incubation period of 12 any more. 
+
+For the combined Tianjin Cluster we have 
+median 8.06 shape 4.74 (3.35, 5.72) scale 1.827 (1.285, 2.045)
+
+ and for the late data we have 
+ 
+ median 12.11 shape 7.78 (9.52, 21.47) scale 0.695 (0.379,0.778)
+ 
+ 
+```{r}
+# given the statfit (from Eallthree or Lallthree) I could get samples of the shape, scale parameter like this, but right now I am not going to 
+#  x=exp(rmvnorm(n=10000, mean = statfit$coefficients, sigma=statfit$var)
+```
+
+NEXT TASK: re-read what we did before; make the above plot again maybe as a data frame and produce something for the paper. Then copy it to the Singapore file and do the same there. Do this in the context of what is in the paper now so that it will fit. 
