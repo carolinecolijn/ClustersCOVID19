@@ -98,6 +98,86 @@ sum(d3$TimeDiff<0)/length(d3$TimeDiff)
 ```
 
 
+## With covariance. 
+
+In the file cov_tianjin_cc.Rmd we estimated the covariation between the incubation period and serial interval. Now we can sample these, using multivariate distributions, to see how having some dependence structure may alter the proportion. 
+
+The estimate of correlation was 0.289 but there was some variation in this, of course. 
+
+Here is the approach I take now. 
+
+- sample incubation period parameters using the fits to data in the main text. These fits include a variance estimate between the shape and scale parameters, so I sample shape and scale together keeping that in mind . Create 100 samples. This is 100 incubation period shape, scale pairs. 
+
+- we have a multivariate gamma sampler and a multivariate normal one but not one with a gamma on one margin and a normal on the other.
+
+- therefore, we use a gamma distribution for the serial interval, with the same mean and variance as the normal we estimated with the ICC method. We obtain 100 serial interval gamma shape, scale pairs with mean and variance as they should be. 
+
+- For each of these 100 distributions, sample *jointly* 500 incubation periods and serial intervals, with correlation of 0.3 (ish). 
+
+- Now we have 100x 500 samples of incubation period and serial interval. Their difference, SI - inc period, should be the fraction pre-symptomatic. 
+
+```{r}
+getMyDiffs = function(statfit, cormean=0.29) {
+  # choose shape and scale according to our fits 
+  incparsamps = exp(rmvnorm(n=100,
+                          mean = statfit$coefficients,
+                          sigma=statfit$var))
+  # choose mean SI with a bit of uncertainty too, but not too much 
+  sishapes = rnorm(100, mean=21, sd=1)
+# we don't really even know the correlation between inc and si
+  corvals = rnorm(100, mean=cormean, sd = 0.04)
+# sample: 
+  bigsamps = lapply(1:100, function(x) 
+  rmvgamma(n=500, shape=c(incparsamps[x,1], sishapes[x]), 
+           rate=c(1/incparsamps[x,2], 1/0.203),
+           corr = matrix(c(1, corvals[x], corvals[x], 1), nrow = 2)))
+# glue together 
+  bigsamps = do.call(rbind, bigsamps)
+  return(data.frame(incs=bigsamps[,1], sis=bigsamps[,2],
+                    diffs= bigsamps[,2] - bigsamps[,1]))
+}
+
+
+earlydiffs = getMyDiffs(Eallthree$myfit_gamma)
+anydiffs=getMyDiffs(allthree$myfit_gamma)
+latediffs= getMyDiffs(Lallthree$myfit_gamma)
+
+
+d1=data.frame(TimeDiff=earlydiffs$diffs, group="Early")
+d2=data.frame(TimeDiff=latediffs$diffs, group="Late")
+d3=data.frame(TimeDiff=anydiffs$diffs, group="Unstratified")
+
+df=rbind(d1,d2, d3) 
+
+
+ggplot(data=df, aes(x=TimeDiff, fill=group))+geom_histogram(position="dodge", bins=30)+theme_bw()+ggtitle("Tianjin")
+```
+
+
+```{r, eval=FALSE}
+
+ggsave(file="portion_pre_Tianjin_corr.pdf", height=4,width = 6)
+
+```
+
+
+
+```{r} 
+
+# portion pre-symptom: early
+sum(d1$TimeDiff<0)/length(d1$TimeDiff)
+# portion pre-symptom: late
+sum(d2$TimeDiff<0)/length(d2$TimeDiff)
+# portion pre-symptom: unstratified 
+sum(d3$TimeDiff<0)/length(d3$TimeDiff)
+```
+
+
+
+
+
+
+
 ## Singapore 
 
 ```{r}
