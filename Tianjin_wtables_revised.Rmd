@@ -1,7 +1,8 @@
 ---
 title: "Tianjin"
-author: "Caroline Colijn, Manu Saraswat, Michelle Coombe"
+author: "Caroline Colijn, Manu Saraswat, Michelle Coombe, Jessica Stockdale"
 date: "25/02/2020"
+updated: "22/05/2020"
 output: 
   html_document:
     keep_md: TRUE
@@ -295,6 +296,7 @@ getMeanCI_DF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
 
 ### Generating Figure 3b (lower panel) for manuscript
 This is to plot the Kaplan-Meier survival curves and estimated probability distribution of days post-infection for a case not to be showing symptoms yet, when stratifying the data pre and post quarantine procedures in China. As per tables above, the symptom onset date of on or before Jan 31, 2020 is the cut-off for what defines an "early" case. 
+
 ```{r}
 #Generating Figure 3 for the paper
 tdays=seq(0,20,by=0.05)

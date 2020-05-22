@@ -1,6 +1,6 @@
 ---
 title: "Testing incubation with intermediate"
-author: "Caroline Colijn"
+author: "Caroline Colijn, Jessica Stockdale"
 date: "`r Sys.Date()`"
 output: 
   html_document:
@@ -337,7 +337,7 @@ Then the remaining question is to see if we want to handle right truncation with
 
 
 
-JS: Can we also try to optimize the shared scale parameter b? CC: I think we discuss this but don't show it (re optimizing b). 
+We can also optimize the shared scale parameter b
 
 ```{r}
 # negative log likelihood function for optim 
@@ -369,10 +369,10 @@ optim(c(3,4, b), l_optim_3, allmaxtimes = spdata$maxIncTimes, allmintime=spdata$
                allrtTimes = spdata$Ti, maxinters=n, rate=r)
 ```
 
-It wants to make scale b really small and the shape parameters really big  - but actually if you look at the resulting disribution it has a very similar mean to b=2.1 so that's good. Lets try running 2 par optim for a reasonable range of b values instead. 
+It wants to make scale b really small and the shape parameters really big  - but actually if you look at the resulting distribution it has a very similar mean to b=2.1 so that's good. Lets try running 2 par optim for a reasonable range of b values instead. 
 
 ```{r eval=FALSE}
-res<-matrix(NA,90,2)
+res<-matrix(NA,91,2)
 for (i in 10:100){
 ans <- optim(c(40/i,40/i), l_optim, allmaxtimes = spdata$maxIncTimes, allmintime=spdata$minIncTimes,
                allrtTimes = spdata$Ti, maxinters=n, rate=r, comscale=i/20 )
@@ -381,11 +381,11 @@ res[i-9,] <- ans$par
 
 
 # Plot mean estimate instead (scale 2.1)
-dfbg <- data.frame(b=seq(10/20,100/20,length.out=90), ag=res[,1])
-dfbi <- data.frame(b=seq(10/20,100/20,length.out=90), ai = res[,2])
+dfbg <- data.frame(b=seq(10/20,100/20,length.out=91), ag=res[,1])
+dfbi <- data.frame(b=seq(10/20,100/20,length.out=91), ai = res[,2])
 
-dfbg2 <- data.frame(b=seq(10/20,100/20,length.out=90), "Mean generation time"=res[,1]*seq(10/20,100/20,length.out=90))
-dfbi2 <- data.frame(b=seq(10/20,100/20,length.out=90), "Mean incubation period" = res[,2]*seq(10/20,100/20,length.out=90))
+dfbg2 <- data.frame(b=seq(10/20,100/20,length.out=91), "Mean generation time"=res[,1]*seq(10/20,100/20,length.out=91))
+dfbi2 <- data.frame(b=seq(10/20,100/20,length.out=91), "Mean incubation period" = res[,2]*seq(10/20,100/20,length.out=91))
 
 plot1 <- ggplot(dfbg, aes(x=b, y=ag)) + geom_line(color="maroon4")+ geom_point(color="maroon4") + theme_minimal()
 plot2 <- ggplot(dfbi, aes(x=b, y=ai)) + geom_line(color="royalblue4")+ geom_point(color="royalblue4") + theme_minimal()
@@ -398,7 +398,7 @@ plot2 <- ggplot(dfbi2, aes(x=b, y=Mean.incubation.period)) + geom_line(color="ro
 grid.arrange(plot1, plot2, ncol=2)
 
 # on the same plot
-df_together <- data.frame(b=seq(10/20,100/20,length.out=90), "Mean generation time"=res[,1]*seq(10/20,100/20,length.out=90), "Mean incubation period"=res[,2]*seq(10/20,100/20,length.out=90))
+df_together <- data.frame(b=seq(10/20,100/20,length.out=91), "Mean generation time"=res[,1]*seq(10/20,100/20,length.out=91), "Mean incubation period"=res[,2]*seq(10/20,100/20,length.out=91))
 
 ggplot(df_together) + geom_line(color="maroon4", aes(x=b, y=Mean.generation.time))+ geom_point(color="maroon4", aes(x=b, y=Mean.generation.time)) + theme_minimal() + geom_line(color="royalblue4", aes(x=b, y=Mean.incubation.period))+ geom_point(color="royalblue4", aes(x=b, y=Mean.incubation.period)) + ylab("Time (days)")
 

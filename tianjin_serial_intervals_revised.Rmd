@@ -1,7 +1,6 @@
 ---
 title: "Tianjin serial intervals - Revisions"
-author: "Caroline Colijn, Michelle Coombe, and Manu Saraswat"
-date: "`r Sys.Date()`"
+author: "Caroline Colijn, Michelle Coombe, Manu Saraswat and Jessica Stockdale
 output: 
   html_document:  
     keep_md: TRUE
@@ -58,6 +57,7 @@ tdata <- tdata[which(!is.na(tdata$symptom_onset)),]  #removes 10 observations
 ```
 
 We need to fix a data entry error in Infection_source column, where TJ is listed as JN. This WILLL affect the node/edges used later, so important to fix this here.
+
 ```{r}
 tdata$Infection_source <- str_replace(tdata$Infection_source, pattern = "JN", replacement = "TJ")
 ```
@@ -824,7 +824,6 @@ ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
 
 ## Presymptomatic transmission from original submission code
 
-Currently not run and have not done associated trouble-shooting to ensure works for revised manuscript.
 #### R0 estimation
 We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equation $R=\exp{r \mu - 1/2 r^2 \sigma^2}$. To obtain CIs for R, we use our bootstrap estimates of $\mu$ and $\sigma^2$ and simply resample R using this equation. 
 

@@ -1,7 +1,7 @@
 ---
 title: "Singapore Serial Intervals - Revisions"
-author: "Caroline Colijn, Michelle Coombe, and Manu Saraswat"
-date: "2020-05-20"
+author: "Caroline Colijn, Michelle Coombe, Manu Saraswat and Jessica Stockdale"
+date: "2020-05-22"
 output: 
   html_document:  
     keep_md: TRUE
@@ -26,31 +26,31 @@ glimpse(spdata)
 ```
 ## Observations: 93
 ## Variables: 25
-## $ CaseID                 <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,…
-## $ `Related cases`        <chr> "2,3", "1,3", "1,2", "13", "11", NA, NA, NA, "…
-## $ `Cluster links`        <chr> NA, NA, NA, NA, NA, NA, NA, NA, "9,31,33,38,83…
-## $ `Relationship notes`   <chr> NA, NA, "Son of 1", "Daughter of 13", NA, NA, …
-## $ Case                   <chr> "Case 1, 66M, Wuhan", "Case 2, 53F, Wuhan", "C…
-## $ age                    <dbl> 66, 53, 37, 42, 36, 56, 56, 35, 56, 56, 56, 31…
-## $ sex                    <chr> "M", "F", "M", "F", "M", "F", "M", "M", "F", "…
-## $ country                <chr> "Singapore", "Singapore", "Singapore", "Singap…
-## $ hospital               <chr> "Singapore General Hospital", "National Centre…
-## $ presumed_infected_date <dttm> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
-## $ presumed_reason        <chr> "Arrived from Wuhan", "Arrived from Wuhan", "A…
-## $ last_poss_exposure     <date> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
-## $ contact_based_exposure <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-## $ start_source           <date> 2019-12-31, 2020-01-01, 2020-01-03, NA, 2020-…
-## $ end_source             <date> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
-## $ date_onset_symptoms    <date> 2020-01-20, 2020-01-21, 2020-01-23, NA, 2020-…
-## $ date_quarantine        <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 2…
-## $ date_hospital          <date> 2020-01-22, 2020-01-22, 2020-01-23, 2020-01-2…
-## $ date_confirmation      <date> 2020-01-23, 2020-01-24, 2020-01-24, 2020-02-0…
-## $ outcome                <chr> "Discharged", "Discharged", "Discharged", "Dis…
-## $ date_discharge         <date> 2020-02-19, 2020-02-07, 2020-02-21, 2020-02-0…
-## $ travel_history         <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wuhan", "…
-## $ additional_information <chr> "Travelled with Case 3 (son) and M1 (wife) ;MO…
-## $ cluster                <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wuhan", "…
-## $ citizenship            <chr> "China", "China", "China", "China", "China", "…
+## $ CaseID                 <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, ...
+## $ `Related cases`        <chr> "2,3", "1,3", "1,2", "13", "11", NA, NA...
+## $ `Cluster links`        <chr> NA, NA, NA, NA, NA, NA, NA, NA, "9,31,3...
+## $ `Relationship notes`   <chr> NA, NA, "Son of 1", "Daughter of 13", N...
+## $ Case                   <chr> "Case 1, 66M, Wuhan", "Case 2, 53F, Wuh...
+## $ age                    <dbl> 66, 53, 37, 42, 36, 56, 56, 35, 56, 56,...
+## $ sex                    <chr> "M", "F", "M", "F", "M", "F", "M", "M",...
+## $ country                <chr> "Singapore", "Singapore", "Singapore", ...
+## $ hospital               <chr> "Singapore General Hospital", "National...
+## $ presumed_infected_date <dttm> 2020-01-20, 2020-01-20, 2020-01-20, 20...
+## $ presumed_reason        <chr> "Arrived from Wuhan", "Arrived from Wuh...
+## $ last_poss_exposure     <date> 2020-01-20, 2020-01-20, 2020-01-20, 20...
+## $ contact_based_exposure <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ start_source           <date> 2019-12-31, 2020-01-01, 2020-01-03, NA...
+## $ end_source             <date> 2020-01-20, 2020-01-20, 2020-01-20, 20...
+## $ date_onset_symptoms    <date> 2020-01-20, 2020-01-21, 2020-01-23, NA...
+## $ date_quarantine        <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
+## $ date_hospital          <date> 2020-01-22, 2020-01-22, 2020-01-23, 20...
+## $ date_confirmation      <date> 2020-01-23, 2020-01-24, 2020-01-24, 20...
+## $ outcome                <chr> "Discharged", "Discharged", "Discharged...
+## $ date_discharge         <date> 2020-02-19, 2020-02-07, 2020-02-21, 20...
+## $ travel_history         <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wu...
+## $ additional_information <chr> "Travelled with Case 3 (son) and M1 (wi...
+## $ cluster                <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wu...
+## $ citizenship            <chr> "China", "China", "China", "China", "Ch...
 ```
 
 ```r
@@ -384,10 +384,12 @@ table(spdata$presumed_reason_group)
 
 ```
 ## 
-##     Grace Assembly of God     Grand Hyatt Singapore        Known relationship 
-##                        22                         3                         6 
-##               Life Church Seletar Aerospace Heights                   Unknown 
-##                         6                         5                        16 
+##     Grace Assembly of God     Grand Hyatt Singapore 
+##                        22                         3 
+##        Known relationship               Life Church 
+##                         6                         6 
+## Seletar Aerospace Heights                   Unknown 
+##                         5                        16 
 ##              Wuhan travel            Yong Thai Hang 
 ##                        17                         8
 ```
@@ -424,9 +426,9 @@ glimpse(nodes.df)
 ```
 ## Observations: 83
 ## Variables: 3
-## $ id    <fct> case1, case2, case3, case4, case5, case6, case7, case8, case9, …
-## $ label <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 17, 48, …
-## $ group <fct> Wuhan travel, Wuhan travel, Wuhan travel, Wuhan travel, Wuhan t…
+## $ id    <fct> case1, case2, case3, case4, case5, case6, case7, case8, ...
+## $ label <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 1...
+## $ group <fct> Wuhan travel, Wuhan travel, Wuhan travel, Wuhan travel, ...
 ```
 
 ```r
@@ -448,16 +450,18 @@ ccs
 
 ```
 ## $membership
-##  case1  case2  case3  case4 case11  case8  case9 case83 case90 case38 case33 
-##      1      1      1      2      2      3      3      3      3      3      3 
-## case12 case18 case13 case54 case57 case58 case61 case67 case66 case68 case70 
-##      4      4      1      5      5      5      6      6      3      3      3 
-## case71 case80 case51 case73 case84 case88 case30 case36 case39 case50 case77 
-##      3      3      7      7      3      3      8      8      8      9      9 
-## case59 case72 case79 case82 case86 case42 case69 case47 case52 case44 case19 
-##     10     10     10     11     11     12     12     12     12      1     13 
-## case21 case24 case27 case40 case20 case34 case91 case31 case55 case56 case25 
-##     13     13     13     13     13     13      3      3      9     12     13 
+##  case1  case2  case3  case4 case11  case8  case9 case83 case90 case38 
+##      1      1      1      2      2      3      3      3      3      3 
+## case33 case12 case18 case13 case54 case57 case58 case61 case67 case66 
+##      3      4      4      1      5      5      5      6      6      3 
+## case68 case70 case71 case80 case51 case73 case84 case88 case30 case36 
+##      3      3      3      3      7      7      3      3      8      8 
+## case39 case50 case77 case59 case72 case79 case82 case86 case42 case69 
+##      8      9      9     10     10     10     11     11     12     12 
+## case47 case52 case44 case19 case21 case24 case27 case40 case20 case34 
+##     12     12      1     13     13     13     13     13     13     13 
+## case91 case31 case55 case56 case25 
+##      3      3      9     12     13 
 ## 
 ## $csize
 ##  [1]  5  2 15  2  3  2  2  3  3  3  2  5  8
@@ -1073,7 +1077,7 @@ ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) + 
 #ggsave(file="final_figures/sing_serialint.pdf", height = 4, width = 6)
 ```
 
-CC noticed that the serial interval gets longer if we include more cases per cluster (because the mixture of 4 pathways in Vink et al does not include longer transmission chains, which forces the assumption that everyone in the cluster was infected by the initial case, which in turn lengthens the estimated serial interval). We do not know the true infection pathways but it is reasonable not to constrain the model to enforce that most are infected by the first few cases. 
+Notice that the serial interval gets longer if we include more cases per cluster (because the mixture of 4 pathways in Vink et al does not include longer transmission chains, which forces the assumption that everyone in the cluster was infected by the initial case, which in turn lengthens the estimated serial interval). We do not know the true infection pathways but it is reasonable not to constrain the model to enforce that most are infected by the first few cases. 
 
 **The mean SI (using first 4 cases per cluster) is 4.166.** The standard deviation of the serial intervals is 1.057.
 
@@ -1504,10 +1508,10 @@ table(spdata_org$date_confirmation[no_date])
 
 ```
 ## 
-## 2020-01-31 2020-02-03 2020-02-04 2020-02-05 2020-02-10 2020-02-14 2020-02-16 
-##          1          2          1          1          1          1          2 
-## 2020-02-21 
-##          1
+## 2020-01-31 2020-02-03 2020-02-04 2020-02-05 2020-02-10 2020-02-14 
+##          1          2          1          1          1          1 
+## 2020-02-16 2020-02-21 
+##          2          1
 ```
 
 ```r
@@ -1696,10 +1700,12 @@ table(imp_data$presumed_reason_group)
 
 ```
 ## 
-##     Grace Assembly of God     Grand Hyatt Singapore        Known relationship 
-##                        22                         3                         8 
-##               Life Church Seletar Aerospace Heights                   Unknown 
-##                         6                         5                        16 
+##     Grace Assembly of God     Grand Hyatt Singapore 
+##                        22                         3 
+##        Known relationship               Life Church 
+##                         8                         6 
+## Seletar Aerospace Heights                   Unknown 
+##                         5                        16 
 ##              Wuhan travel            Yong Thai Hang 
 ##                        24                         9
 ```
@@ -1719,9 +1725,9 @@ glimpse(nodes.df.i)
 ```
 ## Observations: 93
 ## Variables: 3
-## $ id    <fct> case1, case2, case3, case26, case4, case5, case6, case7, case8,…
-## $ label <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 45, …
-## $ group <fct> Wuhan travel, Wuhan travel, Wuhan travel, Wuhan travel, Wuhan t…
+## $ id    <fct> case1, case2, case3, case26, case4, case5, case6, case7,...
+## $ label <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 1...
+## $ group <fct> Wuhan travel, Wuhan travel, Wuhan travel, Wuhan travel, ...
 ```
 
 ```r
@@ -1743,18 +1749,20 @@ ccs_imp
 
 ```
 ## $membership
-##  case1  case2  case3 case13 case26  case4 case11  case8  case9 case83 case90 
-##      1      1      1      1      1      2      2      3      3      3      3 
-## case38 case33 case12 case18 case76 case87 case22 case23 case54 case57 case58 
-##      3      3      4      4      5      5      6      6      7      7      7 
-## case61 case67 case66 case68 case70 case71 case80 case51 case73 case84 case88 
-##      8      8      3      3      3      3      3      9      9      3      3 
-## case30 case36 case39 case50 case65 case77 case59 case72 case79 case82 case86 
-##     10     10     10     11     11     11     12     12     12     13     13 
-## case42 case69 case47 case52 case44 case41 case75 case55 case19 case21 case24 
-##     14     14     14     14      1     15     15     11     16     16     16 
-## case27 case28 case40 case20 case34 case91 case31 case56 case25 
-##     16     16     16     16     16      3      3     14     16 
+##  case1  case2  case3 case13 case26  case4 case11  case8  case9 case83 
+##      1      1      1      1      1      2      2      3      3      3 
+## case90 case38 case33 case12 case18 case76 case87 case22 case23 case54 
+##      3      3      3      4      4      5      5      6      6      7 
+## case57 case58 case61 case67 case66 case68 case70 case71 case80 case51 
+##      7      7      8      8      3      3      3      3      3      9 
+## case73 case84 case88 case30 case36 case39 case50 case65 case77 case59 
+##      9      3      3     10     10     10     11     11     11     12 
+## case72 case79 case82 case86 case42 case69 case47 case52 case44 case41 
+##     12     12     13     13     14     14     14     14      1     15 
+## case75 case55 case19 case21 case24 case27 case28 case40 case20 case34 
+##     15     11     16     16     16     16     16     16     16     16 
+## case91 case31 case56 case25 
+##      3      3     14     16 
 ## 
 ## $csize
 ##  [1]  6  2 15  2  2  2  3  2  2  3  4  3  2  5  2  9
@@ -2464,8 +2472,7 @@ The mean of the mean serial intervals with imputed dates of symptom onset is4.31
 **The bootstrapped 95% range for the mean serial interval with imputed dates of symptom onset is (2.253, 6.297). This is using imputed date of symptom onset and estimated with first 4 cases per cluster.**
 
 
-## Presymptomatic transmission from original submission code
-Currently not run and have not done associated trouble-shooting to ensure works for revised manuscript.
+## Presymptomatic transmission
 
 #### R0 estimation 
 We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equation $R=\exp{r \mu - 1/2 r^2 \sigma^2}$. To obtain CIs for R, we could use our bootstrap estimates of $\mu$ and $\sigma^2$ and simply resample R using this equation. 
