@@ -1,7 +1,7 @@
 ---
 title: "Singapore Serial Intervals - Revisions"
 author: "Caroline Colijn, Michelle Coombe, and Manu Saraswat"
-date: "2020-05-20"
+date: "2020-05-22"
 output: 
   html_document:  
     keep_md: TRUE
@@ -208,6 +208,94 @@ sum(spdata$end_source>spdata$date_onset_symptoms) # =0. Good
 ```
 ## [1] 0
 ```
+
+## Data description for manuscript
+Here we will determine some of the summary statistics about the Tianjin dataset useful for our introduction.
+
+```r
+#Range of confirmed dates
+(srng <- range(spdata_org$date_confirmation))
+```
+
+```
+## [1] "2020-01-23" "2020-02-26"
+```
+
+```r
+#Number of recovered
+(snotsick <- sum(!is.na(spdata_org$date_discharge)))
+```
+
+```
+## [1] 62
+```
+
+```r
+#Number died
+(sdead <- sum(!is.na(spdata_org$death)))
+```
+
+```
+## Warning: Unknown or uninitialised column: 'death'.
+```
+
+```
+## [1] 0
+```
+
+```r
+#Average (symptom onset - end exposure window)
+(s.avgendexp <- mean(spdata_org$date_onset_symptoms - spdata_org$end_source, na.rm = T))
+```
+
+```
+## Time difference of 1.71 days
+```
+
+```r
+(s.sdendexp <- sd(spdata_org$date_onset_symptoms - spdata_org$end_source, na.rm = T))
+```
+
+```
+## [1] 3.01
+```
+
+```r
+#Average time between symtom onset and date confirmation
+(s.avgtest <- mean(spdata_org$date_confirmation - spdata_org$date_onset_symptoms, na.rm = T))
+```
+
+```
+## Time difference of 7.43 days
+```
+
+```r
+(s.sdtest <- sd(spdata_org$date_confirmation - spdata_org$date_onset_symptoms, na.rm = T))
+```
+
+```
+## [1] 5.28
+```
+
+```r
+#Average duration of hospitalization (date_discharged - date_hospitalization)
+(s.avghosp <- mean(spdata_org$date_discharge - spdata_org$date_hospital, na.rm = T))
+```
+
+```
+## Time difference of 13.3 days
+```
+
+```r
+(s.sdhosp <- sd(spdata_org$date_discharge - spdata_org$date_hospital, na.rm = T))
+```
+
+```
+## [1] 6.01
+```
+New confirmed cases in the Tianjin dataset occured between 2020-01-23 to 2020-02-26. The number of recovered patients is 62/93. (74.699%), while the number of patients who had died is 0 (0%). The average time between symptom onset and end of possible exposure window is 1.711 (sd 3.014). The average time between symptom onset and case confirmation is 7.434 (sd 5.276). The duration of hospitalization is on average 13.274 (sd 6.014).
+
+
 
 ## Estimates of serial interval from Singapore data (without imputation)
 We will estimate the serial interval using the 'interval case to case' approach given in Vink et al (https://academic.oup.com/aje/article/180/9/865/2739204). 
@@ -1105,14 +1193,14 @@ load("data/sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE
 hist(bestimates[,1],breaks = 30)
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
 
 ```r
 bootdf=data.frame(mu=bestimates[,1], sig=bestimates[,2])
 ggplot(bootdf, aes(x=mu, y=sig))+geom_point()
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-16-2.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-17-2.png)<!-- -->
 
 ```r
 ggplot(bootdf, aes(x=mu))+geom_histogram()
@@ -1122,7 +1210,7 @@ ggplot(bootdf, aes(x=mu))+geom_histogram()
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-16-3.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-17-3.png)<!-- -->
 
 ```r
 # ggsave(file = "final_figures/FigS1_bootst_SI_sing.pdf", width = 6, height = 4)
@@ -1230,7 +1318,7 @@ ggplot(g_dates, aes(x = earliest_sympt_onset, y = serial_interval)) +
        x = "Date of first onset of symptoms within case pairs")
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-19-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
 
 ```r
 ### B) Histogram  - count of serial intervals on the y-axis
@@ -1269,7 +1357,7 @@ ggplot(sig_dates, aes(x = earliest_sympt_onset, y = count_sig, fill = serial_int
        x = "Date of first onset of symptoms within case pairs")
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-19-2.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-20-2.png)<!-- -->
 
 ```r
 ###~~~~~~~~~~~ C) Cleveland dotplot of raw serial intervals per possible case pair ~~~~~~~~~~~~~~~~~~~~~~~~~~~~###
@@ -1313,7 +1401,7 @@ p <- ggplot(undir_dotplot, aes(y = reorder(pairID, earliest_sympt_onset))) +
 p
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-19-3.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-20-3.png)<!-- -->
 
 ```r
 # Write to PDF
@@ -2360,7 +2448,7 @@ ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) +
     ggtitle("ICC estimate of the Singapore cluster serial interval \nwith imputed data")
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
 
 ```r
 # ggsave(file="final_figures/sing_serialint_imputed.pdf", height = 4, width = 6)
@@ -2395,14 +2483,14 @@ load("data/sing_boots_100_imputed.Rdata") # in case in Rmd with above evals set 
 hist(bestimates_i[ ,1], breaks = 30)
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
 
 ```r
 bootdf_i = data.frame(mu=bestimates_i[,1], sig=bestimates_i[,2])
 ggplot(bootdf_i, aes(x=mu, y=sig)) + geom_point()
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-31-2.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-32-2.png)<!-- -->
 
 ```r
 ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
@@ -2412,7 +2500,7 @@ ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-31-3.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-32-3.png)<!-- -->
 
 ```r
 # ggsave(file = "final_figures/bootst_SI_sing_imputed.pdf", width = 6, height = 4)
@@ -2484,7 +2572,7 @@ for (n in 1:100) {
 hist(Rs,breaks = 30)
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
 
 ```r
 mean(Rs)

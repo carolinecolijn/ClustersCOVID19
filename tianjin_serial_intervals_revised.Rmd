@@ -44,6 +44,31 @@ glimpse(tdata)
 ```
 
 
+## Data description for manuscript
+Here we will determine some of the summary statistics about the Tianjin dataset useful for our introduction.
+```{r}
+#Range of confirmed dates
+(trng <- range(tdata$confirm_date))
+
+#Number of recovered
+  #Information not directly in the dataset
+
+#Number died
+(tdead <- sum(!is.na(tdata$death)))
+
+#Average (symptom onset - end exposure window)
+(t.avgendexp <- mean(tdata$symptom_onset - tdata$end_source, na.rm = T))
+(t.sdendexp <- sd(tdata$symptom_onset - tdata$end_source, na.rm = T))
+
+#Average time between symtom onset and case confirmation
+(t.avgtest <- mean(tdata$confirm_date - tdata$symptom_onset, na.rm = T))
+(t.sdtest <- sd(tdata$confirm_date - tdata$symptom_onset, na.rm = T))
+
+#Average duration of hospitalization
+  #Data unavailable
+```
+New confirmed cases in the Tianjin dataset occured between `r trng[1]` to `r trng[2]`. The number of recovered patients has been provided as 65/135 (`r 65/135*100`%), while the number of patients who had died is `r tdead` (`r tdead/nrow(tdata)*100`%). The average time between symptom onset and end of possible exposure window is `r t.avgendexp` (sd `r t.sdendexp`). The average time between symptom onset and case confirmation is `r t.avgtest` (sd `r t.sdtest`). The duration of hospitalization is not provided for this dataset.
+
 ## Estimates of serial interval from Tianjin data (without imputation)
 
 We will estimate the serial interval using the 'interval case to case' approach given in Vink et al (https://academic.oup.com/aje/article/180/9/865/2739204). 

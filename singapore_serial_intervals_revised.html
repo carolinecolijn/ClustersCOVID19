@@ -11,7 +11,7 @@
 
 <meta name="author" content="Caroline Colijn, Michelle Coombe, and Manu Saraswat" />
 
-<meta name="date" content="2020-05-20" />
+<meta name="date" content="2020-05-22" />
 
 <title>Singapore Serial Intervals - Revisions</title>
 
@@ -5548,7 +5548,7 @@ summary {
 
 <h1 class="title toc-ignore">Singapore Serial Intervals - Revisions</h1>
 <h4 class="author">Caroline Colijn, Michelle Coombe, and Manu Saraswat</h4>
-<h4 class="date">2020-05-20</h4>
+<h4 class="date">2020-05-22</h4>
 
 </div>
 
@@ -5659,6 +5659,36 @@ spdata &lt;- filter(spdata, !is.na(date_onset_symptoms))
 <pre class="r"><code># Let's confirm that the end_source is always before or equal to the symptom onset date
 sum(spdata$end_source&gt;spdata$date_onset_symptoms) # =0. Good</code></pre>
 <pre><code>## [1] 0</code></pre>
+</div>
+<div id="data-description-for-manuscript" class="section level2">
+<h2>Data description for manuscript</h2>
+<p>Here we will determine some of the summary statistics about the Tianjin dataset useful for our introduction.</p>
+<pre class="r"><code>#Range of confirmed dates
+(srng &lt;- range(spdata_org$date_confirmation))</code></pre>
+<pre><code>## [1] &quot;2020-01-23&quot; &quot;2020-02-26&quot;</code></pre>
+<pre class="r"><code>#Number of recovered
+(snotsick &lt;- sum(!is.na(spdata_org$date_discharge)))</code></pre>
+<pre><code>## [1] 62</code></pre>
+<pre class="r"><code>#Number died
+(sdead &lt;- sum(!is.na(spdata_org$death)))</code></pre>
+<pre><code>## Warning: Unknown or uninitialised column: 'death'.</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>#Average (symptom onset - end exposure window)
+(s.avgendexp &lt;- mean(spdata_org$date_onset_symptoms - spdata_org$end_source, na.rm = T))</code></pre>
+<pre><code>## Time difference of 1.71 days</code></pre>
+<pre class="r"><code>(s.sdendexp &lt;- sd(spdata_org$date_onset_symptoms - spdata_org$end_source, na.rm = T))</code></pre>
+<pre><code>## [1] 3.01</code></pre>
+<pre class="r"><code>#Average time between symtom onset and date confirmation
+(s.avgtest &lt;- mean(spdata_org$date_confirmation - spdata_org$date_onset_symptoms, na.rm = T))</code></pre>
+<pre><code>## Time difference of 7.43 days</code></pre>
+<pre class="r"><code>(s.sdtest &lt;- sd(spdata_org$date_confirmation - spdata_org$date_onset_symptoms, na.rm = T))</code></pre>
+<pre><code>## [1] 5.28</code></pre>
+<pre class="r"><code>#Average duration of hospitalization (date_discharged - date_hospitalization)
+(s.avghosp &lt;- mean(spdata_org$date_discharge - spdata_org$date_hospital, na.rm = T))</code></pre>
+<pre><code>## Time difference of 13.3 days</code></pre>
+<pre class="r"><code>(s.sdhosp &lt;- sd(spdata_org$date_discharge - spdata_org$date_hospital, na.rm = T))</code></pre>
+<pre><code>## [1] 6.01</code></pre>
+<p>New confirmed cases in the Tianjin dataset occured between 2020-01-23 to 2020-02-26. The number of recovered patients is 62/93. (74.699%), while the number of patients who had died is 0 (0%). The average time between symptom onset and end of possible exposure window is 1.711 (sd 3.014). The average time between symptom onset and case confirmation is 7.434 (sd 5.276). The duration of hospitalization is on average 13.274 (sd 6.014).</p>
 </div>
 <div id="estimates-of-serial-interval-from-singapore-data-without-imputation" class="section level2">
 <h2>Estimates of serial interval from Singapore data (without imputation)</h2>

@@ -1,7 +1,7 @@
 ---
 title: "Tianjin serial intervals - Revisions"
 author: "Caroline Colijn, Michelle Coombe, and Manu Saraswat"
-date: "2020-05-20"
+date: "2020-05-22"
 output: 
   html_document:  
     keep_md: TRUE
@@ -68,6 +68,70 @@ glimpse(tdata)
 ## $ notes                                 <chr> "sometimes Tianjin didn't menti…
 ```
 
+
+## Data description for manuscript
+Here we will determine some of the summary statistics about the Tianjin dataset useful for our introduction.
+
+```r
+#Range of confirmed dates
+(trng <- range(tdata$confirm_date))
+```
+
+```
+## [1] "2020-01-21" "2020-02-22"
+```
+
+```r
+#Number of recovered
+  #Information not directly in the dataset
+
+#Number died
+(tdead <- sum(!is.na(tdata$death)))
+```
+
+```
+## [1] 3
+```
+
+```r
+#Average (symptom onset - end exposure window)
+(t.avgendexp <- mean(tdata$symptom_onset - tdata$end_source, na.rm = T))
+```
+
+```
+## Time difference of 4.98 days
+```
+
+```r
+(t.sdendexp <- sd(tdata$symptom_onset - tdata$end_source, na.rm = T))
+```
+
+```
+## [1] 4.83
+```
+
+```r
+#Average time between symtom onset and case confirmation
+(t.avgtest <- mean(tdata$confirm_date - tdata$symptom_onset, na.rm = T))
+```
+
+```
+## Time difference of 5.23 days
+```
+
+```r
+(t.sdtest <- sd(tdata$confirm_date - tdata$symptom_onset, na.rm = T))
+```
+
+```
+## [1] 4.15
+```
+
+```r
+#Average duration of hospitalization
+  #Data unavailable
+```
+New confirmed cases in the Tianjin dataset occured between 2020-01-21 to 2020-02-22. The number of recovered patients has been provided as 65/135 (48.148%), while the number of patients who had died is 3 (2.222%). The average time between symptom onset and end of possible exposure window is 4.978 (sd 4.832). The average time between symptom onset and case confirmation is 5.232 (sd 4.153). The duration of hospitalization is not provided for this dataset.
 
 ## Estimates of serial interval from Tianjin data (without imputation)
 
@@ -940,7 +1004,7 @@ ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) +
     ggtitle("ICC estimate of the Tianjin cluster serial interval")
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
 
 ```r
 # ggsave(file="final_figures/tianjin_serialint.pdf", height = 4, width = 6)
@@ -1015,7 +1079,7 @@ The following makes a histogram of the bootstrapped mean serial interval (using 
 hist(bestimates_tj[,1],breaks = 10)
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-16-1.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
 
 ```r
 bootdf=data.frame(mu=bestimates_tj[,1], sig=bestimates_tj[,2])
@@ -1023,7 +1087,7 @@ bootdf=data.frame(mu=bestimates_tj[,1], sig=bestimates_tj[,2])
 ggplot(bootdf, aes(x=mu, y=sig)) + geom_point()
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-16-2.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-17-2.png)<!-- -->
 
 ```r
 ggplot(bootdf, aes(x=mu)) + geom_histogram()
@@ -1033,7 +1097,7 @@ ggplot(bootdf, aes(x=mu)) + geom_histogram()
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-16-3.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-17-3.png)<!-- -->
 
 ```r
 # ggsave(file = "final_figures/FigS1_bootst_SI_tianjin_revised.pdf", width = 6, height = 4)
@@ -2096,7 +2160,7 @@ ggplot(data=data.frame(days=days, density=sp.density_i), aes(x=days,y=density)) 
     ggtitle("ICC estimate of the Tianjin cluster serial interval \nwith imputed data")
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-28-1.png)<!-- -->
 
 ```r
 # ggsave(file="final_figures/tianjin_serialint_imputed.pdf", height = 4, width = 6)
@@ -2169,7 +2233,7 @@ The following makes a histogram of the bootstrapped mean serial interval (using 
 hist(tbestimates_i[,1],breaks = 10)
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
 
 ```r
 bootdf_i=data.frame(mu=tbestimates_i[,1], sig=tbestimates_i[,2])
@@ -2177,7 +2241,7 @@ bootdf_i=data.frame(mu=tbestimates_i[,1], sig=tbestimates_i[,2])
 ggplot(bootdf_i, aes(x=mu, y=sig)) + geom_point()
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-30-2.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-31-2.png)<!-- -->
 
 ```r
 ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
@@ -2187,7 +2251,7 @@ ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-30-3.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-31-3.png)<!-- -->
 
 ```r
 # ggsave(file = "final_figures/bootst_SI_tianjin_imputed.pdf", width = 6, height = 4)
@@ -2213,7 +2277,7 @@ for (n in 1:100) {
 hist(Rs,breaks = 30)
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
 
 ```r
 mean(Rs)
@@ -2235,7 +2299,7 @@ sd(Rs)
 hist(Rs)
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-31-2.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-32-2.png)<!-- -->
 
 ```r
 quantile(Rs, probs = c(0.025, 0.975))

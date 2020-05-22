@@ -11,7 +11,7 @@
 
 <meta name="author" content="Caroline Colijn, Michelle Coombe, and Manu Saraswat" />
 
-<meta name="date" content="2020-05-20" />
+<meta name="date" content="2020-05-22" />
 
 <title>Tianjin serial intervals - Revisions</title>
 
@@ -5548,7 +5548,7 @@ summary {
 
 <h1 class="title toc-ignore">Tianjin serial intervals - Revisions</h1>
 <h4 class="author">Caroline Colijn, Michelle Coombe, and Manu Saraswat</h4>
-<h4 class="date">2020-05-20</h4>
+<h4 class="date">2020-05-22</h4>
 
 </div>
 
@@ -5597,6 +5597,32 @@ str(tdata)</code></pre>
 ## $ death                                 &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA,…
 ## $ recorrection.for.start.and.end.source &lt;chr&gt; &quot;symptom onset as ending source…
 ## $ notes                                 &lt;chr&gt; &quot;sometimes Tianjin didn't menti…</code></pre>
+</div>
+<div id="data-description-for-manuscript" class="section level2">
+<h2>Data description for manuscript</h2>
+<p>Here we will determine some of the summary statistics about the Tianjin dataset useful for our introduction.</p>
+<pre class="r"><code>#Range of confirmed dates
+(trng &lt;- range(tdata$confirm_date))</code></pre>
+<pre><code>## [1] &quot;2020-01-21&quot; &quot;2020-02-22&quot;</code></pre>
+<pre class="r"><code>#Number of recovered
+  #Information not directly in the dataset
+
+#Number died
+(tdead &lt;- sum(!is.na(tdata$death)))</code></pre>
+<pre><code>## [1] 3</code></pre>
+<pre class="r"><code>#Average (symptom onset - end exposure window)
+(t.avgendexp &lt;- mean(tdata$symptom_onset - tdata$end_source, na.rm = T))</code></pre>
+<pre><code>## Time difference of 4.98 days</code></pre>
+<pre class="r"><code>(t.sdendexp &lt;- sd(tdata$symptom_onset - tdata$end_source, na.rm = T))</code></pre>
+<pre><code>## [1] 4.83</code></pre>
+<pre class="r"><code>#Average time between symtom onset and case confirmation
+(t.avgtest &lt;- mean(tdata$confirm_date - tdata$symptom_onset, na.rm = T))</code></pre>
+<pre><code>## Time difference of 5.23 days</code></pre>
+<pre class="r"><code>(t.sdtest &lt;- sd(tdata$confirm_date - tdata$symptom_onset, na.rm = T))</code></pre>
+<pre><code>## [1] 4.15</code></pre>
+<pre class="r"><code>#Average duration of hospitalization
+  #Data unavailable</code></pre>
+<p>New confirmed cases in the Tianjin dataset occured between 2020-01-21 to 2020-02-22. The number of recovered patients has been provided as 65/135 (48.148%), while the number of patients who had died is 3 (2.222%). The average time between symptom onset and end of possible exposure window is 4.978 (sd 4.832). The average time between symptom onset and case confirmation is 5.232 (sd 4.153). The duration of hospitalization is not provided for this dataset.</p>
 </div>
 <div id="estimates-of-serial-interval-from-tianjin-data-without-imputation" class="section level2">
 <h2>Estimates of serial interval from Tianjin data (without imputation)</h2>
