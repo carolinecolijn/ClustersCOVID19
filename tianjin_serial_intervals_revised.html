@@ -9,9 +9,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Caroline Colijn, Michelle Coombe, and Manu Saraswat" />
+<meta name="author" content="Caroline Colijn, Michelle Coombe, Manu Saraswat and Jessica Stockdale" />
 
-<meta name="date" content="2020-05-22" />
 
 <title>Tianjin serial intervals - Revisions</title>
 
@@ -5547,8 +5546,7 @@ summary {
 
 
 <h1 class="title toc-ignore">Tianjin serial intervals - Revisions</h1>
-<h4 class="author">Caroline Colijn, Michelle Coombe, and Manu Saraswat</h4>
-<h4 class="date">2020-05-22</h4>
+<h4 class="author">Caroline Colijn, Michelle Coombe, Manu Saraswat and Jessica Stockdale</h4>
 
 </div>
 
@@ -7351,7 +7349,9 @@ ggplot(bootdf_i, aes(x=mu, y=sig)) + geom_point()</code></pre>
 </div>
 <div id="presymptomatic-transmission-from-original-submission-code" class="section level2">
 <h2>Presymptomatic transmission from original submission code</h2>
-<p>Currently not run and have not done associated trouble-shooting to ensure works for revised manuscript. #### R0 estimation We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equation <span class="math inline">\(R=\exp{r \mu - 1/2 r^2 \sigma^2}\)</span>. To obtain CIs for R, we use our bootstrap estimates of <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma^2\)</span> and simply resample R using this equation.</p>
+<div id="r0-estimation" class="section level4">
+<h4>R0 estimation</h4>
+<p>We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equation <span class="math inline">\(R=\exp{r \mu - 1/2 r^2 \sigma^2}\)</span>. To obtain CIs for R, we use our bootstrap estimates of <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma^2\)</span> and simply resample R using this equation.</p>
 <p>Jung et al Scenario 1</p>
 <pre class="r"><code>load(&quot;data/tianjin_boots_100.Rdata&quot;) # in case in Rmd with above evals set to FALSE 
 myrate=0.15
@@ -7372,6 +7372,7 @@ hist(Rs,breaks = 30)</code></pre>
 <pre><code>##  2.5% 97.5% 
 ##  1.72  2.47</code></pre>
 <p>The mean R is 1.948 and the range is (1.487, 2.408), based on the 1.96 standard deviations from the mean. This agrees closely with the above quantiles.</p>
+</div>
 <div id="additional-uninteresting-we-think-points-we-explored" class="section level4">
 <h4>Additional (uninteresting, we think) points we explored:</h4>
 <p>The direct infections from case 34 according to the figure at <a href="https://mp.weixin.qq.com/s/x4HBXGFw5vnWU7nXXdyWVg" class="uri">https://mp.weixin.qq.com/s/x4HBXGFw5vnWU7nXXdyWVg</a>. These were not included in the paper because the links were compiled by volunteers and they differed from the offical reports.</p>

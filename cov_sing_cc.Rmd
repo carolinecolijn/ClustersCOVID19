@@ -1,7 +1,8 @@
 ---
 title: "Cov(inc period, serial interval) in Singapore"
-author: "Jessica Stockdale"
+author: "Jessica Stockdale, Caroline Colijn"
 date: "May 19, 2020"
+updated: "22/05/2020"
 output: html_document
 ---
 
@@ -145,11 +146,6 @@ sing.data = sing.data[!is.na(sing.data$serial.interval),]
 ```
 
 
-
-
-
-CC begins here. 
-
 ```{r}
 sing.data$serial.interval = as.numeric(sing.data$serial.interval)
 sing.data$Amean = 0.5*(sing.data$inc.infector.min + sing.data$inc.infector.max)
@@ -159,13 +155,6 @@ ggplot(data=sing.data, aes(x= serial.interval, y=Bmean, col=Amean) ) + geom_poin
 
 
 ```
-
-
-
-
-
-
-
 
 
 
@@ -185,7 +174,7 @@ hkend= cor.test(sing.data$serial.interval,sing.data$Bmean,method = "kendall"); h
 
 The portion of SI - incubation period that is negative is the portion asymp transmission and in this raw data it is high. However, we probably want to exclude really long IPs and SIs because they are unlikely to be direct samples from the distributions. let's try this. I find that the correlation is not sensitive to removing long SIs but it is sensitive to removing long B incubation periods. But this is a bit unfair -- naturally removing the largest mean values will make a difference.
 
-What we could do is remove rows where we don't have a good estimate of min and max, so our mean incubation period for the infectee is not a good one. This removes quite a few rows, but is it justified, I think. 
+What we could do is remove rows where we don't have a good estimate of min and max, so our mean incubation period for the infectee is not a good one. This removes quite a few rows, but it is justified, I think. 
 
 ```{r}
 singd = filter(sing.data, inc.infectee.min > 1 &  inc.infectee.max < 20 ) # only 16 rows left

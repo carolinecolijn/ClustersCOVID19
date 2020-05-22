@@ -2,6 +2,7 @@
 title: "Singapore"
 author: "Caroline Colijn, Michelle Coombe, and Manu Saraswat"
 date: "25/02/2020"
+updated: "22/05/2020"
 output: 
   html_document:
     keep_md: TRUE
@@ -440,6 +441,7 @@ Here is a plot of the estimated distribution together with the empirical surviva
 
 ### Generating figure 3a above panel for paper
 This is to plot the Kaplan-Meier survival curve and estimated probability distribution of days post-infection for a case not to be showing symptoms yet (using three possible distributions: weibull, gamma, and log-normal).
+
 
 ```r
 spdays <- seq(0,20, by=0.05)

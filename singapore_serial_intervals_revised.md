@@ -1,6 +1,6 @@
 ---
 title: "Singapore Serial Intervals - Revisions"
-author: "Caroline Colijn, Michelle Coombe, and Manu Saraswat"
+author: "Caroline Colijn, Michelle Coombe, Manu Saraswat and Jessica Stockdale"
 date: "2020-05-22"
 output: 
   html_document:  
@@ -1161,7 +1161,7 @@ ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) + 
 #ggsave(file="final_figures/sing_serialint.pdf", height = 4, width = 6)
 ```
 
-CC noticed that the serial interval gets longer if we include more cases per cluster (because the mixture of 4 pathways in Vink et al does not include longer transmission chains, which forces the assumption that everyone in the cluster was infected by the initial case, which in turn lengthens the estimated serial interval). We do not know the true infection pathways but it is reasonable not to constrain the model to enforce that most are infected by the first few cases. 
+Notice that the serial interval gets longer if we include more cases per cluster (because the mixture of 4 pathways in Vink et al does not include longer transmission chains, which forces the assumption that everyone in the cluster was infected by the initial case, which in turn lengthens the estimated serial interval). We do not know the true infection pathways but it is reasonable not to constrain the model to enforce that most are infected by the first few cases. 
 
 **The mean SI (using first 4 cases per cluster) is 4.166.** The standard deviation of the serial intervals is 1.057.
 
@@ -2552,8 +2552,7 @@ The mean of the mean serial intervals with imputed dates of symptom onset is4.31
 **The bootstrapped 95% range for the mean serial interval with imputed dates of symptom onset is (2.253, 6.297). This is using imputed date of symptom onset and estimated with first 4 cases per cluster.**
 
 
-## Presymptomatic transmission from original submission code
-Currently not run and have not done associated trouble-shooting to ensure works for revised manuscript.
+## Presymptomatic transmission
 
 #### R0 estimation 
 We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equation $R=\exp{r \mu - 1/2 r^2 \sigma^2}$. To obtain CIs for R, we could use our bootstrap estimates of $\mu$ and $\sigma^2$ and simply resample R using this equation. 

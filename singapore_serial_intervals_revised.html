@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Caroline Colijn, Michelle Coombe, and Manu Saraswat" />
+<meta name="author" content="Caroline Colijn, Michelle Coombe, Manu Saraswat and Jessica Stockdale" />
 
 <meta name="date" content="2020-05-22" />
 
@@ -5547,7 +5547,7 @@ summary {
 
 
 <h1 class="title toc-ignore">Singapore Serial Intervals - Revisions</h1>
-<h4 class="author">Caroline Colijn, Michelle Coombe, and Manu Saraswat</h4>
+<h4 class="author">Caroline Colijn, Michelle Coombe, Manu Saraswat and Jessica Stockdale</h4>
 <h4 class="date">2020-05-22</h4>
 
 </div>
@@ -6426,7 +6426,7 @@ print(mm[,c(4,3,1,2)]) </code></pre>
  sp.density= dnorm(days, mean = myest4[1], sd = myest4[2])
 ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) + geom_line() + ggtitle(&quot;ICC estimate of the Singapore cluster serial interval&quot;)
 #ggsave(file=&quot;final_figures/sing_serialint.pdf&quot;, height = 4, width = 6)</code></pre>
-<p>CC noticed that the serial interval gets longer if we include more cases per cluster (because the mixture of 4 pathways in Vink et al does not include longer transmission chains, which forces the assumption that everyone in the cluster was infected by the initial case, which in turn lengthens the estimated serial interval). We do not know the true infection pathways but it is reasonable not to constrain the model to enforce that most are infected by the first few cases.</p>
+<p>Notice that the serial interval gets longer if we include more cases per cluster (because the mixture of 4 pathways in Vink et al does not include longer transmission chains, which forces the assumption that everyone in the cluster was infected by the initial case, which in turn lengthens the estimated serial interval). We do not know the true infection pathways but it is reasonable not to constrain the model to enforce that most are infected by the first few cases.</p>
 <p><strong>The mean SI (using first 4 cases per cluster) is 4.166.</strong> The standard deviation of the serial intervals is 1.057.</p>
 </div>
 <div id="determining-the-confidence-interval-for-the-mean-serial-interval" class="section level4">
@@ -7518,9 +7518,8 @@ mean(bestimates_i[,1])  # mean of the MEAN serial intervals (with imputed dates 
 <pre><code>## [1] 0.629</code></pre>
 <p>The mean of the mean serial intervals with imputed dates of symptom onset is4.311 days and the standard deviation of these means is 1.031. <strong>The bootstrapped 95% range for the mean serial interval with imputed dates of symptom onset is (2.253, 6.297). This is using imputed date of symptom onset and estimated with first 4 cases per cluster.</strong></p>
 </div>
-<div id="presymptomatic-transmission-from-original-submission-code" class="section level2">
-<h2>Presymptomatic transmission from original submission code</h2>
-<p>Currently not run and have not done associated trouble-shooting to ensure works for revised manuscript.</p>
+<div id="presymptomatic-transmission" class="section level2">
+<h2>Presymptomatic transmission</h2>
 <div id="r0-estimation" class="section level4">
 <h4>R0 estimation</h4>
 <p>We estimate R0 from Wallinga and Lipsitch Proc. Roy. Soc. B 2007 using the equation <span class="math inline">\(R=\exp{r \mu - 1/2 r^2 \sigma^2}\)</span>. To obtain CIs for R, we could use our bootstrap estimates of <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma^2\)</span> and simply resample R using this equation.</p>

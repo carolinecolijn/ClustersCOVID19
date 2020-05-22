@@ -1,7 +1,7 @@
 ---
 title: "Testing incubation with intermediate"
 author: "Caroline Colijn, Jessica Stockdale"
-date: "2020-05-18"
+date: "2020-05-22"
 output: 
   html_document:
     keep_md: TRUE
@@ -79,11 +79,12 @@ tdata$maxIncTimes
 
 ```
 ## Time differences in days
-##   [1]  9 20 20 20 20 20 20  4 20  6 20 20 20 20 20 20 20  7  4 20  9 20 20 20 20
-##  [26] 20  8 20 11  9  5 20 20  8 20 20  9  7 11 11 20  3 20 20 20  6 15 11  7  7
-##  [51] 20 20 20  8  9  6 20 20  9 20 20 20 14 11  6  9 20 20  6 20  3  6 13 12 20
-##  [76]  3 11 10 20 20 20 20 20 20 13 20 20 20 20  7 20 20 20 20 20 20 20 16 20 11
-## [101] 20 20 20 20  3 11 20 19 16 20 17 20 11 20 20  6 19 20 20 14 20 16 20 20 20
+##   [1]  9 20 20 20 20 20 20  4 20  6 20 20 20 20 20 20 20  7  4 20  9 20 20
+##  [24] 20 20 20  8 20 11  9  5 20 20  8 20 20  9  7 11 11 20  3 20 20 20  6
+##  [47] 15 11  7  7 20 20 20  8  9  6 20 20  9 20 20 20 14 11  6  9 20 20  6
+##  [70] 20  3  6 13 12 20  3 11 10 20 20 20 20 20 20 13 20 20 20 20  7 20 20
+##  [93] 20 20 20 20 20 16 20 11 20 20 20 20  3 11 20 19 16 20 17 20 11 20 20
+## [116]  6 19 20 20 14 20 16 20 20 20
 ```
 
 ```r
@@ -92,11 +93,12 @@ tdata$minIncTimes
 
 ```
 ## Time differences in days
-##   [1]  0  0  0  0  0  0  1  1  7  4  0  0  0  6  2  0  7  7  4  7  2  3  3 12  8
-##  [26]  5  8  0  7  5  2  3  4  0  4  1  8  1  5  5  0  0  4  1  5  6  9 11  7  0
-##  [51]  8  3  7  8  9  6 14  0  0  0  0  0  1  8  0  9  0  0  6  0  3  6 12  1  0
-##  [76]  3 11 10  0  0  0  0  0  0 13  0 12  0  0  7  0  0  0  0  0  0  0 16  0  4
-## [101]  0  0  0  0  3 11  0  0  0  0 17  0  4  0  0  6 19  0  0 11  6 16 11  0  2
+##   [1]  0  0  0  0  0  0  1  1  7  4  0  0  0  6  2  0  7  7  4  7  2  3  3
+##  [24] 12  8  5  8  0  7  5  2  3  4  0  4  1  8  1  5  5  0  0  4  1  5  6
+##  [47]  9 11  7  0  8  3  7  8  9  6 14  0  0  0  0  0  1  8  0  9  0  0  6
+##  [70]  0  3  6 12  1  0  3 11 10  0  0  0  0  0  0 13  0 12  0  0  7  0  0
+##  [93]  0  0  0  0  0 16  0  4  0  0  0  0  3 11  0  0  0  0 17  0  4  0  0
+## [116]  6 19  0  0 11  6 16 11  0  2
 ```
 
 Define the maximum and minimum exposure times based on these assumptions. These are the times $t_{min}^i$ and $t_{max}^i$ in the notation. 
@@ -455,7 +457,7 @@ Then the remaining question is to see if we want to handle right truncation with
 
 
 
-JS: Can we also try to optimize the shared scale parameter b? CC: I think we discuss this but don't show it (re optimizing b). 
+We can also optimize the shared scale parameter b
 
 
 ```r
@@ -511,7 +513,7 @@ optim(c(3,4, b), l_optim_3, allmaxtimes = tdata$maxIncTimes, allmintime=tdata$mi
 ## NULL
 ```
 
-It wants to make scale b really small and the shape parameters really big  - but actually if you look at the resulting disribution it has a very similar mean to b=2.1 so that's good. Lets try running 2 par optim for a reasonable range of b values instead. 
+It wants to make scale b really small and the shape parameters really big  - but actually if you look at the resulting distribution it has a very similar mean to b=2.1 so that's good. Lets try running 2 par optim for a reasonable range of b values instead. 
 
 
 ```r

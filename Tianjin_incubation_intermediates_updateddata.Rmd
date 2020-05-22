@@ -321,7 +321,7 @@ Then the remaining question is to see if we want to handle right truncation with
 
 
 
-JS: Can we also try to optimize the shared scale parameter b? CC: I think we discuss this but don't show it (re optimizing b). 
+We can also optimize the shared scale parameter b
 
 ```{r}
 # negative log likelihood function for optim 
@@ -353,7 +353,7 @@ optim(c(3,4, b), l_optim_3, allmaxtimes = tdata$maxIncTimes, allmintime=tdata$mi
                allrtTimes = tdata$Ti, maxinters=n, rate=r)
 ```
 
-It wants to make scale b really small and the shape parameters really big  - but actually if you look at the resulting disribution it has a very similar mean to b=2.1 so that's good. Lets try running 2 par optim for a reasonable range of b values instead. 
+It wants to make scale b really small and the shape parameters really big  - but actually if you look at the resulting distribution it has a very similar mean to b=2.1 so that's good. Lets try running 2 par optim for a reasonable range of b values instead. 
 
 ```{r}
 res<-matrix(NA,91,2)

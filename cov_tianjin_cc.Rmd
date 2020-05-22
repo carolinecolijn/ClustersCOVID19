@@ -1,7 +1,8 @@
 ---
 title: "Cov(inc period, serial interval) in Tianjin"
-author: "Jessica Stockdale"
+author: "Jessica Stockdale, Caroline Colijn"
 date: "May 19, 2020"
+updated: "22/05/2020"
 output: html_document
 ---
 
@@ -151,8 +152,6 @@ tianjin.data = tianjin.data[!is.na(tianjin.data$serial.interval),]
 ```
 
 
-CC begins here. 
-
 ```{r}
 tianjin.data$serial.interval = as.numeric(tianjin.data$serial.interval)
 tianjin.data$Amean = 0.5*(tianjin.data$inc.infector.min + tianjin.data$inc.infector.max)
@@ -162,7 +161,8 @@ ggplot(data=tianjin.data, aes(x= serial.interval, y=Bmean, col=Amean) ) + geom_p
 
 ggplot(data=tianjin.data, aes(x= serial.interval, y=Amean, col=Bmean) ) + geom_point() +   geom_smooth(method='lm')
 ```
-Interesting, looks like a mild correlation, positive between serial and B incubation, and negative with A incubation, which is strange..? 
+
+Interesting, looks like a mild correlation, positive between serial and B incubation, and negative with A incubation.
 
 ```{r}
 
@@ -352,4 +352,4 @@ median 8.06 shape 4.74 (3.35, 5.72) scale 1.827 (1.285, 2.045)
 #  x=exp(rmvnorm(n=10000, mean = statfit$coefficients, sigma=statfit$var)
 ```
 
-NEXT TASK: re-read what we did before; make the above plot again maybe as a data frame and produce something for the paper. Then copy it to the Singapore file and do the same there. Do this in the context of what is in the paper now so that it will fit. 
+
