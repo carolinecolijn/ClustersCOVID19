@@ -159,7 +159,7 @@ tianjin.data$Bmean = 0.5*(tianjin.data$inc.infectee.min + tianjin.data$inc.infec
 library(ggplot2)
 ggplot(data=tianjin.data, aes(x= serial.interval, y=Bmean, col=Amean) ) + geom_point() +   geom_smooth(method='lm')
 
-ggplot(data=tianjin.data, aes(x= serial.interval, y=Amean, col=Bmean) ) + geom_point() +   geom_smooth(method='lm')
+
 ```
 
 Interesting, looks like a mild correlation, positive between serial and B incubation, and negative with A incubation.
@@ -223,7 +223,7 @@ Late median 12.11 shape  7.78 (9.52, 21.47) scale 0.695 (0.379,0.778)
 
 Serial interval: 4.31 with sigma = 0.934 (w 4 cases per cluster) 
 
-To get an approximately similar (same mean and variance) gamma distribution, I need the mean 4.31 to be $a \theta$  and the variance to be $a \theta^2$ where $a$ is the shape and $\theta$ is the scale. This gives two equations and two unknowns: $a \theta = 4.31$, $a\theta^2$ = variance is $\sigma^2 = 0.874. THis gives $\theta = a\theta^2 / a\theta = 0.874/4.31 = 0.203$, and $a = 4.31/0.203 = 21.2$. 
+To get an approximately similar (same mean and variance) gamma distribution, I need the mean 4.31 to be $a \theta$  and the variance to be $a \theta^2$ where $a$ is the shape and $\theta$ is the scale. This gives two equations and two unknowns: $a \theta = 4.31$, $a\theta^2$ = variance is $\sigma^2 = 0.874. This gives $\theta = a\theta^2 / a\theta = 0.874/4.31 = 0.203$, and $a = 4.31/0.203 = 21.2$. 
 
 ```{r}
 mean(rgamma(n=10000, shape = 21.2, scale=0.203))

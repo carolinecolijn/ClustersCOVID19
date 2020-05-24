@@ -241,7 +241,58 @@ sum(dif3$TimeDiff < 0)/nrow(dif3)
 sum(dif4$TimeDiff < 0)/nrow(dif4)
 ```
 
+## Intermediate inc periods and ICC serial intervals 
 
+Perhaps the most fair comparison is between the incubation periods with intermediates estimates and teh serial intervals with intermediates estimates. 
+
+I will not do the early/late split because this is kind of implicit in the intermediates, with on average twice as many intermediates landing in IPs that are twice as long. Or at least, I won't do them right now.
+
+However, the analysis  likely to lead to the smallest amount of intermediate transmission is this one, so let's do this one. 
+
+Now compare the bootstrapped inc periods (gamma, shape is boot1[,2] , boot2, etc; scale is 2) to the estimated ICC SI (shape is 21.2, scale is 0.203, see cov_tianjin_cc.Rmd where it says: 
+To get an approximately similar (same mean and variance) gamma distribution, I need the mean 4.31 to be $a \theta$  and the variance to be $a \theta^2$ where $a$ is the shape and $\theta$ is the scale. This gives two equations and two unknowns: $a \theta = 4.31$, $a\theta^2$ = variance is $\sigma^2 = 0.874. This gives $\theta = a\theta^2 / a\theta = 0.874/4.31 = 0.203$, and $a = 4.31/0.203 = 21.2$.)  
+
+
+```{r}
+load("interbooty2_tianjin.Rdata")
+getDiffsInterICC = function(myboot, cormean=0.289, sishape=21.2, siscale=0.203) {
+  gamshape= sample(myboot$isboots, 100)
+  corvals = rnorm(100, mean=cormean, sd = 0.04)
+  bigsamps = lapply(1:100, function(x) 
+  lcmix::rmvgamma(n=500, shape=c(gamshape[x], sishape), 
+           rate=c(1/2, 1/siscale),
+           corr = matrix(c(1, corvals[x], corvals[x], 1), nrow = 2)))
+  bigsamps = do.call(rbind, bigsamps)
+  return(data.frame(incubs=bigsamps[,1], sis=bigsamps[,2],
+                    TimeDiff= bigsamps[,2] - bigsamps[,1], rate=myboot$rate[1])) 
+  # note now we need SI minus IP whereas in the comparison w gen time and ip we needed gen time minus IP. that's why some of these are 2nd col - 1st, others are the other way around
+}
+
+dif1=getDiffsInterICC(boot1)
+dif2=getDiffsInterICC(boot2)
+dif3=getDiffsInterICC(boot3)
+dif4=getDiffsInterICC(boot4)
+
+diffd=rbind(dif1,dif2, dif3,dif4) 
+diffd$rate=as.factor(diffd$rate)
+
+ggplot(data=diffd, aes(x=TimeDiff, fill=rate))+geom_histogram(position="stack",
+  bins=90)+theme_bw()+ggtitle("Tianjin")
+
+ggplot(data=diffd, aes(x=TimeDiff, fill=rate))+
+  geom_density(alpha=0.2)+theme_bw()+ggtitle("Tianjin")
+
+```
+
+```{r}
+sum(dif1$TimeDiff < 0)/nrow(dif1)
+sum(dif2$TimeDiff < 0)/nrow(dif2)
+
+sum(dif3$TimeDiff < 0)/nrow(dif3)
+sum(dif4$TimeDiff < 0)/nrow(dif4)
+```
+
+AND NOW IT IS FINALLY DIFFERENT. 
 
 
 ## Singapore 
@@ -425,6 +476,52 @@ ggplot(data=diffd, aes(x=TimeDiff, fill=rate))+geom_density(alpha=0.2)+theme_bw(
 
 ```{r}
 ggsave(file="portion_pre_Sing_inter_corr.pdf", height=4,width = 6)
+
+```
+
+
+```{r}
+sum(dif1$TimeDiff < 0)/nrow(dif1)
+sum(dif2$TimeDiff < 0)/nrow(dif2)
+
+sum(dif3$TimeDiff < 0)/nrow(dif3)
+sum(dif4$TimeDiff < 0)/nrow(dif4)
+```
+
+
+## Intermediate inc periods with ICC serial intervals, singapore
+
+
+To get an approximately similar (same mean and variance) gamma distribution, I need the mean 4.17 to be $a \theta$  and the variance to be $a \theta^2$ where $a$ is the shape and $\theta$ is the scale. This gives two equations and two unknowns: $a \theta = 4.17$, $a\theta^2$ = variance is $\sigma^2 =(1.06)^2. THis gives $\theta = a\theta^2 / a\theta =1.12/4.17 = 0.269$, and $a = 4.17/0.269 = 15.5$. 
+
+```{r}
+load("interbooty2.Rdata")
+
+getDiffsInterICC = function(myboot, cormean=0.289, sishape=15.5, siscale=0.269) {
+  gamshape= sample(myboot$isboots, 100)
+  corvals = rnorm(100, mean=cormean, sd = 0.04)
+  bigsamps = lapply(1:100, function(x) 
+  lcmix::rmvgamma(n=500, shape=c(gamshape[x], sishape), 
+           rate=c(1/2, 1/siscale),
+           corr = matrix(c(1, corvals[x], corvals[x], 1), nrow = 2)))
+  bigsamps = do.call(rbind, bigsamps)
+  return(data.frame(incubs=bigsamps[,1], sis=bigsamps[,2],
+                    TimeDiff= bigsamps[,2] - bigsamps[,1], rate=myboot$rate[1])) 
+}
+dif1=getDiffsInterICC(boot1)
+dif2=getDiffsInterICC(boot2)
+dif3=getDiffsInterICC(boot3)
+dif4=getDiffsInterICC(boot4)
+
+diffd=rbind(dif1,dif2, dif3,dif4) 
+diffd$rate=as.factor(diffd$rate)
+
+ggplot(data=diffd, aes(x=TimeDiff, fill=rate))+geom_histogram(position="stack",
+  bins=90)+theme_bw()+ggtitle("Tianjin")
+
+ggplot(data=diffd, aes(x=TimeDiff, fill=rate))+
+  geom_density(alpha=0.2)+theme_bw()+ggtitle("Singapore")
+
 
 ```
 
