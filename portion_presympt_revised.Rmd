@@ -11,6 +11,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
+library(gridExtra)
 ```
 
 ## Pre-symptomatic transmission 
@@ -117,6 +118,7 @@ Here is the approach I take now.
 
 - Now we have 100x 500 samples of incubation period and serial interval. Their difference, SI - inc period, should be the fraction pre-symptomatic. 
 
+THIS IS DIRECT TO DIRECT TIANJIN. For this I need the mean and sd of the Tianjin raw SIs and these are mean 5, sd 3.3. So $ a \theta =5$ and $a \theta^2$ = 3.34^2. This means that $\theta = 3.34^2/5 =2.23$ and $a = 5/2.23 =2.24$.  
 ```{r}
 
 load("tianjin_inc_fits.Rdata") 
@@ -127,13 +129,13 @@ getMyDiffs = function(statfit, cormean=0.29) {
                           mean = statfit$coefficients,
                           sigma=statfit$var))
   # choose mean SI with a bit of uncertainty too, but not too much 
-  sishapes = rnorm(100, mean=21, sd=1)
+  sishapes = rnorm(100, mean=2.24, sd=0.25)
 # we don't really even know the correlation between inc and si
   corvals = rnorm(100, mean=cormean, sd = 0.04)
 # sample: 
   bigsamps = lapply(1:100, function(x) 
   lcmix::rmvgamma(n=500, shape=c(incparsamps[x,1], sishapes[x]), 
-           rate=c(1/incparsamps[x,2], 1/0.203),
+           rate=c(1/incparsamps[x,2], 1/2.23),
            corr = matrix(c(1, corvals[x], corvals[x], 1), nrow = 2)))
 # glue together 
   bigsamps = do.call(rbind, bigsamps)
@@ -154,13 +156,25 @@ d3=data.frame(TimeDiff=anydiffs$diffs, group="Unstratified")
 df=rbind(d1,d2, d3) 
 
 
-ggplot(data=df, aes(x=TimeDiff, fill=group))+geom_histogram(position="dodge", bins=30)+theme_bw()+ggtitle("Tianjin")
+#ggplot(data=df, aes(x=TimeDiff, fill=group))+geom_histogram(position="dodge", bins=30)+theme_bw()+ggtitle("Tianjin")
+p3=ggplot(data=df, aes(x=TimeDiff, fill=group))+
+  geom_density(alpha=0.5)+theme_bw()+
+  geom_vline(xintercept = 0, linetype="solid", 
+                color = "grey", size=1.5)+
+  xlim(c(-20,10))+ggtitle("Tianjin")
+
+ggplot(data=df, aes(x=TimeDiff, fill=group))+
+  geom_density(alpha=0.5)+theme_bw()+
+  geom_vline(xintercept = 0, linetype="solid", 
+                color = "grey", size=1.5)+
+  xlim(c(-20,10))+ggtitle("Tianjin")
 ```
 
 
 ```{r, eval=FALSE}
 
-ggsave(file="portion_pre_Tianjin_corr.pdf", height=4,width = 6)
+#ggsave(file="portion_pre_Tianjin_corr.pdf", height=4,width = 6)
+ggsave(file=portion_pre_Tianjin_dir_to_dir.pdf, height = 4, width = 6)
 
 ```
 
@@ -192,7 +206,7 @@ quantile(boot4$isboots*b, p=c(0.025, 0.5, 0.975))
 
 For this part, we have the generation time and incubation period. The fraction pre-symp is the fraction of generation time - incubation period that is negative.
 
-Let's blindly assume the same kind of correlation we have from the direct estimates, but use the intermediates to explore how much pre-symp transmission there would be. We do the same as above, but now the scale is fixed at 2 and we sample multivariate gamma for the incubation period and generation time (instead of serial interval and incubation period). Now I can sample the gsboots and isboots for the shapes. eg boot1$gsboots: gamma shape for generation time; boot1$isboots is the inc period
+Let's blindly assume the same kind of correlation we have from the direct estimates, but use the intermediates to explore how much pre-symp transmission there would be. We do the same as above, but now the scale is fixed at 2 and we sample multivariate gamma for the incubation period and generation time (instead of serial interval and incubation period). Now I can sample the gsboots and isboots for the shapes. eg boot1$gsboots: gamma shape for generation time; boot1$isboots is the inc period. THIS IS INDIRECT WITH IC AND GEN TIME
 
 ```{r}
 getDiffsInter = function(myboot, cormean=0.289) {
@@ -243,6 +257,8 @@ sum(dif4$TimeDiff < 0)/nrow(dif4)
 
 ## Intermediate inc periods and ICC serial intervals 
 
+This is "indirect to indirect". 
+
 Perhaps the most fair comparison is between the incubation periods with intermediates estimates and teh serial intervals with intermediates estimates. 
 
 I will not do the early/late split because this is kind of implicit in the intermediates, with on average twice as many intermediates landing in IPs that are twice as long. Or at least, I won't do them right now.
@@ -282,6 +298,22 @@ ggplot(data=diffd, aes(x=TimeDiff, fill=rate))+geom_histogram(position="stack",
 ggplot(data=diffd, aes(x=TimeDiff, fill=rate))+
   geom_density(alpha=0.2)+theme_bw()+ggtitle("Tianjin")
 
+
+p4=ggplot(data=diffd, aes(x=TimeDiff, fill=rate))+
+  geom_density(alpha=0.5)+theme_bw()+
+  geom_vline(xintercept = 0, linetype="solid", 
+                color = "grey", size=1.5)+
+  xlim(c(-20,10))+
+  ggtitle("Tianjin") # going to arrange into one plot, i think. p1,2: sing direct, ind; 3,4 tianjin dir, ind
+
+# also plot and save 
+ggplot(data=diffd, aes(x=TimeDiff, fill=rate))+
+  geom_density(alpha=0.5)+theme_bw()+
+  geom_vline(xintercept = 0, linetype="solid", 
+                color = "grey", size=1.5)+
+  xlim(c(-20,10))+
+  ggtitle("Tianjin")
+
 ```
 
 ```{r}
@@ -292,8 +324,11 @@ sum(dif3$TimeDiff < 0)/nrow(dif3)
 sum(dif4$TimeDiff < 0)/nrow(dif4)
 ```
 
-AND NOW IT IS FINALLY DIFFERENT. 
+AND HERE  IT IS FINALLY DIFFERENT. 
 
+```{r}
+ggsave("portion_pre_Tianjin_ind_ind.pdf")
+```
 
 ## Singapore 
 
@@ -364,7 +399,10 @@ In the file cov_sing_cc.Rmd we estimated the covariation between the incubation 
 
 The estimate of correlation was 0.429 but there was some variation in this, of course. 
 
-I take the same approach as above. 
+I take the same approach as above.  THIS IS NOW DIRECT TO DIRECT - replacing the old one because I am sick of adding more and sorting them out. 
+HERE the SI is mean 4 with sd of about 3; it is variable. This matches the right trunction F not too badly and also matches the empirical mean and sd not too badly, I think. This gives theta = 1.5 and a = 4/1.5 = 2.68
+
+NOTE BEFORE I had 21 and 0.203, in place of 2.68 and 1.5, in the code below. That was DIRECT TO INDIRECT which I do not want any more. 
 
 ```{r}
 load("singapore_inc_fits.Rdata") 
@@ -376,13 +414,13 @@ getMyDiffs = function(statfit, cormean=0.429) {
                           mean = statfit$coefficients,
                           sigma=statfit$var))
   # choose mean SI with a bit of uncertainty too, but not too much 
-  sishapes = rnorm(100, mean=21, sd=1)
+  sishapes = rnorm(100, mean=2.67, sd=0.2)
 # we don't really even know the correlation between inc and si
   corvals = rnorm(100, mean=cormean, sd = 0.04)
 # sample: 
   bigsamps = lapply(1:100, function(x) 
   rmvgamma(n=500, shape=c(incparsamps[x,1], sishapes[x]), 
-           rate=c(1/incparsamps[x,2], 1/0.203),
+           rate=c(1/incparsamps[x,2], 1/1.5),
            corr = matrix(c(1, corvals[x], corvals[x], 1), nrow = 2)))
 # glue together 
   bigsamps = do.call(rbind, bigsamps)
@@ -403,13 +441,27 @@ d3=data.frame(TimeDiff=anydiffs$diffs, group="Unstratified")
 df=rbind(d1,d2, d3) 
 
 
-ggplot(data=df, aes(x=TimeDiff, fill=group))+geom_histogram(position="dodge", bins=30)+theme_bw()+ggtitle("Singapore")
+
+p1=ggplot(data=df, aes(x=TimeDiff, fill=group))+
+  geom_density(alpha=0.5)+theme_bw()+
+  geom_vline(xintercept = 0, linetype="solid", 
+                color = "grey", size=1.5)+
+  xlim(c(-20,10))+
+  ggtitle("Singapore")
+
+ggplot(data=df, aes(x=TimeDiff, fill=group))+
+  geom_density(alpha=0.5)+theme_bw()+
+  geom_vline(xintercept = 0, linetype="solid", 
+                color = "grey", size=1.5)+
+  xlim(c(-20,10))+
+  ggtitle("Singapore")
+
 ```
 
 
 ```{r, eval=FALSE}
-
-ggsave(file="portion_pre_Singapore_corr.pdf", height=4,width = 6)
+# this was portion_pre_Singapore_corr.pdf  but that was direct to indirect
+ggsave(file="portion_pre_Sing_dir_to_dir.pdf", height=4,width = 6)
 
 ```
 
@@ -418,10 +470,13 @@ ggsave(file="portion_pre_Singapore_corr.pdf", height=4,width = 6)
 ```{r} 
 
 # portion pre-symptom: early
+d1=dplyr::filter(d1, !is.na(TimeDiff))
 sum(d1$TimeDiff<0)/length(d1$TimeDiff)
 # portion pre-symptom: late
+d2=dplyr::filter(d2, !is.na(TimeDiff))
 sum(d2$TimeDiff<0)/length(d2$TimeDiff)
 # portion pre-symptom: unstratified 
+d3=dplyr::filter(d3, !is.na(TimeDiff))
 sum(d3$TimeDiff<0)/length(d3$TimeDiff)
 ```
 
@@ -491,6 +546,7 @@ sum(dif4$TimeDiff < 0)/nrow(dif4)
 
 ## Intermediate inc periods with ICC serial intervals, singapore
 
+THIS IS INDIRECT TO INDIRECT 
 
 To get an approximately similar (same mean and variance) gamma distribution, I need the mean 4.17 to be $a \theta$  and the variance to be $a \theta^2$ where $a$ is the shape and $\theta$ is the scale. This gives two equations and two unknowns: $a \theta = 4.17$, $a\theta^2$ = variance is $\sigma^2 =(1.06)^2. THis gives $\theta = a\theta^2 / a\theta =1.12/4.17 = 0.269$, and $a = 4.17/0.269 = 15.5$. 
 
@@ -519,10 +575,22 @@ diffd$rate=as.factor(diffd$rate)
 ggplot(data=diffd, aes(x=TimeDiff, fill=rate))+geom_histogram(position="stack",
   bins=90)+theme_bw()+ggtitle("Tianjin")
 
+p2=ggplot(data=diffd, aes(x=TimeDiff, fill=rate))+
+  geom_density(alpha=0.5)+theme_bw()+
+  geom_vline(xintercept = 0, linetype="solid", 
+                color = "grey", size=1.5)+
+  xlim(c(-20,10))+
+  ggtitle("Singapore")
+
 ggplot(data=diffd, aes(x=TimeDiff, fill=rate))+
-  geom_density(alpha=0.2)+theme_bw()+ggtitle("Singapore")
-
-
+  geom_density(alpha=0.5)+theme_bw()+
+  geom_vline(xintercept = 0, linetype="solid", 
+                color = "grey", size=1.5)+
+  xlim(c(-20,10))+
+  ggtitle("Singapore")
+```
+```{r}
+ggsave(file="portion_pre_Sing_ind_to_ind.pdf", height=4,width = 6)
 ```
 
 
@@ -532,5 +600,10 @@ sum(dif2$TimeDiff < 0)/nrow(dif2)
 
 sum(dif3$TimeDiff < 0)/nrow(dif3)
 sum(dif4$TimeDiff < 0)/nrow(dif4)
+```
+In the plot below: top, bottom row are Singapore, Tianjin; each row has direct to direct (left), indirect to indirect (right). 
+
+```{r}
+grid.arrange(p1,p2,p3,p4, nrow=2)
 ```
 

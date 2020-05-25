@@ -436,12 +436,27 @@ mytest$time_diff= mytest$stee-mytest$stor
 mytest$serial = as.numeric(mytest$time_diff)
 
 mytest$rtrunc = lubridate::ymd("2020-02-27") - mytest$stee 
-mytest$ltrunc = mytest$rtrunc- 54 # just to get working? 
+mytest$ltrunc = mytest$rtrunc- 54 # not sensitive to this but we need a value
 #mytest = dplyr::filter(mytest, serial>0)
 
 mytest$group = factor( mytest$stor < lubridate::ymd("2020-01-30"))
-mean(mytest$serial[which(mytest$group==TRUE)])
-mean(mytest$serial[which(mytest$group==FALSE)])
+```
+
+The raw means and sd, followed by means for early and late: 
+```{r}
+
+mean(mytest$serial, na.rm = TRUE)
+
+sd(mytest$serial, na.rm = TRUE)
+
+mean(mytest$serial[which(mytest$group==TRUE)],na.rm = TRUE)
+
+mean(mytest$serial[which(mytest$group==FALSE)],na.rm = TRUE)
+```
+
+Now, is this difference due to right truncation, or something else going on? 
+
+```{r} 
 
 mynpsurv = cdfDT(y=mytest$serial,
               l=as.numeric(mytest$ltrunc),
