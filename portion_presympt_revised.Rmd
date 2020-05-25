@@ -171,10 +171,10 @@ ggplot(data=df, aes(x=TimeDiff, fill=group))+
 ```
 
 
-```{r, eval=FALSE}
+```{r}
 
 #ggsave(file="portion_pre_Tianjin_corr.pdf", height=4,width = 6)
-ggsave(file=portion_pre_Tianjin_dir_to_dir.pdf, height = 4, width = 6)
+ggsave(file="portion_pre_Tianjin_dir_to_dir.pdf", height = 4, width = 6)
 
 ```
 
