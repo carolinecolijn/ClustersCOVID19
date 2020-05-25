@@ -453,6 +453,60 @@ all_cp <- undir_tdates %>%
 
 The mean direct serial interval of the possible case-pairs is `r all_cp$mean_direct_si`, with a standard deviation of `r all_cp$sd_direct_si`: giving a confidence interval around the mean of (`r all_cp$mean_direct_si - 1.96*all_cp$sd_direct_si`, `r all_cp$mean_direct_si + 1.96*all_cp$sd_direct_si`). The median of the direct serial interval `r all_cp$median_direct_si`.
 
+#### cc doing survival w right truncation on these 
+
+CC exploring right truncation 
+
+```{r}
+library(SurvTrunc)
+mytest = data.frame(stee=undir_tdates$to_sympt_date,
+                    stor =undir_tdates$from_sympt_date, 
+                    time_diff = 0)
+mytest$time_diff= mytest$stee-mytest$stor 
+
+mytest$serial = as.numeric(mytest$time_diff)
+
+mytest$rtrunc = lubridate::ymd("2020-02-27") - mytest$stee 
+mytest$ltrunc = mytest$rtrunc- 54 # just to get working? 
+#mytest = dplyr::filter(mytest, serial>0)
+
+mytest$group = factor( mytest$stor < lubridate::ymd("2020-01-30"))
+mean(mytest$serial[which(mytest$group==TRUE)])
+mean(mytest$serial[which(mytest$group==FALSE)])
+
+mynpsurv = cdfDT(y=mytest$serial,
+              l=as.numeric(mytest$ltrunc),
+              r=as.numeric(mytest$rtrunc),boot = TRUE)
+
+# median is approx: 
+ll = max(which(mynpsurv$F < 0.5))
+medapp = with(mynpsurv,
+              time[ll] + ( time[ll+1]-time[ll])*(0.5-F[ll])/(F[ll+1]-F[ll]))
+
+# mean surv time is area under survival curve , approx by 
+mynpsurv$Survival[1] + sum( diff( mynpsurv$time)*mynpsurv$Survival[-1]) 
+# this does depend on the unknown trunc time 
+# another numerical approx int is 
+sum(diff(mynpsurv$time)*mynpsurv$Survival[-length(mynpsurv$Survival)])
+
+mycox = coxDT(Surv(serial)~group, data = mytest, L=ltrunc, R = rtrunc)
+# no signif diff early to late here 
+mycox
+# the fact that SIs contract but it is not signif in the cox regression indicates that the SI shortening is likely due to right truncation which makes sense given that there is no saturation yet ..?? 
+
+```
+
+
+
+
+According to the Cox regression there is no signif diff between early and late. 
+The fact that SIs contract but it is not signif in the cox regression indicates that the SI shortening is likely due to right truncation.
+
+The mean SI here is approximately `r mynpsurv$Survival[1] + sum( diff( mynpsurv$time)*mynpsurv$Survival[-1])` days and the median is around `r medapp`, assuming the right truncation time is Feb 22. If it is assumed earlier both go up a little bit. 
+
+
+
+
 
 #### Effect of time on direct serial interval estimates: splitting possible case-pairs in half by earliest date of symptom onset
 To determine the effect of time on the raw serial intevals, we will split the case-pairs into early and late, and find the median, mean, and standard deviation. Early cases are those case-pairs where the earlier first date of symptom onset for the pair ('earliest_sympt_onset') is on or before Jan 31, 2020, and late cases are those with earliest_sympt_onset after Jan 31, 2020. 

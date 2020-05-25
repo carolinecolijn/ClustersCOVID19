@@ -95,7 +95,7 @@ sum(spdata$end_source>spdata$date_onset_symptoms) # =0. Good
 ```
 
 ## Data description for manuscript
-Here we will determine some of the summary statistics about the Tianjin dataset useful for our introduction.
+Here we will determine some of the summary statistics about the  dataset useful for our introduction.
 ```{r}
 #Range of confirmed dates
 (srng <- range(spdata_org$date_confirmation))
@@ -118,7 +118,7 @@ Here we will determine some of the summary statistics about the Tianjin dataset 
 (s.avghosp <- mean(spdata_org$date_discharge - spdata_org$date_hospital, na.rm = T))
 (s.sdhosp <- sd(spdata_org$date_discharge - spdata_org$date_hospital, na.rm = T))
 ```
-New confirmed cases in the Tianjin dataset occured between `r srng[1]` to `r srng[2]`. The number of recovered patients is `r snotsick`/`r nrow(spdata_org)`. (`r snotsick/nrow(spdata)*100`%), while the number of patients who had died is `r sdead` (`r sdead/nrow(spdata_org)*100`%). The average time between symptom onset and end of possible exposure window is `r s.avgendexp` (sd `r s.sdendexp`). The average time between symptom onset and case confirmation is `r s.avgtest` (sd `r s.sdtest`). The duration of hospitalization is on average `r s.avghosp` (sd `r s.sdhosp`).
+New confirmed cases in this dataset occured between `r srng[1]` to `r srng[2]`. The number of recovered patients is `r snotsick`/`r nrow(spdata_org)`. (`r snotsick/nrow(spdata)*100`%), while the number of patients who had died is `r sdead` (`r sdead/nrow(spdata_org)*100`%). The average time between symptom onset and end of possible exposure window is `r s.avgendexp` (sd `r s.sdendexp`). The average time between symptom onset and case confirmation is `r s.avgtest` (sd `r s.sdtest`). The duration of hospitalization is on average `r s.avghosp` (sd `r s.sdhosp`).
 
 
 
@@ -422,6 +422,52 @@ undir_dates <- mutate(undir_dates, si_groups = factor(case_when(abs_serial_inter
                                                          T ~ "other")))
 
 ```
+
+
+CC exploring right truncation 
+
+```{r}
+library(SurvTrunc)
+mytest = data.frame(stee=undir_dates$to_sympt_date,
+                    stor =undir_dates$from_sympt_date, 
+                    time_diff = 0)
+mytest$time_diff= mytest$stee-mytest$stor 
+
+mytest$serial = as.numeric(mytest$time_diff)
+
+mytest$rtrunc = lubridate::ymd("2020-02-27") - mytest$stee 
+mytest$ltrunc = mytest$rtrunc- 54 # just to get working? 
+#mytest = dplyr::filter(mytest, serial>0)
+
+mytest$group = factor( mytest$stor < lubridate::ymd("2020-01-30"))
+mean(mytest$serial[which(mytest$group==TRUE)])
+mean(mytest$serial[which(mytest$group==FALSE)])
+
+mynpsurv = cdfDT(y=mytest$serial,
+              l=as.numeric(mytest$ltrunc),
+              r=as.numeric(mytest$rtrunc))
+
+ll = max(which(mynpsurv$F < 0.5))
+medapp = with(mynpsurv,
+              time[ll] + ( time[ll+1]-time[ll])*(0.5-F[ll])/(F[ll+1]-F[ll]))
+
+# mean surv time is area under survival curve , approx by 
+mynpsurv$Survival[1] + sum( diff( mynpsurv$time)*mynpsurv$Survival[-1]) # does depend on trunc time , but if feb 20, then 3.73. not far off of raw mean
+# another numerical approx int is 
+sum(diff(mynpsurv$time)*mynpsurv$Survival[-length(mynpsurv$Survival)])
+
+mycox = coxDT(Surv(serial)~group, data = mytest, L=ltrunc, R = rtrunc)
+# no signif diff early to late here 
+mycox
+
+
+```
+
+According to the Cox regression there is no signif diff between early and late. 
+The fact that SIs contract but it is not signif in the cox regression indicates that the SI shortening is likely due to right truncation.
+
+The mean SI here is approximately `r mynpsurv$Survival[1] + sum( diff( mynpsurv$time)*mynpsurv$Survival[-1])` days and the median is around `r medapp`, assuming the right truncation time is Feb 27. If it is assumed earlier both go up a little bit. 
+
 
 #### Graphs of raw serial intervals
 
