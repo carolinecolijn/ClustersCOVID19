@@ -195,7 +195,7 @@ It remains to look at the estimates from the intermediates: what would they say?
 ## Tianjin, with estimates from intermediate analysis
 ```{r}
 load("interbooty2_tianjin.Rdata") # bootstraps for 0.05, 0.1, 0.15, 2, incubation period means
-b=2
+b=2.2
 quantile(boot1$isboots*b, p=c(0.025, 0.5, 0.975))
 quantile(boot2$isboots*b, p=c(0.025, 0.5, 0.975))
 quantile(boot3$isboots*b, p=c(0.025, 0.5, 0.975))
@@ -215,7 +215,7 @@ getDiffsInter = function(myboot, cormean=0.289) {
   corvals = rnorm(100, mean=cormean, sd = 0.04)
   bigsamps = lapply(1:100, function(x) 
   lcmix::rmvgamma(n=500, shape=c(gamshape[x], incshape[x]), 
-           rate=c(1/2, 1/2),
+           rate=c(1/2.2, 1/2.2),
            corr = matrix(c(1, corvals[x], corvals[x], 1), nrow = 2)))
   bigsamps = do.call(rbind, bigsamps)
   return(data.frame(gens=bigsamps[,1], incs=bigsamps[,2],
@@ -266,17 +266,18 @@ I will not do the early/late split because this is kind of implicit in the inter
 However, the analysis  likely to lead to the smallest amount of intermediate transmission is this one, so let's do this one. 
 
 Now compare the bootstrapped inc periods (gamma, shape is boot1[,2] , boot2, etc; scale is 2) to the estimated ICC SI (shape is 21.2, scale is 0.203, see cov_tianjin_cc.Rmd where it says: 
-To get an approximately similar (same mean and variance) gamma distribution, I need the mean 4.31 to be $a \theta$  and the variance to be $a \theta^2$ where $a$ is the shape and $\theta$ is the scale. This gives two equations and two unknowns: $a \theta = 4.31$, $a\theta^2$ = variance is $\sigma^2 = 0.874. This gives $\theta = a\theta^2 / a\theta = 0.874/4.31 = 0.203$, and $a = 4.31/0.203 = 21.2$.)  
+To get an approximately similar (same mean and variance) gamma distribution, I need the mean 4.31 to be $a \theta$  and the variance to be $a \theta^2$ where $a$ is the shape and $\theta$ is the scale. This gives two equations and two unknowns: $a \theta = 4.4$, $a\theta^2$ = variance is $\sigma^2 = 0.874. This gives $\theta = a\theta^2 / a\theta = 0.874/4.4 = 0.199$, and $a = 4.4/0.199 = 22.1$.)  
 
+INDIRECT TO INDIRECT 
 
 ```{r}
 load("interbooty2_tianjin.Rdata")
-getDiffsInterICC = function(myboot, cormean=0.289, sishape=21.2, siscale=0.203) {
+getDiffsInterICC = function(myboot, cormean=0.289, sishape=22.1, siscale=0.199) {
   gamshape= sample(myboot$isboots, 100)
   corvals = rnorm(100, mean=cormean, sd = 0.04)
   bigsamps = lapply(1:100, function(x) 
   lcmix::rmvgamma(n=500, shape=c(gamshape[x], sishape), 
-           rate=c(1/2, 1/siscale),
+           rate=c(1/2.2, 1/siscale),
            corr = matrix(c(1, corvals[x], corvals[x], 1), nrow = 2)))
   bigsamps = do.call(rbind, bigsamps)
   return(data.frame(incubs=bigsamps[,1], sis=bigsamps[,2],
@@ -505,7 +506,7 @@ getDiffsInter = function(myboot, cormean=0.429) {
   corvals = rnorm(100, mean=cormean, sd = 0.04)
   bigsamps = lapply(1:100, function(x) 
   rmvgamma(n=500, shape=c(gamshape[x], incshape[x]), 
-           rate=c(1/2, 1/2),
+           rate=c(1/2.1, 1/2.1),  # SCALE was 2.1 for singapore
            corr = matrix(c(1, corvals[x], corvals[x], 1), nrow = 2)))
   bigsamps = do.call(rbind, bigsamps)
   return(data.frame(gens=bigsamps[,1], incs=bigsamps[,2],
@@ -558,7 +559,7 @@ getDiffsInterICC = function(myboot, cormean=0.289, sishape=15.5, siscale=0.269) 
   corvals = rnorm(100, mean=cormean, sd = 0.04)
   bigsamps = lapply(1:100, function(x) 
   lcmix::rmvgamma(n=500, shape=c(gamshape[x], sishape), 
-           rate=c(1/2, 1/siscale),
+           rate=c(1/2.1, 1/siscale),
            corr = matrix(c(1, corvals[x], corvals[x], 1), nrow = 2)))
   bigsamps = do.call(rbind, bigsamps)
   return(data.frame(incubs=bigsamps[,1], sis=bigsamps[,2],

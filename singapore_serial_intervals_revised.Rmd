@@ -460,16 +460,33 @@ Now, is this difference due to right truncation, or something else going on?
 
 mynpsurv = cdfDT(y=mytest$serial,
               l=as.numeric(mytest$ltrunc),
-              r=as.numeric(mytest$rtrunc))
+              r=as.numeric(mytest$rtrunc),boot = TRUE)
 
 ll = max(which(mynpsurv$F < 0.5))
 medapp = with(mynpsurv,
               time[ll] + ( time[ll+1]-time[ll])*(0.5-F[ll])/(F[ll+1]-F[ll]))
 
+ll = max(which(mynpsurv$CI.upper.F < 0.5))
+medL = with(mynpsurv,
+              time[ll] + ( time[ll+1]-time[ll])*(0.5-CI.upper.F[ll])/(CI.upper.F[ll+1]-CI.upper.F[ll]))
+
+ll = max(which(mynpsurv$CI.lower.F < 0.5))
+medU = with(mynpsurv,
+              time[ll] + ( time[ll+1]-time[ll])*(0.5-CI.lower.F[ll])/(CI.lower.F[ll+1]-CI.lower.F[ll]))
+
+#
 # mean surv time is area under survival curve , approx by 
 mynpsurv$Survival[1] + sum( diff( mynpsurv$time)*mynpsurv$Survival[-1]) # does depend on trunc time , but if feb 20, then 3.73. not far off of raw mean
 # another numerical approx int is 
 sum(diff(mynpsurv$time)*mynpsurv$Survival[-length(mynpsurv$Survival)])
+
+# i want a range: note that I have CI.lower.F and CI.upper.F so i can get 
+# a range on Survival and compute these again, yay. 
+with(mynpsurv, 
+sum(diff(time)*(1-CI.upper.F[-length(CI.upper.F)])))
+
+with(mynpsurv, 
+sum(diff(time)*(1-CI.lower.F[-length(CI.lower.F)])))
 
 mycox = coxDT(Surv(serial)~group, data = mytest, L=ltrunc, R = rtrunc)
 # no signif diff early to late here 

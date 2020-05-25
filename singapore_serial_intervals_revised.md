@@ -1,7 +1,7 @@
 ---
 title: "Singapore Serial Intervals - Revisions"
 author: "Caroline Colijn, Michelle Coombe, Manu Saraswat and Jessica Stockdale"
-date: "2020-05-22"
+date: "2020-05-24"
 output: 
   html_document:  
     keep_md: TRUE
@@ -24,8 +24,8 @@ glimpse(spdata)
 ```
 
 ```
-## Observations: 93
-## Variables: 25
+## Rows: 93
+## Columns: 25
 ## $ CaseID                 <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,…
 ## $ `Related cases`        <chr> "2,3", "1,3", "1,2", "13", "11", NA, NA, NA, "…
 ## $ `Cluster links`        <chr> NA, NA, NA, NA, NA, NA, NA, NA, "9,31,33,38,83…
@@ -210,7 +210,7 @@ sum(spdata$end_source>spdata$date_onset_symptoms) # =0. Good
 ```
 
 ## Data description for manuscript
-Here we will determine some of the summary statistics about the Tianjin dataset useful for our introduction.
+Here we will determine some of the summary statistics about the  dataset useful for our introduction.
 
 ```r
 #Range of confirmed dates
@@ -236,7 +236,7 @@ Here we will determine some of the summary statistics about the Tianjin dataset 
 ```
 
 ```
-## Warning: Unknown or uninitialised column: 'death'.
+## Warning: Unknown or uninitialised column: `death`.
 ```
 
 ```
@@ -293,7 +293,7 @@ Here we will determine some of the summary statistics about the Tianjin dataset 
 ```
 ## [1] 6.01
 ```
-New confirmed cases in the Tianjin dataset occured between 2020-01-23 to 2020-02-26. The number of recovered patients is 62/93. (74.699%), while the number of patients who had died is 0 (0%). The average time between symptom onset and end of possible exposure window is 1.711 (sd 3.014). The average time between symptom onset and case confirmation is 7.434 (sd 5.276). The duration of hospitalization is on average 13.274 (sd 6.014).
+New confirmed cases in this dataset occured between 2020-01-23 to 2020-02-26. The number of recovered patients is 62/93. (74.699%), while the number of patients who had died is 0 (0%). The average time between symptom onset and end of possible exposure window is 1.711 (sd 3.014). The average time between symptom onset and case confirmation is 7.434 (sd 5.276). The duration of hospitalization is on average 13.274 (sd 6.014).
 
 
 
@@ -510,8 +510,8 @@ glimpse(nodes.df)
 ```
 
 ```
-## Observations: 83
-## Variables: 3
+## Rows: 83
+## Columns: 3
 ## $ id    <fct> case1, case2, case3, case4, case5, case6, case7, case8, case9, …
 ## $ label <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 17, 48, …
 ## $ group <fct> Wuhan travel, Wuhan travel, Wuhan travel, Wuhan travel, Wuhan t…
@@ -1279,6 +1279,145 @@ undir_dates <- mutate(undir_dates, si_groups = factor(case_when(abs_serial_inter
                                                          T ~ "other")))
 ```
 
+
+CC exploring right truncation 
+
+
+```r
+library(SurvTrunc)
+mytest = data.frame(stee=undir_dates$to_sympt_date,
+                    stor =undir_dates$from_sympt_date, 
+                    time_diff = 0)
+mytest$time_diff= mytest$stee-mytest$stor 
+
+mytest$serial = as.numeric(mytest$time_diff)
+
+mytest$rtrunc = lubridate::ymd("2020-02-27") - mytest$stee 
+mytest$ltrunc = mytest$rtrunc- 54 # not sensitive to this but we need a value
+#mytest = dplyr::filter(mytest, serial>0)
+
+mytest$group = factor( mytest$stor < lubridate::ymd("2020-01-30"))
+```
+
+The raw means and sd, followed by means for early and late: 
+
+```r
+mean(mytest$serial, na.rm = TRUE)
+```
+
+```
+## [1] 4.05
+```
+
+```r
+sd(mytest$serial, na.rm = TRUE)
+```
+
+```
+## [1] 3.39
+```
+
+```r
+mean(mytest$serial[which(mytest$group==TRUE)],na.rm = TRUE)
+```
+
+```
+## [1] 4.4
+```
+
+```r
+mean(mytest$serial[which(mytest$group==FALSE)],na.rm = TRUE)
+```
+
+```
+## [1] 3.48
+```
+
+Now, is this difference due to right truncation, or something else going on? 
+
+
+```r
+mynpsurv = cdfDT(y=mytest$serial,
+              l=as.numeric(mytest$ltrunc),
+              r=as.numeric(mytest$rtrunc))
+```
+
+```
+## number of iterations 3 
+##  time n.event cumulative.df survival
+##     0       2        0.0355   0.9645
+##     1      11        0.2304   0.7696
+##     2       6        0.3368   0.6632
+##     3       9        0.4963   0.5037
+##     4       7        0.6204   0.3796
+##     5      10        0.7977   0.2023
+##     6       5        0.8863   0.1137
+##     7       1        0.9040   0.0960
+##     8       1        0.9218   0.0782
+##    10       2        0.9572   0.0428
+##    16       1        0.9767   0.0233
+##    18       1        1.0000   0.0000
+## number of observations read: 61 
+## number of observations used: 56
+```
+
+```r
+ll = max(which(mynpsurv$F < 0.5))
+medapp = with(mynpsurv,
+              time[ll] + ( time[ll+1]-time[ll])*(0.5-F[ll])/(F[ll+1]-F[ll]))
+
+# mean surv time is area under survival curve , approx by 
+mynpsurv$Survival[1] + sum( diff( mynpsurv$time)*mynpsurv$Survival[-1]) # does depend on trunc time , but if feb 20, then 3.73. not far off of raw mean
+```
+
+```
+## [1] 4
+```
+
+```r
+# another numerical approx int is 
+sum(diff(mynpsurv$time)*mynpsurv$Survival[-length(mynpsurv$Survival)])
+```
+
+```
+## [1] 4.15
+```
+
+```r
+mycox = coxDT(Surv(serial)~group, data = mytest, L=ltrunc, R = rtrunc)
+```
+
+```
+## number of observations read: 61 
+## number of observations used: 56
+```
+
+```r
+# no signif diff early to late here 
+mycox
+```
+
+```
+## $results.beta
+##      Estimate SE     CI.lower CI.upper Wald statistic p-value
+## [1,] -0.3229  0.2721 -0.856   0.211    1.41           0.2355 
+## 
+## $CI
+## [1] "Normal approximation"
+## 
+## $p.value
+## [1] "Normal approximation"
+## 
+## $weights
+## [1] "print option not requested"
+```
+
+According to the Cox regression there is no signif diff between early and late. 
+The fact that SIs contract but it is not signif in the cox regression indicates that the SI shortening is likely due to right truncation.
+
+The mean SI here is approximately 3.996 days and the median is around 3.03, assuming the right truncation time is Feb 27. If it is assumed earlier both go up a little bit. 
+
+
 #### Graphs of raw serial intervals
 
 Now let's turn this into a dot plot and a bar chart so we can see if and how serial interval changes over time. The dates on the x-axis are the earliest date of symptom onset from each infected pair.
@@ -1318,7 +1457,7 @@ ggplot(g_dates, aes(x = earliest_sympt_onset, y = serial_interval)) +
        x = "Date of first onset of symptoms within case pairs")
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-20-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
 
 ```r
 ### B) Histogram  - count of serial intervals on the y-axis
@@ -1357,7 +1496,7 @@ ggplot(sig_dates, aes(x = earliest_sympt_onset, y = count_sig, fill = serial_int
        x = "Date of first onset of symptoms within case pairs")
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-20-2.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-23-2.png)<!-- -->
 
 ```r
 ###~~~~~~~~~~~ C) Cleveland dotplot of raw serial intervals per possible case pair ~~~~~~~~~~~~~~~~~~~~~~~~~~~~###
@@ -1401,7 +1540,7 @@ p <- ggplot(undir_dotplot, aes(y = reorder(pairID, earliest_sympt_onset))) +
 p
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-20-3.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-23-3.png)<!-- -->
 
 ```r
 # Write to PDF
@@ -1805,8 +1944,8 @@ glimpse(nodes.df.i)
 ```
 
 ```
-## Observations: 93
-## Variables: 3
+## Rows: 93
+## Columns: 3
 ## $ id    <fct> case1, case2, case3, case26, case4, case5, case6, case7, case8,…
 ## $ label <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 45, …
 ## $ group <fct> Wuhan travel, Wuhan travel, Wuhan travel, Wuhan travel, Wuhan t…
@@ -2448,7 +2587,7 @@ ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) +
     ggtitle("ICC estimate of the Singapore cluster serial interval \nwith imputed data")
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
 
 ```r
 # ggsave(file="final_figures/sing_serialint_imputed.pdf", height = 4, width = 6)
@@ -2483,14 +2622,14 @@ load("data/sing_boots_100_imputed.Rdata") # in case in Rmd with above evals set 
 hist(bestimates_i[ ,1], breaks = 30)
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
 
 ```r
 bootdf_i = data.frame(mu=bestimates_i[,1], sig=bestimates_i[,2])
 ggplot(bootdf_i, aes(x=mu, y=sig)) + geom_point()
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-32-2.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-35-2.png)<!-- -->
 
 ```r
 ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
@@ -2500,7 +2639,7 @@ ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-32-3.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-35-3.png)<!-- -->
 
 ```r
 # ggsave(file = "final_figures/bootst_SI_sing_imputed.pdf", width = 6, height = 4)
@@ -2571,7 +2710,7 @@ for (n in 1:100) {
 hist(Rs,breaks = 30)
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-37-1.png)<!-- -->
 
 ```r
 mean(Rs)

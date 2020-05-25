@@ -50,8 +50,8 @@ glimpse(tdata)
 ```
 
 ```
-## Observations: 135
-## Variables: 13
+## Rows: 135
+## Columns: 13
 ## $ case_id                               <chr> "TJ1", "TJ2", "TJ3", "TJ4", "TJ…
 ## $ gender                                <chr> "F", "M", "F", "M", "M", "M", "…
 ## $ age                                   <int> 59, 57, 68, 40, 46, 56, 29, 39,…
@@ -1179,6 +1179,160 @@ all_cp <- undir_tdates %>%
 
 The mean direct serial interval of the possible case-pairs is 4.986, with a standard deviation of 3.337: giving a confidence interval around the mean of (-1.554, 11.527). The median of the direct serial interval 4.
 
+#### cc doing survival w right truncation on these 
+
+CC exploring right truncation 
+
+
+```r
+library(SurvTrunc)
+mytest = data.frame(stee=undir_tdates$to_sympt_date,
+                    stor =undir_tdates$from_sympt_date, 
+                    time_diff = 0)
+mytest$time_diff= mytest$stee-mytest$stor 
+
+mytest$serial = as.numeric(mytest$time_diff)
+
+mytest$rtrunc = lubridate::ymd("2020-02-27") - mytest$stee 
+mytest$ltrunc = mytest$rtrunc- 54 # just to get working? 
+#mytest = dplyr::filter(mytest, serial>0)
+
+mytest$group = factor( mytest$stor < lubridate::ymd("2020-01-30"))
+```
+
+The raw means and sd, followed by means for early and late: 
+
+```r
+mean(mytest$serial, na.rm = TRUE)
+```
+
+```
+## [1] 4.99
+```
+
+```r
+sd(mytest$serial, na.rm = TRUE)
+```
+
+```
+## [1] 3.34
+```
+
+```r
+mean(mytest$serial[which(mytest$group==TRUE)],na.rm = TRUE)
+```
+
+```
+## [1] 5.92
+```
+
+```r
+mean(mytest$serial[which(mytest$group==FALSE)],na.rm = TRUE)
+```
+
+```
+## [1] 4.05
+```
+
+Now look to see if this difference is explained with right truncation
+
+
+```r
+mynpsurv = cdfDT(y=mytest$serial,
+              l=as.numeric(mytest$ltrunc),
+              r=as.numeric(mytest$rtrunc),boot = TRUE)
+```
+
+```
+## number of iterations 4 
+##  time n.event cumulative.df survival
+##     0       3        0.0404   0.9596
+##     1       4        0.0944   0.9056
+##     2      11        0.2426   0.7574
+##     3       8        0.3504   0.6496
+##     4      16        0.5661   0.4339
+##     5       6        0.6470   0.3530
+##     6       7        0.7413   0.2587
+##     7       3        0.7818   0.2182
+##     8       5        0.8492   0.1508
+##     9       4        0.9039   0.0961
+##    10       1        0.9176   0.0824
+##    11       3        0.9587   0.0413
+##    13       1        0.9724   0.0276
+##    14       1        0.9861   0.0139
+##    16       1        1.0000   0.0000
+## number of observations read: 74 
+## number of observations used: 74
+```
+
+```r
+# median is approx: 
+ll = max(which(mynpsurv$F < 0.5))
+medapp = with(mynpsurv,
+              time[ll] + ( time[ll+1]-time[ll])*(0.5-F[ll])/(F[ll+1]-F[ll]))
+
+# mean surv time is area under survival curve , approx by 
+mynpsurv$Survival[1] + sum( diff( mynpsurv$time)*mynpsurv$Survival[-1]) 
+```
+
+```
+## [1] 4.98
+```
+
+```r
+# this does depend on the unknown trunc time 
+# another numerical approx int is 
+sum(diff(mynpsurv$time)*mynpsurv$Survival[-length(mynpsurv$Survival)])
+```
+
+```
+## [1] 5
+```
+
+```r
+mycox = coxDT(Surv(serial)~group, data = mytest, L=ltrunc, R = rtrunc)
+```
+
+```
+## number of observations read: 74 
+## number of observations used: 74
+```
+
+```r
+# no signif diff early to late here 
+mycox
+```
+
+```
+## $results.beta
+##      Estimate SE     CI.lower CI.upper Wald statistic p-value
+## [1,] -0.4686  0.2738 -1.005   0.068    2.93           0.087  
+## 
+## $CI
+## [1] "Normal approximation"
+## 
+## $p.value
+## [1] "Normal approximation"
+## 
+## $weights
+## [1] "print option not requested"
+```
+
+```r
+# the fact that SIs contract but it is not signif in the cox regression indicates that the SI shortening is likely due to right truncation which makes sense given that there is no saturation yet ..?? 
+```
+
+
+
+
+According to the Cox regression there is no signif diff between early and late. 
+The fact that SIs contract but it is not signif in the cox regression indicates that the SI shortening is likely due to right truncation.
+
+The mean SI here is approximately 4.976 days and the median is around 3.694, assuming the right truncation time is Feb 22. If it is assumed earlier both go up a little bit. 
+
+
+
+
 
 #### Effect of time on direct serial interval estimates: splitting possible case-pairs in half by earliest date of symptom onset
 To determine the effect of time on the raw serial intevals, we will split the case-pairs into early and late, and find the median, mean, and standard deviation. Early cases are those case-pairs where the earlier first date of symptom onset for the pair ('earliest_sympt_onset') is on or before Jan 31, 2020, and late cases are those with earliest_sympt_onset after Jan 31, 2020. 
@@ -2160,7 +2314,7 @@ ggplot(data=data.frame(days=days, density=sp.density_i), aes(x=days,y=density)) 
     ggtitle("ICC estimate of the Tianjin cluster serial interval \nwith imputed data")
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-28-1.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
 
 ```r
 # ggsave(file="final_figures/tianjin_serialint_imputed.pdf", height = 4, width = 6)
@@ -2233,7 +2387,7 @@ The following makes a histogram of the bootstrapped mean serial interval (using 
 hist(tbestimates_i[,1],breaks = 10)
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
 
 ```r
 bootdf_i=data.frame(mu=tbestimates_i[,1], sig=tbestimates_i[,2])
@@ -2241,7 +2395,7 @@ bootdf_i=data.frame(mu=tbestimates_i[,1], sig=tbestimates_i[,2])
 ggplot(bootdf_i, aes(x=mu, y=sig)) + geom_point()
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-31-2.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-34-2.png)<!-- -->
 
 ```r
 ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
@@ -2251,7 +2405,7 @@ ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-31-3.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-34-3.png)<!-- -->
 
 ```r
 # ggsave(file = "final_figures/bootst_SI_tianjin_imputed.pdf", width = 6, height = 4)
@@ -2276,7 +2430,7 @@ for (n in 1:100) {
 hist(Rs,breaks = 30)
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
 
 ```r
 mean(Rs)
@@ -2298,7 +2452,7 @@ sd(Rs)
 hist(Rs)
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-32-2.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-35-2.png)<!-- -->
 
 ```r
 quantile(Rs, probs = c(0.025, 0.975))
