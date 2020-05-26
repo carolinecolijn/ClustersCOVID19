@@ -270,6 +270,7 @@ To get an approximately similar (same mean and variance) gamma distribution, I n
 $\sigma^2 = ((5.717-2.91)/(2*1.96))^2 = 0.513$. 
 This gives $\theta = a\theta^2 / a\theta = 0.513/4.31 = 0.119$, and $a = 4.31/0.199 = 21.7$.)  
 
+NOTE we re-ran this with cormean - 0.1 and 0.8 for the exploration of how correlation impacts the portion pre-symp. 
 INDIRECT TO INDIRECT 
 
 ```{r}
