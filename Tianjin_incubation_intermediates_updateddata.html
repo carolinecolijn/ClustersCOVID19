@@ -11,7 +11,7 @@
 
 <meta name="author" content="Caroline Colijn, Jessica Stockdale" />
 
-<meta name="date" content="2020-05-22" />
+<meta name="date" content="2020-05-26" />
 
 <title>Testing incubation with intermediate</title>
 
@@ -187,7 +187,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Testing incubation with intermediate</h1>
 <h4 class="author"><em>Caroline Colijn, Jessica Stockdale</em></h4>
-<h4 class="date"><em>2020-05-22</em></h4>
+<h4 class="date"><em>2020-05-26</em></h4>
 
 </div>
 
@@ -444,7 +444,7 @@ g &lt;- arrangeGrob(plot1, plot2, ncol=2) #generates g
 ggsave(filename = &quot;final_figures/incgen_tianjin_shapes.pdf&quot;, g, width = 10, height = 6)
 
 
-# Plot mean estimates instead (scale b=2.1)
+# Plot mean estimates instead (scale b=2.2)
 
 value &lt;- c(boot1[,1]*b, boot2[,1]*b, boot3[,1]*b, boot4[,1]*b)
 group &lt;- c(boot1[,3], boot2[,3], boot3[,3], boot4[,3])
@@ -504,7 +504,7 @@ l_optim_3(c(3,4,b), allmaxtimes = tdata$maxIncTimes,
 ## 
 ## $message
 ## NULL</code></pre>
-<p>It wants to make scale b really small and the shape parameters really big - but actually if you look at the resulting distribution it has a very similar mean to b=2.1 so that’s good. Lets try running 2 par optim for a reasonable range of b values instead.</p>
+<p>It wants to make scale b really small and the shape parameters really big - but actually if you look at the resulting distribution it has a very similar mean to b=2.2 so that’s good. Lets try running 2 par optim for a reasonable range of b values instead.</p>
 <pre class="r"><code>res&lt;-matrix(NA,91,2)
 for (i in 10:100){
 ans &lt;- optim(c(40/i,40/i), l_optim, allmaxtimes = tdata$maxIncTimes, allmintime=tdata$minIncTimes,

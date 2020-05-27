@@ -12,6 +12,8 @@ output:
 
 ## Pre-symptomatic transmission 
 
+# Without covariance - we no longer report this is in the paper
+
 The mean of (incubation time - serial interval) is the difference in means if the two are sampled independently. While this is a big assumption, we don't know the covariance. 
 
 Mean differences in Tianjin: 8.89 - 4.31 = 4.58. 
@@ -106,7 +108,7 @@ sum(d1$TimeDiff<0)/length(d1$TimeDiff)
 ```
 
 ```
-## [1] 0.8102
+## [1] 0.8158
 ```
 
 ```r
@@ -115,7 +117,7 @@ sum(d2$TimeDiff<0)/length(d2$TimeDiff)
 ```
 
 ```
-## [1] 0.9911
+## [1] 0.9915
 ```
 
 ```r
@@ -124,7 +126,31 @@ sum(d3$TimeDiff<0)/length(d3$TimeDiff)
 ```
 
 ```
-## [1] 0.8712
+## [1] 0.8733
+```
+
+```r
+mean(d1$TimeDiff)
+```
+
+```
+## [1] -2.524321
+```
+
+```r
+mean(d2$TimeDiff)
+```
+
+```
+## [1] -8.118504
+```
+
+```r
+mean(d3$TimeDiff)
+```
+
+```
+## [1] -4.593705
 ```
 
 
@@ -199,7 +225,7 @@ ggplot(data=df, aes(x=TimeDiff, fill=group))+
 ```
 
 ```
-## Warning: Removed 619 rows containing non-finite values (stat_density).
+## Warning: Removed 610 rows containing non-finite values (stat_density).
 ```
 
 ![](portion_presympt_revised_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
@@ -212,7 +238,7 @@ ggsave(file="portion_pre_Tianjin_dir_to_dir.pdf", height = 4, width = 6)
 ```
 
 ```
-## Warning: Removed 619 rows containing non-finite values (stat_density).
+## Warning: Removed 610 rows containing non-finite values (stat_density).
 ```
 
 
@@ -233,7 +259,7 @@ sum(d2$TimeDiff<0)/length(d2$TimeDiff)
 ```
 
 ```
-## [1] 0.96122
+## [1] 0.96346
 ```
 
 ```r
@@ -242,7 +268,31 @@ sum(d3$TimeDiff<0)/length(d3$TimeDiff)
 ```
 
 ```
-## [1] 0.8111
+## [1] 0.80634
+```
+
+```r
+mean(d1$TimeDiff)
+```
+
+```
+## [1] -1.868651
+```
+
+```r
+mean(d2$TimeDiff)
+```
+
+```
+## [1] -7.460765
+```
+
+```r
+mean(d3$TimeDiff)
+```
+
+```
+## [1] -3.543347
 ```
 
 It remains to look at the estimates from the intermediates: what would they say? there, we don't have the true fits, just a bunch of bootstraps, so we would need another function and a bit more code. 
@@ -290,7 +340,7 @@ quantile(boot4$isboots*b, p=c(0.025, 0.5, 0.975))
 
 For this part, we have the generation time and incubation period. The fraction pre-symp is the fraction of generation time - incubation period that is negative.
 
-Let's blindly assume the same kind of correlation we have from the direct estimates, but use the intermediates to explore how much pre-symp transmission there would be. We do the same as above, but now the scale is fixed at 2 and we sample multivariate gamma for the incubation period and generation time (instead of serial interval and incubation period). Now I can sample the gsboots and isboots for the shapes. eg boot1$gsboots: gamma shape for generation time; boot1$isboots is the inc period. THIS IS INDIRECT WITH IC AND GEN TIME
+Let's blindly assume the same kind of correlation we have from the direct estimates, but use the intermediates to explore how much pre-symp transmission there would be. We do the same as above, but now the scale is fixed at 2.2 and we sample multivariate gamma for the incubation period and generation time (instead of serial interval and incubation period). Now I can sample the gsboots and isboots for the shapes. eg boot1$gsboots: gamma shape for generation time; boot1$isboots is the inc period. THIS IS INDIRECT WITH IC AND GEN TIME
 
 
 ```r
@@ -344,7 +394,7 @@ sum(dif1$TimeDiff < 0)/nrow(dif1)
 ```
 
 ```
-## [1] 0.90766
+## [1] 0.90786
 ```
 
 ```r
@@ -352,7 +402,7 @@ sum(dif2$TimeDiff < 0)/nrow(dif2)
 ```
 
 ```
-## [1] 0.91894
+## [1] 0.9146
 ```
 
 ```r
@@ -360,7 +410,7 @@ sum(dif3$TimeDiff < 0)/nrow(dif3)
 ```
 
 ```
-## [1] 0.90162
+## [1] 0.89732
 ```
 
 ```r
@@ -368,28 +418,63 @@ sum(dif4$TimeDiff < 0)/nrow(dif4)
 ```
 
 ```
-## [1] 0.88544
+## [1] 0.88392
+```
+
+```r
+mean(dif1$TimeDiff)
+```
+
+```
+## [1] -4.832395
+```
+
+```r
+mean(dif2$TimeDiff)
+```
+
+```
+## [1] -4.629914
+```
+
+```r
+mean(dif3$TimeDiff)
+```
+
+```
+## [1] -4.103059
+```
+
+```r
+mean(dif4$TimeDiff)
+```
+
+```
+## [1] -3.761796
 ```
 
 ## Intermediate inc periods and ICC serial intervals 
 
 This is "indirect to indirect". 
 
-Perhaps the most fair comparison is between the incubation periods with intermediates estimates and teh serial intervals with intermediates estimates. 
+Perhaps the most fair comparison is between the incubation periods with intermediates estimates and the serial intervals with intermediates estimates. 
 
 I will not do the early/late split because this is kind of implicit in the intermediates, with on average twice as many intermediates landing in IPs that are twice as long. Or at least, I won't do them right now.
 
 However, the analysis  likely to lead to the smallest amount of intermediate transmission is this one, so let's do this one. 
 
 Now compare the bootstrapped inc periods (gamma, shape is boot1[,2] , boot2, etc; scale is 2) to the estimated ICC SI (shape is 21.2, scale is 0.203, see cov_tianjin_cc.Rmd where it says: 
-To get an approximately similar (same mean and variance) gamma distribution, I need the mean 4.31 to be $a \theta$  and the variance to be $a \theta^2$ where $a$ is the shape and $\theta$ is the scale. This gives two equations and two unknowns: $a \theta = 4.4$, $a\theta^2$ = variance is $\sigma^2 = 0.874. This gives $\theta = a\theta^2 / a\theta = 0.874/4.4 = 0.199$, and $a = 4.4/0.199 = 22.1$.)  
+To get an approximately similar (same mean and variance) gamma distribution, I need the mean 4.31 to be $a \theta$  and the variance to be $a \theta^2$ where $a$ is the shape and $\theta$ is the scale.
 
+This gives two equations and two unknowns: $a \theta = 4.31$, $a\theta^2$ = variance is $\sigma^2 = 0.874. This gives $\theta = a\theta^2 / a\theta = 0.874/4.31 = 0.203$, and $a = 4.31/0.203 = 21.2$.
+
+NOTE we re-ran this with cormean - 0.1 and 0.8 for the exploration of how correlation impacts the portion pre-symp. 
 INDIRECT TO INDIRECT 
 
 
 ```r
 load("interbooty2_tianjin.Rdata")
-getDiffsInterICC = function(myboot, cormean=0.289, sishape=22.1, siscale=0.199) {
+getDiffsInterICC = function(myboot, cormean=0.289, sishape=21.2, siscale=0.203) {
   gamshape= sample(myboot$isboots, 100)
   corvals = rnorm(100, mean=cormean, sd = 0.04)
   bigsamps = lapply(1:100, function(x) 
@@ -441,7 +526,7 @@ ggplot(data=diffd, aes(x=TimeDiff, fill=rate))+
 ```
 
 ```
-## Warning: Removed 227 rows containing non-finite values (stat_density).
+## Warning: Removed 211 rows containing non-finite values (stat_density).
 ```
 
 ![](portion_presympt_revised_files/figure-html/unnamed-chunk-11-3.png)<!-- -->
@@ -452,7 +537,7 @@ sum(dif1$TimeDiff < 0)/nrow(dif1)
 ```
 
 ```
-## [1] 0.78284
+## [1] 0.79306
 ```
 
 ```r
@@ -460,7 +545,7 @@ sum(dif2$TimeDiff < 0)/nrow(dif2)
 ```
 
 ```
-## [1] 0.72028
+## [1] 0.73774
 ```
 
 ```r
@@ -468,7 +553,7 @@ sum(dif3$TimeDiff < 0)/nrow(dif3)
 ```
 
 ```
-## [1] 0.6669
+## [1] 0.67308
 ```
 
 ```r
@@ -476,10 +561,42 @@ sum(dif4$TimeDiff < 0)/nrow(dif4)
 ```
 
 ```
-## [1] 0.6175
+## [1] 0.6354
 ```
 
-AND HERE  IT IS FINALLY DIFFERENT. 
+```r
+mean(dif1$TimeDiff)
+```
+
+```
+## [1] -3.235703
+```
+
+```r
+mean(dif2$TimeDiff)
+```
+
+```
+## [1] -2.645192
+```
+
+```r
+mean(dif3$TimeDiff)
+```
+
+```
+## [1] -2.03502
+```
+
+```r
+mean(dif4$TimeDiff)
+```
+
+```
+## [1] -1.701404
+```
+
+AND HERE IT IS FINALLY DIFFERENT. 
 
 
 ```r
@@ -491,10 +608,12 @@ ggsave("portion_pre_Tianjin_ind_ind.pdf")
 ```
 
 ```
-## Warning: Removed 227 rows containing non-finite values (stat_density).
+## Warning: Removed 211 rows containing non-finite values (stat_density).
 ```
 
 ## Singapore 
+
+This first part is no longer used - was the Weibull fits
 
 
 ```r
@@ -541,7 +660,7 @@ sum(d1$TimeDiff<0)/length(d1$TimeDiff)
 ```
 
 ```
-## [1] 0.6775
+## [1] 0.6658
 ```
 
 ```r
@@ -550,7 +669,7 @@ sum(d2$TimeDiff<0)/length(d2$TimeDiff)
 ```
 
 ```
-## [1] 0.6604
+## [1] 0.6638
 ```
 
 ```r
@@ -559,13 +678,32 @@ sum(d3$TimeDiff<0)/length(d3$TimeDiff)
 ```
 
 ```
-## [1] 0.6691
+## [1] 0.6665
 ```
 
+```r
+mean(d1$TimeDiff)
+```
 
+```
+## [1] -1.639267
+```
 
+```r
+mean(d2$TimeDiff)
+```
 
-### leftover 
+```
+## [1] -2.043402
+```
+
+```r
+mean(d3$TimeDiff)
+```
+
+```
+## [1] -1.97965
+```
 
 Now a broader experiment where we sample the shape and scale parameters from the above distribution, assuming they themselves are normal. 
 
@@ -590,7 +728,7 @@ sum(sertimes-inctimes < 0)/length(sertimes)
 ```
 
 ```
-## [1] 0.8106
+## [1] 0.8096
 ```
 
 This is consistent with the other estimates. 
@@ -604,8 +742,9 @@ In the file cov_sing_cc.Rmd we estimated the covariation between the incubation 
 
 The estimate of correlation was 0.429 but there was some variation in this, of course. 
 
-I take the same approach as above.  THIS IS NOW DIRECT TO DIRECT - replacing the old one because I am sick of adding more and sorting them out. 
-HERE the SI is mean 4 with sd of about 3; it is variable. This matches the right trunction F not too badly and also matches the empirical mean and sd not too badly, I think. This gives theta = 1.5 and a = 4/1.5 = 2.68
+I take the same approach as above.  THIS IS NOW DIRECT TO DIRECT - replacing the old one.
+
+HERE the SI is mean 4 with sd of about 3; it is variable. This matches the right trunction F not too badly and also matches the empirical mean and sd not too badly, I think. So $ a \theta =4$ and $a \theta^2$ = 3.39^2. This gives theta = 2.87 and a = 4/2.87 = 1.39
 
 NOTE BEFORE I had 21 and 0.203, in place of 2.68 and 1.5, in the code below. That was DIRECT TO INDIRECT which I do not want any more. 
 
@@ -620,7 +759,7 @@ library(lcmix)
 ```
 
 ```
-## R.methodsS3 v1.8.0 (2020-02-14 07:10:20 UTC) successfully loaded. See ?R.methodsS3 for help.
+## R.methodsS3 v1.7.1 (2016-02-15) successfully loaded. See ?R.methodsS3 for help.
 ```
 
 ```
@@ -642,13 +781,13 @@ getMyDiffs = function(statfit, cormean=0.429) {
                           mean = statfit$coefficients,
                           sigma=statfit$var))
   # choose mean SI with a bit of uncertainty too, but not too much 
-  sishapes = rnorm(100, mean=2.67, sd=0.2)
+  sishapes = rnorm(100, mean=1.39, sd=0.2)
 # we don't really even know the correlation between inc and si
   corvals = rnorm(100, mean=cormean, sd = 0.04)
 # sample: 
   bigsamps = lapply(1:100, function(x) 
   rmvgamma(n=500, shape=c(incparsamps[x,1], sishapes[x]), 
-           rate=c(1/incparsamps[x,2], 1/1.5),
+           rate=c(1/incparsamps[x,2], 1/2.87),
            corr = matrix(c(1, corvals[x], corvals[x], 1), nrow = 2)))
 # glue together 
   bigsamps = do.call(rbind, bigsamps)
@@ -686,7 +825,7 @@ ggplot(data=df, aes(x=TimeDiff, fill=group))+
 ```
 
 ```
-## Warning: Removed 179 rows containing non-finite values (stat_density).
+## Warning: Removed 919 rows containing non-finite values (stat_density).
 ```
 
 ![](portion_presympt_revised_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
@@ -708,7 +847,7 @@ sum(d1$TimeDiff<0)/length(d1$TimeDiff)
 ```
 
 ```
-## [1] 0.7157
+## [1] 0.7426
 ```
 
 ```r
@@ -718,7 +857,7 @@ sum(d2$TimeDiff<0)/length(d2$TimeDiff)
 ```
 
 ```
-## [1] 0.7292
+## [1] 0.74448
 ```
 
 ```r
@@ -728,7 +867,31 @@ sum(d3$TimeDiff<0)/length(d3$TimeDiff)
 ```
 
 ```
-## [1] 0.73782
+## [1] 0.73672
+```
+
+```r
+mean(d1$TimeDiff)
+```
+
+```
+## [1] -1.994605
+```
+
+```r
+mean(d2$TimeDiff)
+```
+
+```
+## [1] -2.143564
+```
+
+```r
+mean(d3$TimeDiff)
+```
+
+```
+## [1] -1.943988
 ```
 
 It remains to look at the estimates from the intermediates: what would they say? there, we don't have the true fits, just a bunch of bootstraps, so we would need another function and a bit more code. 
@@ -737,13 +900,13 @@ It remains to look at the estimates from the intermediates: what would they say?
 
 ```r
 load("interbooty2.Rdata") # bootstraps for 0.05, 0.1, 0.15, 2, incubation period means
-b=2
+b=2.1
 quantile(boot1$isboots*b, p=c(0.025, 0.5, 0.975))
 ```
 
 ```
 ##     2.5%      50%    97.5% 
-## 4.140700 4.680827 5.423466
+## 4.347735 4.914868 5.694639
 ```
 
 ```r
@@ -752,7 +915,7 @@ quantile(boot2$isboots*b, p=c(0.025, 0.5, 0.975))
 
 ```
 ##     2.5%      50%    97.5% 
-## 3.839479 4.217617 5.006032
+## 4.031453 4.428498 5.256333
 ```
 
 ```r
@@ -761,7 +924,7 @@ quantile(boot3$isboots*b, p=c(0.025, 0.5, 0.975))
 
 ```
 ##     2.5%      50%    97.5% 
-## 3.545912 3.925385 4.519083
+## 3.723208 4.121654 4.745038
 ```
 
 ```r
@@ -770,7 +933,7 @@ quantile(boot4$isboots*b, p=c(0.025, 0.5, 0.975))
 
 ```
 ##     2.5%      50%    97.5% 
-## 3.347159 3.706753 4.276773
+## 3.514517 3.892091 4.490612
 ```
 
 
@@ -828,7 +991,7 @@ sum(dif1$TimeDiff < 0)/nrow(dif1)
 ```
 
 ```
-## [1] 0.67662
+## [1] 0.67306
 ```
 
 ```r
@@ -836,7 +999,7 @@ sum(dif2$TimeDiff < 0)/nrow(dif2)
 ```
 
 ```
-## [1] 0.72374
+## [1] 0.73534
 ```
 
 ```r
@@ -844,7 +1007,7 @@ sum(dif3$TimeDiff < 0)/nrow(dif3)
 ```
 
 ```
-## [1] 0.7465
+## [1] 0.74208
 ```
 
 ```r
@@ -852,7 +1015,39 @@ sum(dif4$TimeDiff < 0)/nrow(dif4)
 ```
 
 ```
-## [1] 0.75132
+## [1] 0.74872
+```
+
+```r
+mean(dif1$TimeDiff)
+```
+
+```
+## [1] -1.295886
+```
+
+```r
+mean(dif2$TimeDiff)
+```
+
+```
+## [1] -1.664853
+```
+
+```r
+mean(dif3$TimeDiff)
+```
+
+```
+## [1] -1.617761
+```
+
+```r
+mean(dif4$TimeDiff)
+```
+
+```
+## [1] -1.580715
 ```
 
 
@@ -908,7 +1103,7 @@ ggplot(data=diffd, aes(x=TimeDiff, fill=rate))+
 ```
 
 ```
-## Warning: Removed 26 rows containing non-finite values (stat_density).
+## Warning: Removed 17 rows containing non-finite values (stat_density).
 ```
 
 ![](portion_presympt_revised_files/figure-html/unnamed-chunk-24-2.png)<!-- -->
@@ -918,7 +1113,7 @@ ggsave(file="portion_pre_Sing_ind_to_ind.pdf", height=4,width = 6)
 ```
 
 ```
-## Warning: Removed 26 rows containing non-finite values (stat_density).
+## Warning: Removed 17 rows containing non-finite values (stat_density).
 ```
 
 
@@ -928,7 +1123,7 @@ sum(dif1$TimeDiff < 0)/nrow(dif1)
 ```
 
 ```
-## [1] 0.5154
+## [1] 0.52646
 ```
 
 ```r
@@ -936,7 +1131,7 @@ sum(dif2$TimeDiff < 0)/nrow(dif2)
 ```
 
 ```
-## [1] 0.45726
+## [1] 0.46148
 ```
 
 ```r
@@ -944,7 +1139,7 @@ sum(dif3$TimeDiff < 0)/nrow(dif3)
 ```
 
 ```
-## [1] 0.41502
+## [1] 0.41376
 ```
 
 ```r
@@ -952,7 +1147,39 @@ sum(dif4$TimeDiff < 0)/nrow(dif4)
 ```
 
 ```
-## [1] 0.38394
+## [1] 0.37682
+```
+
+```r
+mean(dif1$TimeDiff)
+```
+
+```
+## [1] -0.7809583
+```
+
+```r
+mean(dif2$TimeDiff)
+```
+
+```
+## [1] -0.3140271
+```
+
+```r
+mean(dif3$TimeDiff)
+```
+
+```
+## [1] 0.007446026
+```
+
+```r
+mean(dif4$TimeDiff)
+```
+
+```
+## [1] 0.2379792
 ```
 In the plot below: top, bottom row are Singapore, Tianjin; each row has direct to direct (left), indirect to indirect (right). 
 
@@ -962,19 +1189,19 @@ grid.arrange(p1,p2,p3,p4, nrow=2)
 ```
 
 ```
-## Warning: Removed 179 rows containing non-finite values (stat_density).
+## Warning: Removed 919 rows containing non-finite values (stat_density).
 ```
 
 ```
-## Warning: Removed 26 rows containing non-finite values (stat_density).
+## Warning: Removed 17 rows containing non-finite values (stat_density).
 ```
 
 ```
-## Warning: Removed 619 rows containing non-finite values (stat_density).
+## Warning: Removed 610 rows containing non-finite values (stat_density).
 ```
 
 ```
-## Warning: Removed 227 rows containing non-finite values (stat_density).
+## Warning: Removed 211 rows containing non-finite values (stat_density).
 ```
 
 ![](portion_presympt_revised_files/figure-html/unnamed-chunk-27-1.png)<!-- -->

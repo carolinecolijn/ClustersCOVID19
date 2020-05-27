@@ -171,9 +171,9 @@ summary(fit1)
 plot(fit1)
 
 cov(tianjin.data$serial.interval,tianjin.data$Bmean) # 2.63
-hpear =  cor.test(tianjin.data$serial.interval,tianjin.data$Bmean); hpear
-hspear = cor.test(tianjin.data$serial.interval,tianjin.data$Bmean,method="spearman"); hspear
-hkend= cor.test(tianjin.data$serial.interval,tianjin.data$Bmean,method = "kendall"); hkend
+hpear =  cor.test(tianjin.data$serial.interval,tianjin.data$Bmean); hpear #0.289
+hspear = cor.test(tianjin.data$serial.interval,tianjin.data$Bmean,method="spearman"); hspear # 0.285
+hkend= cor.test(tianjin.data$serial.interval,tianjin.data$Bmean,method = "kendall"); hkend # 0.206
 
 ```
 
@@ -219,9 +219,9 @@ Incubation period:
 
 Early: median 6.48 shape 6.01 (3.61, 7.26) scale 1.140 (0.66,1.276)
 
-Late median 12.11 shape  7.78 (9.52, 21.47) scale 0.695 (0.379,0.778)
+Late median 12.11 shape  17.78 (9.52, 21.47) scale 0.695 (0.379,0.778)
 
-Serial interval: 4.31 with sigma = 0.934 (w 4 cases per cluster) 
+Serial interval: 4.31 with sigma = 0.935 (w 4 cases per cluster) 
 
 To get an approximately similar (same mean and variance) gamma distribution, I need the mean 4.31 to be $a \theta$  and the variance to be $a \theta^2$ where $a$ is the shape and $\theta$ is the scale. This gives two equations and two unknowns: $a \theta = 4.31$, $a\theta^2$ = variance is $\sigma^2 = 0.874. This gives $\theta = a\theta^2 / a\theta = 0.874/4.31 = 0.203$, and $a = 4.31/0.203 = 21.2$. 
 
@@ -344,7 +344,8 @@ median 8.06 shape 4.74 (3.35, 5.72) scale 1.827 (1.285, 2.045)
 
  and for the late data we have 
  
- median 12.11 shape 7.78 (9.52, 21.47) scale 0.695 (0.379,0.778)
+ median 12.11 shape 17.78 (9.52, 21.47) scale 0.695 (0.379,0.778)
+
  
  
 ```{r}

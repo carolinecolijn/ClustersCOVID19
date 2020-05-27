@@ -167,8 +167,8 @@ plot(fit1)
 cov(sing.data$serial.interval,sing.data$Bmean) # 5.88
 cor(sing.data$serial.interval,sing.data$Bmean)  # 0.429 
 hpear =  cor.test(sing.data$serial.interval,sing.data$Bmean); hpear
-hspear = cor.test(sing.data$serial.interval,sing.data$Bmean,method="spearman"); hspear
-hkend= cor.test(sing.data$serial.interval,sing.data$Bmean,method = "kendall"); hkend
+hspear = cor.test(sing.data$serial.interval,sing.data$Bmean,method="spearman"); hspear # 0.174
+hkend= cor.test(sing.data$serial.interval,sing.data$Bmean,method = "kendall"); hkend # 0.134
 
 ```
 

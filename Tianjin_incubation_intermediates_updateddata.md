@@ -1,7 +1,7 @@
 ---
 title: "Testing incubation with intermediate"
 author: "Caroline Colijn, Jessica Stockdale"
-date: "2020-05-22"
+date: "2020-05-26"
 output: 
   html_document:
     keep_md: TRUE
@@ -430,7 +430,7 @@ g <- arrangeGrob(plot1, plot2, ncol=2) #generates g
 ggsave(filename = "final_figures/incgen_tianjin_shapes.pdf", g, width = 10, height = 6)
 
 
-# Plot mean estimates instead (scale b=2.1)
+# Plot mean estimates instead (scale b=2.2)
 
 value <- c(boot1[,1]*b, boot2[,1]*b, boot3[,1]*b, boot4[,1]*b)
 group <- c(boot1[,3], boot2[,3], boot3[,3], boot4[,3])
@@ -513,7 +513,7 @@ optim(c(3,4, b), l_optim_3, allmaxtimes = tdata$maxIncTimes, allmintime=tdata$mi
 ## NULL
 ```
 
-It wants to make scale b really small and the shape parameters really big  - but actually if you look at the resulting distribution it has a very similar mean to b=2.1 so that's good. Lets try running 2 par optim for a reasonable range of b values instead. 
+It wants to make scale b really small and the shape parameters really big  - but actually if you look at the resulting distribution it has a very similar mean to b=2.2 so that's good. Lets try running 2 par optim for a reasonable range of b values instead. 
 
 
 ```r
