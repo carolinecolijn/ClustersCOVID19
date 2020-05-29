@@ -11,7 +11,14 @@ output:
 
 ## Data 
 
-Thanks to EpiCoronaHack Cluster team. These data are manually entered from postings from the Government of Singapore website: [website](https://www.moh.gov.sg/covid-19).
+Thanks to Dongxuan Chen and Louxin Zhang. These data are from three main sources:
+
+* source1: http://wsjk.tj.gov.cn/col/col87/index.html#!uid=259&pageNum=1 (Tianjin health commission official website, for daily announcements)
+
+* source2: https://www.weibo.com/u/2967529507?is_all (Jinyun News, Tianjin offical local media weibo account, for patient symptom onset reference)
+
+* source3: https://m.weibo.cn/status/IrrHI1FHm?jumpfrom=weibocom (another Tianjin local media weibo link, for mall cluster reference)
+
   
 
 ```r
@@ -315,7 +322,7 @@ boot4=getBootstraps(nboot, tdata,therate = 0.2)
 #save(boot1, boot2, boot3, boot4, file = "data/interbooty2_tianjin.Rdata")
 ```
 
-Table of quantile information
+**Table 1 incubation period estimates (accounting for intermediates):** Table of quantile information
 
 
 ```r

@@ -262,8 +262,7 @@ boot4=getBootstraps(nboot, spdata,therate = 0.2)
 
 ```
 
-Table of quantile information for the incubation period
-
+**Table 1 incubation period estimates (accounting for intermediates):** Table of quantile information for the incubation period
 
 ```{r}
 load("data/interbooty2.Rdata")

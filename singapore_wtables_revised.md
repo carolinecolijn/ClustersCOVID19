@@ -389,7 +389,7 @@ return(list(par1=par1,par2=par2, par1range=par1range, par2range=par2range, means
 }
 ```
 
-**Table 1 (without intermediates)** for unstratified mean incubation period and CI for these fits: 
+**Table 1 (without intermediates) and Appendix Table 1** for unstratified mean incubation period and CI for these fits: 
 
 
 ```r
@@ -433,7 +433,7 @@ getMeanCI_DF(myfit,myfit_gamma,myfit_lnorm)
 ## 3  1.57      1.38      1.81  0.60     0.475     0.759  5.84      4.76      7.08
 ```
 
-Here is a plot of the estimated distribution together with the empirical survival curve from the data. This is Figure 3a (upper panel) in the manuscript.
+Here is a plot of the estimated distribution together with the empirical survival curve from the data. This is Figure 44a (upper panel) in the manuscript.
 
 ### Generating figure 4a above panel for paper (not stratified)
 This is to plot the Kaplan-Meier survival curve and estimated probability distribution of days post-infection for a case not to be showing symptoms yet (using three possible distributions: weibull, gamma, and log-normal).
@@ -508,7 +508,7 @@ getQuantileDF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
 ## 3 Log normal 1.55 0.606   1.439   3.14  4.72   7.11    15.5
 ```
 
-EARLY: how variable are these point estimates? Look at mean and 95\% CI (**Table 1 (without intermediates)**)
+EARLY: how variable are these point estimates? Look at mean and 95\% CI (**Table 1 (without intermediates) and Appendix Table 2**)
 
 
 ```r
@@ -522,7 +522,7 @@ getMeanCI_DF(Eallthree[[1]],Eallthree[[2]], Eallthree[[3]])
 ## 3  1.59      1.33      1.82 0.598     0.421     0.848  6.02      4.49      8.03
 ```
 
-LATE: how variable are these point estimates? Look at mean and 95\% CI (**Table 1 (without intermediates)**)
+LATE: how variable are these point estimates? Look at mean and 95\% CI (**Table 1 (without intermediates) and Appendix Table 2**)
 
 
 ```r

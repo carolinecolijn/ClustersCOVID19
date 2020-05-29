@@ -372,7 +372,12 @@ summary {
 
 <div id="data" class="section level2">
 <h2>Data</h2>
-<p>Thanks to EpiCoronaHack Cluster team. These data are manually entered from postings from the Government of Singapore website: <a href="https://www.moh.gov.sg/covid-19">website</a>.</p>
+<p>Thanks to Dongxuan Chen and Louxin Zhang. These data are from three main sources:</p>
+<ul>
+<li><p>source1: <a href="http://wsjk.tj.gov.cn/col/col87/index.html#!uid=259&amp;pageNum=1" class="uri">http://wsjk.tj.gov.cn/col/col87/index.html#!uid=259&amp;pageNum=1</a> (Tianjin health commission official website, for daily announcements)</p></li>
+<li><p>source2: <a href="https://www.weibo.com/u/2967529507?is_all" class="uri">https://www.weibo.com/u/2967529507?is_all</a> (Jinyun News, Tianjin offical local media weibo account, for patient symptom onset reference)</p></li>
+<li><p>source3: <a href="https://m.weibo.cn/status/IrrHI1FHm?jumpfrom=weibocom" class="uri">https://m.weibo.cn/status/IrrHI1FHm?jumpfrom=weibocom</a> (another Tianjin local media weibo link, for mall cluster reference)</p></li>
+</ul>
 <pre class="r"><code>tdata=read.csv(&quot;data/Tianjin135cases_revised.csv&quot;,na.strings = &quot;&quot;, stringsAsFactors = F)
 
 tdata$symptom_onset=as.Date(tdata$symptom_onset, format = &quot;%d/%m/%Y&quot;)
@@ -568,7 +573,7 @@ boot2=getBootstraps(nboot, tdata,therate = 0.1)
 boot3=getBootstraps(nboot, tdata,therate = 0.15) 
 boot4=getBootstraps(nboot, tdata,therate = 0.2) 
 #save(boot1, boot2, boot3, boot4, file = &quot;data/interbooty2_tianjin.Rdata&quot;)</code></pre>
-<p>Table of quantile information</p>
+<p><strong>Table 1 incubation period estimates (accounting for intermediates):</strong> Table of quantile information</p>
 <pre class="r"><code>load(&quot;data/interbooty2_tianjin.Rdata&quot;)
 
 quantile(boot1$isboots*b, p=c(0.025, 0.5, 0.975))</code></pre>

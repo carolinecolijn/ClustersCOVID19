@@ -591,7 +591,7 @@ getQuantileDF(myfit,myfit_gamma,myfit_lnorm)</code></pre>
   }
 return(list(par1=par1,par2=par2, par1range=par1range, par2range=par2range, means=mymeans, qs = quantile(mymeans, probs = c(0.025, 0.5, 0.975)), meanmeans=mean(mymeans), sdmeans=sd(mymeans)))
 }</code></pre>
-<p><strong>Table 1 (without intermediates)</strong> for unstratified mean incubation period and CI for these fits:</p>
+<p><strong>Table 1 (without intermediates) and Appendix Table 1</strong> for unstratified mean incubation period and CI for these fits:</p>
 <pre class="r"><code>getMeanCI_DF = function(myfit,myfit_gamma,myfit_lnorm) {
 out_weib=getMeanCI(statfit = myfit, dist = &quot;weibull&quot;)
 out_gamm = getMeanCI(statfit =myfit_gamma, dist = &quot;gamma&quot;)
@@ -627,7 +627,7 @@ getMeanCI_DF(myfit,myfit_gamma,myfit_lnorm)</code></pre>
 ## 1  1.83      1.45      2.30  6.91     5.766     8.289  6.18      5.16      7.38
 ## 2  3.05      2.00      3.84  1.95     1.234     2.343  5.99      4.97      7.14
 ## 3  1.57      1.38      1.81  0.60     0.475     0.759  5.84      4.76      7.08</code></pre>
-<p>Here is a plot of the estimated distribution together with the empirical survival curve from the data. This is Figure 3a (upper panel) in the manuscript.</p>
+<p>Here is a plot of the estimated distribution together with the empirical survival curve from the data. This is Figure 44a (upper panel) in the manuscript.</p>
 <div id="generating-figure-4a-above-panel-for-paper-not-stratified" class="section level3">
 <h3>Generating figure 4a above panel for paper (not stratified)</h3>
 <p>This is to plot the Kaplan-Meier survival curve and estimated probability distribution of days post-infection for a case not to be showing symptoms yet (using three possible distributions: weibull, gamma, and log-normal).</p>
@@ -667,13 +667,13 @@ Lallthree=getthreefits(latedata)</code></pre>
 ## 1    Weibull 1.75 6.989   0.858   3.43  5.67   8.42    14.7
 ## 2      Gamma 2.96 2.034   1.220   3.44  5.35   7.87    14.6
 ## 3 Log normal 1.55 0.606   1.439   3.14  4.72   7.11    15.5</code></pre>
-<p>EARLY: how variable are these point estimates? Look at mean and 95% CI (<strong>Table 1 (without intermediates)</strong>)</p>
+<p>EARLY: how variable are these point estimates? Look at mean and 95% CI (<strong>Table 1 (without intermediates) and Appendix Table 2</strong>)</p>
 <pre class="r"><code>getMeanCI_DF(Eallthree[[1]],Eallthree[[2]], Eallthree[[3]])</code></pre>
 <pre><code>##   par1s par1lower par1upper par2s par2lower par2upper means meanlower meanupper
 ## 1  2.05      1.34      2.58 6.587     5.077     7.897  5.92      4.47      7.62
 ## 2  3.22      1.67      4.05 1.818     0.847     2.180  5.91      4.50      7.64
 ## 3  1.59      1.33      1.82 0.598     0.421     0.848  6.02      4.49      8.03</code></pre>
-<p>LATE: how variable are these point estimates? Look at mean and 95% CI (<strong>Table 1 (without intermediates)</strong>)</p>
+<p>LATE: how variable are these point estimates? Look at mean and 95% CI (<strong>Table 1 (without intermediates) and Appendix Table 2</strong>)</p>
 <pre class="r"><code>getMeanCI_DF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])</code></pre>
 <pre><code>##   par1s par1lower par1upper par2s par2lower par2upper means meanlower meanupper
 ## 1  1.75      1.29      2.21 6.989     5.408     8.380  6.30      4.87      8.09

@@ -14,7 +14,7 @@ Thanks to Dongxuan Chen and Louxin Zhang. These data are from three main sources
 
 * source1: http://wsjk.tj.gov.cn/col/col87/index.html#!uid=259&pageNum=1 (Tianjin health commission official website, for daily announcements)
 
-* source2: https://weibo.com/u/2967529507 (Jinyun News, Tianjin offical local media weibo account, for patient symptom onset reference)
+* source2: https://www.weibo.com/u/2967529507?is_all=1 (Jinyun News, Tianjin offical local media weibo account, for patient symptom onset reference)
 
 * source3: https://m.weibo.cn/status/IrrHI1FHm?jumpfrom=weibocom (another Tianjin local media weibo link, for mall cluster reference)
 
@@ -50,8 +50,8 @@ glimpse(tdata)
 ```
 
 ```
-## Rows: 135
-## Columns: 13
+## Observations: 135
+## Variables: 13
 ## $ case_id                               <chr> "TJ1", "TJ2", "TJ3", "TJ4", "TJ…
 ## $ gender                                <chr> "F", "M", "F", "M", "M", "M", "…
 ## $ age                                   <int> 59, 57, 68, 40, 46, 56, 29, 39,…
@@ -1073,6 +1073,7 @@ sd(bestimates_tj[ ,2]) #sd of the SD serial intervals (with imputed dates of sym
 
 **The bootstrapped 95% range for the mean serial interval is (2.911, 5.717).**
 
+**Appendix Figure 1**
 The following makes a histogram of the bootstrapped mean serial interval (using a cluster size of 4).
 
 ```r
@@ -1165,6 +1166,8 @@ Notice that there are 3 possible case-pairs where the serial interval is zero; t
 
 #### Direct serial interval estimates: all possible case-pairs
 To determine an estimate of the raw serial intevals, we will find the mean, median, and standard deviation of all possible case-pairs. Note that this is the raw data where cases without date of symptom onset have been removed (i.e. NOT imputed!).
+
+**Table 1 serial interval estimates (without intermediates):**
 
 ```r
 ### Arrange the dataset by the date of earliest symptom onset for each case pair
@@ -1270,7 +1273,11 @@ mynpsurv = cdfDT(y=mytest$serial,
 ll = max(which(mynpsurv$F < 0.5))
 medapp = with(mynpsurv,
               time[ll] + ( time[ll+1]-time[ll])*(0.5-F[ll])/(F[ll+1]-F[ll]))
+```
 
+**Table 1 (serial interval estimates, without intermediates)** 
+
+```r
 # mean surv time is area under survival curve , approx by 
 mynpsurv$Survival[1] + sum( diff( mynpsurv$time)*mynpsurv$Survival[-1]) 
 ```
@@ -1287,6 +1294,26 @@ sum(diff(mynpsurv$time)*mynpsurv$Survival[-length(mynpsurv$Survival)])
 
 ```
 ## [1] 5
+```
+
+```r
+# i want a range: note that I have CI.lower.F and CI.upper.F so i can get 
+# a range on Survival and compute these again, yay. 
+with(mynpsurv, 
+sum(diff(time)*(1-CI.upper.F[-length(CI.upper.F)])))
+```
+
+```
+## [1] 3.82
+```
+
+```r
+with(mynpsurv, 
+sum(diff(time)*(1-CI.lower.F[-length(CI.lower.F)])))
+```
+
+```
+## [1] 6.19
 ```
 
 ```r
@@ -1387,7 +1414,7 @@ l <- undir_tdates %>%
 
 The mean serial interval for the **early** half of the case-pairs is 5.478, with a standard deviation of 3.285, and a median of 4.5. The mean serial interval for the **late** half of the case-pairs is 4.179, with a standard deviation of 3.323, and a median of 3.
 
-This version of the Cleveland dotplot shows which half of the case-pairs was used to calculate each summary statistic.
+**Fig6b:** This version of the Cleveland dotplot shows which half of the case-pairs was used to calculate each summary statistic.
 
 ```r
 ###  Cleveland dotplot of raw serial intervals, facetted by portion of dataset used to do mean, median and sd calculations
@@ -1428,7 +1455,7 @@ p2
 
 ```r
 # Write to PDF
-# pdf("final_figures/Dotplot_raw_serial_intervals_Tianjin_facetted_in_half.pdf", 
+# pdf("final_figures/Fig6b_Dotplot_raw_serial_intervals_Tianjin_facetted_in_half.pdf", 
      #family = "Times", 
 #     width = 8.5, height = 11)
 
@@ -2314,7 +2341,7 @@ ggplot(data=data.frame(days=days, density=sp.density_i), aes(x=days,y=density)) 
     ggtitle("ICC estimate of the Tianjin cluster serial interval \nwith imputed data")
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
 
 ```r
 # ggsave(file="final_figures/tianjin_serialint_imputed.pdf", height = 4, width = 6)
@@ -2387,7 +2414,7 @@ The following makes a histogram of the bootstrapped mean serial interval (using 
 hist(tbestimates_i[,1],breaks = 10)
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
 
 ```r
 bootdf_i=data.frame(mu=tbestimates_i[,1], sig=tbestimates_i[,2])
@@ -2395,7 +2422,7 @@ bootdf_i=data.frame(mu=tbestimates_i[,1], sig=tbestimates_i[,2])
 ggplot(bootdf_i, aes(x=mu, y=sig)) + geom_point()
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-34-2.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-35-2.png)<!-- -->
 
 ```r
 ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
@@ -2405,7 +2432,7 @@ ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-34-3.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-35-3.png)<!-- -->
 
 ```r
 # ggsave(file = "final_figures/bootst_SI_tianjin_imputed.pdf", width = 6, height = 4)
@@ -2430,7 +2457,7 @@ for (n in 1:100) {
 hist(Rs,breaks = 30)
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
 
 ```r
 mean(Rs)
@@ -2452,7 +2479,7 @@ sd(Rs)
 hist(Rs)
 ```
 
-![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-35-2.png)<!-- -->
+![](tianjin_serial_intervals_revised_files/figure-html/unnamed-chunk-36-2.png)<!-- -->
 
 ```r
 quantile(Rs, probs = c(0.025, 0.975))

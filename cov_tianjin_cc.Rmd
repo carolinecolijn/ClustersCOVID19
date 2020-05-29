@@ -247,7 +247,7 @@ length(which(mysamps[,1]-mysamps[,2] <0))/nrow(mysamps)
 EARLY : resample from the gamma fit for the incubation period, and a little from the 21, 0.2 from the SI, and create a histogram for pre-symp transmission. This could go in the paper. 
 
 ```{r}
-load("~/ClustersCOVID19/tianjin_inc_fits.Rdata")
+load("data/tianjin_inc_fits.Rdata")
 incparsamps = exp(rmvnorm(n=100,
                           mean = Eallthree$myfit_gamma$coefficients,
                           sigma=Eallthree$myfit$var))

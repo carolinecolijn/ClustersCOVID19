@@ -383,7 +383,7 @@ for (kk in 1:Nboot) {
 #save(bestimates, file = "data/sing_boots_100.Rdata")
 ```
 
-**Appendix Figure 1**
+**Appendix Figure 1b**
 ```{r, eval=TRUE}
 load("data/sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE 
 hist(bestimates[,1],breaks = 30)
@@ -474,7 +474,10 @@ medL = with(mynpsurv,
 ll = max(which(mynpsurv$CI.lower.F < 0.5))
 medU = with(mynpsurv,
               time[ll] + ( time[ll+1]-time[ll])*(0.5-CI.lower.F[ll])/(CI.lower.F[ll+1]-CI.lower.F[ll]))
+```
 
+**Table 1 (serial interval estimates, without intermediates)** 
+```{r}
 #
 # mean surv time is area under survival curve , approx by 
 mynpsurv$Survival[1] + sum( diff( mynpsurv$time)*mynpsurv$Survival[-1]) # does depend on trunc time , but if feb 20, then 3.73. not far off of raw mean
@@ -637,6 +640,7 @@ To determine an estimate of the raw serial intevals, we will find the mean, medi
 #sd(directSI)
 ```
 
+**Table 1 serial interval estimates (without intermediates):**
 
 ```{r}
 ### Arrange the dataset by the date of earliest symptom onset for each case pair
@@ -704,7 +708,7 @@ l <- undir_dates %>%
 
 The mean serial interval for the **early** half of the case-pairs is `r e$mean_early`, with a standard deviation of `r e$sd_early`, and a median of `r e$median_early`. The mean serial interval for the **late** half of the case-pairs is `r l$mean_late`, with a standard deviation of `r l$sd_late`, and a median of `r l$median_late`.
 
-**Fig6a** This version of the Cleveland dotplot shows which half of the case-pairs was used to calculate each summary statistic.
+**Fig6a:** This version of the Cleveland dotplot shows which half of the case-pairs was used to calculate each summary statistic.
 
 ```{r Cleveland dotplot facetted by half for mean calculations}
 ###  Cleveland dotplot of raw serial intervals, facetted by portion of dataset used to do mean, median and sd calculations

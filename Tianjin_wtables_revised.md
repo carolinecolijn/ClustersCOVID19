@@ -16,7 +16,7 @@ Thanks to Dongxuan Chen and Louxin Zhang. These data are from three main sources
 
 * source1: http://wsjk.tj.gov.cn/col/col87/index.html#!uid=259&pageNum=1 (Tianjin health commission official website, for daily announcements)
 
-* source2: https://weibo.com/u/2967529507 (Jinyun News, Tianjin offical local media weibo account, for patient symptom onset reference)
+* source2: https://www.weibo.com/u/2967529507?is_all=1 (Jinyun News, Tianjin offical local media weibo account, for patient symptom onset reference)
 
 * source3: https://m.weibo.cn/status/IrrHI1FHm?jumpfrom=weibocom (another Tianjin local media weibo link, for mall cluster reference)
 
@@ -148,7 +148,7 @@ We want to report (1) the parameters for these fits and the quantiles (including
 
 Then we want to report (2) the resulting mean (95% CI for the mean). This describes our uncertainty in the distribution. 
 
-(1) For the point estimates, get the parameters and quantiles for these  distributions. For Weibull and gamma distributions, the two parameters are shape and scale. For log normal they are mu and sdlog. 
+(1) **Appendix Table 1:** For the point estimates, get the parameters and quantiles for these  distributions. For Weibull and gamma distributions, the two parameters are shape and scale. For log normal they are mu and sdlog. 
 
 
 ```r
@@ -218,7 +218,7 @@ return(list(par1=par1,par2=par2, par1range=par1range, par2range=par2range, means
 }
 ```
 
-**Table 1 (without intermediates)** for parameters and their CIs, and the  mean incubation period and its CI, for unstratified data: 
+**Table 1 (without intermediates) and Appendix Table 1** for parameters and their CIs, and the  mean incubation period and its CI, for unstratified data: 
 
 
 ```r
@@ -316,7 +316,7 @@ ggs$plot +geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn))
 ```
 
 
-### Stratified early and late (Table 1 and Figure 4a below panel for manuscript)
+### Stratified early and late (Table 1 and Figure 4b below panel for manuscript)
 Finally, we want to do this all again but stratifying the data between early occurring cases and late. This is why we used functions in the above, though it was clumsy. 
 
 
@@ -361,7 +361,7 @@ getQuantileDF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
 ## 3 Log normal  2.48  0.233    7.60   10.2  12.0   14.0    18.9
 ```
 
-EARLY: how variable are these point estimates? Look at mean and 95\% CI (**Table 1 (without intermediates)**)
+EARLY: how variable are these point estimates? Look at mean and 95\% CI (**Table 1 (without intermediates) and Appendix Table 2**)
 
 
 ```r
@@ -375,7 +375,7 @@ getMeanCI_DF(Eallthree[[1]],Eallthree[[2]], Eallthree[[3]])
 ## 3  1.84      1.70      2.03 0.426     0.331     0.547  6.93      5.96      8.03
 ```
 
-LATE: how variable are these point estimates? Look at mean and 95\% CI (**Table 1 (without intermediates)**)
+LATE: how variable are these point estimates? Look at mean and 95\% CI (**Table 1 (without intermediates) and Appendix Table 2**)
 
 
 ```r
@@ -393,12 +393,12 @@ getMeanCI_DF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
 ## 3      13.7
 ```
 
-### Generating Figure 3b (lower panel) for manuscript (stratified into early and late)
+### Generating Figure 4b (lower panel) for manuscript (stratified into early and late)
 This is to plot the Kaplan-Meier survival curves and estimated probability distribution of days post-infection for a case not to be showing symptoms yet, when stratifying the data pre and post quarantine procedures in China. As per tables above, the symptom onset date of on or before Jan 31, 2020 is the cut-off for what defines an "early" case. 
 
 
 ```r
-#Generating Figure 3 for the paper
+#Generating Figure 4 for the paper
 tdays=seq(0,20,by=0.05)
 
 fit1<-survfit(Surv(earlydata$minIncTimes, earlydata$maxIncTimes, type="interval2")~1, data=earlydata)

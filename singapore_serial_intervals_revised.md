@@ -1,7 +1,7 @@
 ---
 title: "Singapore Serial Intervals - Revisions"
 author: "Caroline Colijn, Michelle Coombe, Manu Saraswat and Jessica Stockdale"
-date: "2020-05-26"
+date: "2020-05-29"
 output: 
   html_document:  
     keep_md: TRUE
@@ -26,31 +26,31 @@ glimpse(spdata)
 ```
 ## Observations: 93
 ## Variables: 25
-## $ CaseID                 <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, ...
-## $ `Related cases`        <chr> "2,3", "1,3", "1,2", "13", "11", NA, NA...
-## $ `Cluster links`        <chr> NA, NA, NA, NA, NA, NA, NA, NA, "9,31,3...
-## $ `Relationship notes`   <chr> NA, NA, "Son of 1", "Daughter of 13", N...
-## $ Case                   <chr> "Case 1, 66M, Wuhan", "Case 2, 53F, Wuh...
-## $ age                    <dbl> 66, 53, 37, 42, 36, 56, 56, 35, 56, 56,...
-## $ sex                    <chr> "M", "F", "M", "F", "M", "F", "M", "M",...
-## $ country                <chr> "Singapore", "Singapore", "Singapore", ...
-## $ hospital               <chr> "Singapore General Hospital", "National...
-## $ presumed_infected_date <dttm> 2020-01-20, 2020-01-20, 2020-01-20, 20...
-## $ presumed_reason        <chr> "Arrived from Wuhan", "Arrived from Wuh...
-## $ last_poss_exposure     <date> 2020-01-20, 2020-01-20, 2020-01-20, 20...
-## $ contact_based_exposure <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
-## $ start_source           <date> 2019-12-31, 2020-01-01, 2020-01-03, NA...
-## $ end_source             <date> 2020-01-20, 2020-01-20, 2020-01-20, 20...
-## $ date_onset_symptoms    <date> 2020-01-20, 2020-01-21, 2020-01-23, NA...
-## $ date_quarantine        <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
-## $ date_hospital          <date> 2020-01-22, 2020-01-22, 2020-01-23, 20...
-## $ date_confirmation      <date> 2020-01-23, 2020-01-24, 2020-01-24, 20...
-## $ outcome                <chr> "Discharged", "Discharged", "Discharged...
-## $ date_discharge         <date> 2020-02-19, 2020-02-07, 2020-02-21, 20...
-## $ travel_history         <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wu...
-## $ additional_information <chr> "Travelled with Case 3 (son) and M1 (wi...
-## $ cluster                <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wu...
-## $ citizenship            <chr> "China", "China", "China", "China", "Ch...
+## $ CaseID                 <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,…
+## $ `Related cases`        <chr> "2,3", "1,3", "1,2", "13", "11", NA, NA, NA, "…
+## $ `Cluster links`        <chr> NA, NA, NA, NA, NA, NA, NA, NA, "9,31,33,38,83…
+## $ `Relationship notes`   <chr> NA, NA, "Son of 1", "Daughter of 13", NA, NA, …
+## $ Case                   <chr> "Case 1, 66M, Wuhan", "Case 2, 53F, Wuhan", "C…
+## $ age                    <dbl> 66, 53, 37, 42, 36, 56, 56, 35, 56, 56, 56, 31…
+## $ sex                    <chr> "M", "F", "M", "F", "M", "F", "M", "M", "F", "…
+## $ country                <chr> "Singapore", "Singapore", "Singapore", "Singap…
+## $ hospital               <chr> "Singapore General Hospital", "National Centre…
+## $ presumed_infected_date <dttm> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
+## $ presumed_reason        <chr> "Arrived from Wuhan", "Arrived from Wuhan", "A…
+## $ last_poss_exposure     <date> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
+## $ contact_based_exposure <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ start_source           <date> 2019-12-31, 2020-01-01, 2020-01-03, NA, 2020-…
+## $ end_source             <date> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
+## $ date_onset_symptoms    <date> 2020-01-20, 2020-01-21, 2020-01-23, NA, 2020-…
+## $ date_quarantine        <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 2…
+## $ date_hospital          <date> 2020-01-22, 2020-01-22, 2020-01-23, 2020-01-2…
+## $ date_confirmation      <date> 2020-01-23, 2020-01-24, 2020-01-24, 2020-02-0…
+## $ outcome                <chr> "Discharged", "Discharged", "Discharged", "Dis…
+## $ date_discharge         <date> 2020-02-19, 2020-02-07, 2020-02-21, 2020-02-0…
+## $ travel_history         <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wuhan", "…
+## $ additional_information <chr> "Travelled with Case 3 (son) and M1 (wife) ;MO…
+## $ cluster                <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wuhan", "…
+## $ citizenship            <chr> "China", "China", "China", "China", "China", "…
 ```
 
 ```r
@@ -472,12 +472,10 @@ table(spdata$presumed_reason_group)
 
 ```
 ## 
-##     Grace Assembly of God     Grand Hyatt Singapore 
-##                        22                         3 
-##        Known relationship               Life Church 
-##                         6                         6 
-## Seletar Aerospace Heights                   Unknown 
-##                         5                        16 
+##     Grace Assembly of God     Grand Hyatt Singapore        Known relationship 
+##                        22                         3                         6 
+##               Life Church Seletar Aerospace Heights                   Unknown 
+##                         6                         5                        16 
 ##              Wuhan travel            Yong Thai Hang 
 ##                        17                         8
 ```
@@ -514,9 +512,9 @@ glimpse(nodes.df)
 ```
 ## Observations: 83
 ## Variables: 3
-## $ id    <fct> case1, case2, case3, case4, case5, case6, case7, case8, ...
-## $ label <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 1...
-## $ group <fct> Wuhan travel, Wuhan travel, Wuhan travel, Wuhan travel, ...
+## $ id    <fct> case1, case2, case3, case4, case5, case6, case7, case8, case9, …
+## $ label <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 17, 48, …
+## $ group <fct> Wuhan travel, Wuhan travel, Wuhan travel, Wuhan travel, Wuhan t…
 ```
 
 ```r
@@ -538,18 +536,16 @@ ccs
 
 ```
 ## $membership
-##  case1  case2  case3  case4 case11  case8  case9 case83 case90 case38 
-##      1      1      1      2      2      3      3      3      3      3 
-## case33 case12 case18 case13 case54 case57 case58 case61 case67 case66 
-##      3      4      4      1      5      5      5      6      6      3 
-## case68 case70 case71 case80 case51 case73 case84 case88 case30 case36 
-##      3      3      3      3      7      7      3      3      8      8 
-## case39 case50 case77 case59 case72 case79 case82 case86 case42 case69 
-##      8      9      9     10     10     10     11     11     12     12 
-## case47 case52 case44 case19 case21 case24 case27 case40 case20 case34 
-##     12     12      1     13     13     13     13     13     13     13 
-## case91 case31 case55 case56 case25 
-##      3      3      9     12     13 
+##  case1  case2  case3  case4 case11  case8  case9 case83 case90 case38 case33 
+##      1      1      1      2      2      3      3      3      3      3      3 
+## case12 case18 case13 case54 case57 case58 case61 case67 case66 case68 case70 
+##      4      4      1      5      5      5      6      6      3      3      3 
+## case71 case80 case51 case73 case84 case88 case30 case36 case39 case50 case77 
+##      3      3      7      7      3      3      8      8      8      9      9 
+## case59 case72 case79 case82 case86 case42 case69 case47 case52 case44 case19 
+##     10     10     10     11     11     12     12     12     12      1     13 
+## case21 case24 case27 case40 case20 case34 case91 case31 case55 case56 case25 
+##     13     13     13     13     13     13      3      3      9     12     13 
 ## 
 ## $csize
 ##  [1]  5  2 15  2  3  2  2  3  3  3  2  5  8
@@ -598,7 +594,7 @@ icc6 = getICCs(spdata,ccs,6)
 icc_expose = getICCs(spdata, ccs, 4, orderby ="exposure")
 ```
 
-#### Serial inteval estimates (Table 1 and Table S3) 
+#### Serial inteval estimates (Table 1 accounting for intermediates and Appendix Table 3) 
 Note that the first 4 rows is with using the first 3 to 6 cases per cluster, based on ordering by date of symptom onset; while the last row is with 4 cases per cluster, but ordered by date in the 'end_source' (end of presumed exposure window) column instead.
 
 
@@ -1167,7 +1163,7 @@ ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) + 
 
 Notice that the serial interval gets longer if we include more cases per cluster (because the mixture of 4 pathways in Vink et al does not include longer transmission chains, which forces the assumption that everyone in the cluster was infected by the initial case, which in turn lengthens the estimated serial interval). We do not know the true infection pathways but it is reasonable not to constrain the model to enforce that most are infected by the first few cases. 
 
-**The mean SI (using first 4 cases per cluster) is 4.166.** The standard deviation of the serial intervals is 1.057.
+**The mean SI (using first 4 cases per cluster, accounting for intermediates) is 4.166.** The standard deviation of the serial intervals is 1.057.
 
 #### Determining the confidence interval for the mean serial interval 
 We need CIs for the mean. For this we use bootstrapping. The bootstrapping is done on the serial interval estimate with 4 cases per cluster and ordered by date of symptom onset.
@@ -1188,9 +1184,10 @@ for (kk in 1:Nboot) {
 }
 
 #bestimates <- bestimates[-1, ] #Remove the non-bootstrapped row (i.e. the myest4 object)
-save(bestimates, file = "data/sing_boots_100.Rdata")
+#save(bestimates, file = "data/sing_boots_100.Rdata")
 ```
 
+**Appendix Figure 1b**
 
 ```r
 load("data/sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE 
@@ -1262,7 +1259,7 @@ sd(bestimates[,2]) #sd of the sd serial intervals
 ## [1] 0.538
 ```
 The mean of the mean serial intervals is 3.83 days and the standard deviation of these means is 0.882. 
-**The bootstrapped 95% range for the mean serial interval is (2.438, 5.894).**
+**The bootstrapped 95% range for the mean serial interval (accounting for intermediates) is (2.438, 5.894).**
 
 
 ## Effect of time on serial interval estimates
@@ -1289,13 +1286,6 @@ CC exploring right truncation
 
 ```r
 library(SurvTrunc)
-```
-
-```
-## Warning: package 'SurvTrunc' was built under R version 3.6.3
-```
-
-```r
 mytest = data.frame(stee=undir_dates$to_sympt_date,
                     stor =undir_dates$from_sympt_date, 
                     time_diff = 0)
@@ -1384,7 +1374,11 @@ medL = with(mynpsurv,
 ll = max(which(mynpsurv$CI.lower.F < 0.5))
 medU = with(mynpsurv,
               time[ll] + ( time[ll+1]-time[ll])*(0.5-CI.lower.F[ll])/(CI.lower.F[ll+1]-CI.lower.F[ll]))
+```
 
+**Table 1 (serial interval estimates, without intermediates)** 
+
+```r
 #
 # mean surv time is area under survival curve , approx by 
 mynpsurv$Survival[1] + sum( diff( mynpsurv$time)*mynpsurv$Survival[-1]) # does depend on trunc time , but if feb 20, then 3.73. not far off of raw mean
@@ -1497,7 +1491,7 @@ ggplot(g_dates, aes(x = earliest_sympt_onset, y = serial_interval)) +
        x = "Date of first onset of symptoms within case pairs")
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
 
 ```r
 ### B) Histogram  - count of serial intervals on the y-axis
@@ -1536,7 +1530,7 @@ ggplot(sig_dates, aes(x = earliest_sympt_onset, y = count_sig, fill = serial_int
        x = "Date of first onset of symptoms within case pairs")
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-23-2.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-24-2.png)<!-- -->
 
 ```r
 ###~~~~~~~~~~~ C) Cleveland dotplot of raw serial intervals per possible case pair ~~~~~~~~~~~~~~~~~~~~~~~~~~~~###
@@ -1580,7 +1574,7 @@ p <- ggplot(undir_dotplot, aes(y = reorder(pairID, earliest_sympt_onset))) +
 p
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-23-3.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-24-3.png)<!-- -->
 
 ```r
 # Write to PDF
@@ -1605,6 +1599,7 @@ To determine an estimate of the raw serial intevals, we will find the mean, medi
 #sd(directSI)
 ```
 
+**Table 1 serial interval estimates (without intermediates):**
 
 
 ```r
@@ -1674,7 +1669,7 @@ l <- undir_dates %>%
 
 The mean serial interval for the **early** half of the case-pairs is 4.436, with a standard deviation of 3.698, and a median of 4. The mean serial interval for the **late** half of the case-pairs is 3.176, with a standard deviation of 2.404, and a median of 3.
 
-This version of the Cleveland dotplot shows which half of the case-pairs was used to calculate each summary statistic.
+**Fig6a:** This version of the Cleveland dotplot shows which half of the case-pairs was used to calculate each summary statistic.
 
 
 ```r
@@ -1716,7 +1711,7 @@ p2
 
 ```r
 # Write to PDF
-# pdf("final_figures/Dotplot_raw_serial_intervals_Singapore_facetted_in_half.pdf", 
+# pdf("final_figures/Fig6a_Dotplot_raw_serial_intervals_Singapore_facetted_in_half.pdf", 
      #family = "Times", 
 #   width = 8.5, height = 11)
 
@@ -1725,7 +1720,7 @@ p2
 # dev.off()
 ```
 
-## Imputataion of missing data (Supplementary materials and Table S5)
+## Imputataion of missing data (Appendix and Appendix Table 5)
 We want to see what the effect of cases with missing dates of symptom onset has on our estimates of serial intervals. To do this, we will impute the missing data by:
 missing date of symptom onset = confirmation date - mean(confirmation data- symptom onset date)...where the mean is taken over the cases that do have a symptom onset date present. We will use the copy made of the original data so that we can repeat the full estimation process using the data with imputed dates of symptom onset.
 
@@ -1771,10 +1766,10 @@ table(spdata_org$date_confirmation[no_date])
 
 ```
 ## 
-## 2020-01-31 2020-02-03 2020-02-04 2020-02-05 2020-02-10 2020-02-14 
-##          1          2          1          1          1          1 
-## 2020-02-16 2020-02-21 
-##          2          1
+## 2020-01-31 2020-02-03 2020-02-04 2020-02-05 2020-02-10 2020-02-14 2020-02-16 
+##          1          2          1          1          1          1          2 
+## 2020-02-21 
+##          1
 ```
 
 ```r
@@ -1963,12 +1958,10 @@ table(imp_data$presumed_reason_group)
 
 ```
 ## 
-##     Grace Assembly of God     Grand Hyatt Singapore 
-##                        22                         3 
-##        Known relationship               Life Church 
-##                         8                         6 
-## Seletar Aerospace Heights                   Unknown 
-##                         5                        16 
+##     Grace Assembly of God     Grand Hyatt Singapore        Known relationship 
+##                        22                         3                         8 
+##               Life Church Seletar Aerospace Heights                   Unknown 
+##                         6                         5                        16 
 ##              Wuhan travel            Yong Thai Hang 
 ##                        24                         9
 ```
@@ -1988,9 +1981,9 @@ glimpse(nodes.df.i)
 ```
 ## Observations: 93
 ## Variables: 3
-## $ id    <fct> case1, case2, case3, case26, case4, case5, case6, case7,...
-## $ label <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 1...
-## $ group <fct> Wuhan travel, Wuhan travel, Wuhan travel, Wuhan travel, ...
+## $ id    <fct> case1, case2, case3, case26, case4, case5, case6, case7, case8,…
+## $ label <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 18, 45, …
+## $ group <fct> Wuhan travel, Wuhan travel, Wuhan travel, Wuhan travel, Wuhan t…
 ```
 
 ```r
@@ -2012,20 +2005,18 @@ ccs_imp
 
 ```
 ## $membership
-##  case1  case2  case3 case13 case26  case4 case11  case8  case9 case83 
-##      1      1      1      1      1      2      2      3      3      3 
-## case90 case38 case33 case12 case18 case76 case87 case22 case23 case54 
-##      3      3      3      4      4      5      5      6      6      7 
-## case57 case58 case61 case67 case66 case68 case70 case71 case80 case51 
-##      7      7      8      8      3      3      3      3      3      9 
-## case73 case84 case88 case30 case36 case39 case50 case65 case77 case59 
-##      9      3      3     10     10     10     11     11     11     12 
-## case72 case79 case82 case86 case42 case69 case47 case52 case44 case41 
-##     12     12     13     13     14     14     14     14      1     15 
-## case75 case55 case19 case21 case24 case27 case28 case40 case20 case34 
-##     15     11     16     16     16     16     16     16     16     16 
-## case91 case31 case56 case25 
-##      3      3     14     16 
+##  case1  case2  case3 case13 case26  case4 case11  case8  case9 case83 case90 
+##      1      1      1      1      1      2      2      3      3      3      3 
+## case38 case33 case12 case18 case76 case87 case22 case23 case54 case57 case58 
+##      3      3      4      4      5      5      6      6      7      7      7 
+## case61 case67 case66 case68 case70 case71 case80 case51 case73 case84 case88 
+##      8      8      3      3      3      3      3      9      9      3      3 
+## case30 case36 case39 case50 case65 case77 case59 case72 case79 case82 case86 
+##     10     10     10     11     11     11     12     12     12     13     13 
+## case42 case69 case47 case52 case44 case41 case75 case55 case19 case21 case24 
+##     14     14     14     14      1     15     15     11     16     16     16 
+## case27 case28 case40 case20 case34 case91 case31 case56 case25 
+##     16     16     16     16     16      3      3     14     16 
 ## 
 ## $csize
 ##  [1]  6  2 15  2  2  2  3  2  2  3  4  3  2  5  2  9
@@ -2631,7 +2622,7 @@ ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) +
     ggtitle("ICC estimate of the Singapore cluster serial interval \nwith imputed data")
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
 
 ```r
 # ggsave(file="final_figures/sing_serialint_imputed.pdf", height = 4, width = 6)
@@ -2666,14 +2657,14 @@ load("data/sing_boots_100_imputed.Rdata") # in case in Rmd with above evals set 
 hist(bestimates_i[ ,1], breaks = 30)
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
 
 ```r
 bootdf_i = data.frame(mu=bestimates_i[,1], sig=bestimates_i[,2])
 ggplot(bootdf_i, aes(x=mu, y=sig)) + geom_point()
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-35-2.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-36-2.png)<!-- -->
 
 ```r
 ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
@@ -2683,7 +2674,7 @@ ggplot(bootdf_i, aes(x=mu)) + geom_histogram()
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-35-3.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-36-3.png)<!-- -->
 
 ```r
 # ggsave(file = "final_figures/bootst_SI_sing_imputed.pdf", width = 6, height = 4)
@@ -2754,7 +2745,7 @@ for (n in 1:100) {
 hist(Rs,breaks = 30)
 ```
 
-![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-37-1.png)<!-- -->
+![](singapore_serial_intervals_revised_files/figure-html/unnamed-chunk-38-1.png)<!-- -->
 
 ```r
 mean(Rs)
