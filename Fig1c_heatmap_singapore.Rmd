@@ -1,0 +1,106 @@
+---
+ title: "Progression Heatmap Data Preprocessing & Plotting"
+ author: "Venus Lau; Yen-Hsiang (Brian) Lee, Lauren Tindale"
+ date: "19/02/2020"
+ updated: "23/02/2020"
+ output: 
+  html_document:
+    keep_md: TRUE
+ ---
+
+#Preprocessing: formatting table for heatmap
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(here)
+# data<-read.table("data/COVID-19_Singapore_Heatmap-table.tsv", header = TRUE, sep = "\t")
+data_pre <- read.csv("data/COVID-19_Singapore_Heatmap-table.csv")
+data$case <- gsub('Case ', '', data$case)
+
+data_long <- data %>% gather(key=date, value=status, starts_with("X"))
+
+data_long$date <- gsub('X', '0', data_long$date)
+data_long$date <- gsub('\\.', '\\/', data_long$date)
+data_long$date <- as.Date(data_long$date, "%m/%d/%Y")
+
+#write.csv(data_long, "data/COVID-19_Singapore_Heatmap_long_26-02-2020.csv")
+
+```
+
+#Plotting
+Emma G just used from here downwards, didn't do any of the above preprocessing because I edited COVID-19_Singapore_Heatmap_long_26-02-2020.csv
+```{r }
+library(ggplot2)
+library(viridis)
+library(plotly)
+
+data <- read.csv("data/COVID-19_Singapore_Heatmap_long_18-05-2020.csv")
+data$date <- factor(data$date, levels=unique(data$date))
+data$case <- factor(data$case, levels=unique(data$case))
+
+data$status_word=ifelse(data$status == 0,"Unexposed",
+                         ifelse(data$status == 1,"Exposed",
+                                ifelse(data$status == 2,"Symptomatic",
+                                       ifelse(data$status == 3,"Hospitalized","Discharged"))))
+
+#write.csv(data, "data/COVID-19_Singapore_Heatmap_plot.csv")
+
+p1 <- ggplot(
+  data, 
+  # aes(x = date, y = case, fill = status_word,
+  aes(x = date, y = case, fill = status,
+      text = paste("Case: ", case_detailed,
+                   "<br>Date: ", date,
+                   "<br>Status: ", status_word,
+                   "<br>Cluster: ", cluster,
+                   "<br>Citizenship: ", citizenship))) +
+  geom_tile() +
+  xlab(label = "Date") +
+  ylab(label = "Cases") +
+  ggtitle("COVID-19 Progression Amongst Singapore Cases") +
+  labs(fill = "Status") + #tile fill legend label
+  theme(plot.title = element_text(hjust = 0.5)) + #centre main title
+  theme(axis.text.x = element_text(angle = 60, hjust = 0.6, size = 8),
+        axis.ticks.x = element_blank(), #remove x axis ticks
+        axis.ticks.y = element_blank()) + #remove y axis ticks
+  # scale_fill_viridis_d(direction = -1) +
+  scale_fill_viridis_c(direction = 1) +
+  theme(panel.background = element_rect(fill = "white"))
+
+ggplotly(p1,tooltip = 'text')
+
+```
+
+
+```{r}
+
+p_static=ggplot(
+  data, 
+  # aes(x = date, y = case, fill = status_word,
+  aes(x = date, y = case, fill = status_word,
+      text = paste("Case: ", case_detailed,
+                   "<br>Date: ", date,
+                   "<br>Status: ", status_word,
+                   "<br>Cluster: ", cluster,
+                   "<br>Citizenship: ", citizenship))) +
+  geom_tile() +
+  xlab(label = "Date") +
+  ylab(label = "Cases") +
+  ggtitle("COVID-19 Progression Amongst Singapore Cases") +
+  labs(fill = "Status") + #tile fill legend label
+  theme(plot.title = element_text(hjust = 0.5)) + #centre main title
+  theme(axis.text.x = element_text(angle = 60, hjust = 0.6, size = 8),
+        axis.ticks.x = element_blank(), #remove x axis ticks
+        axis.ticks.y = element_blank()) + #remove y axis ticks
+  # scale_fill_viridis_d(direction = -1) +
+  scale_fill_viridis_d(direction = -1,breaks=c("Unexposed","Exposed","Symptomatic","Hospitalized","Discharged")) +
+  theme(panel.background = element_rect(fill = "white"),
+        axis.text.y = element_text(size=6),
+        axis.text.x = element_text(hjust=1))
+
+p_static
+
+#ggsave("final_figures/Fig1c_heatmap_singapore.pdf",plot=p_static, device="pdf",width = 12,height = 8,units="in")
+
+```
+ 

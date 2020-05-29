@@ -331,7 +331,7 @@ icc6 = getICCs(spdata,ccs,6)
 icc_expose = getICCs(spdata, ccs, 4, orderby ="exposure")
 ```
 
-#### Serial inteval estimates (Table 1 and Table S3) 
+#### Serial inteval estimates (Table 1 accounting for intermediates and Appendix Table 3) 
 Note that the first 4 rows is with using the first 3 to 6 cases per cluster, based on ordering by date of symptom onset; while the last row is with 4 cases per cluster, but ordered by date in the 'end_source' (end of presumed exposure window) column instead.
 
 ```{r}
@@ -360,7 +360,7 @@ ggplot(data=data.frame(days=days, density=sp.density), aes(x=days,y=density)) + 
 
 Notice that the serial interval gets longer if we include more cases per cluster (because the mixture of 4 pathways in Vink et al does not include longer transmission chains, which forces the assumption that everyone in the cluster was infected by the initial case, which in turn lengthens the estimated serial interval). We do not know the true infection pathways but it is reasonable not to constrain the model to enforce that most are infected by the first few cases. 
 
-**The mean SI (using first 4 cases per cluster) is `r myest4[1]`.** The standard deviation of the serial intervals is `r myest4[2]`.
+**The mean SI (using first 4 cases per cluster, accounting for intermediates) is `r myest4[1]`.** The standard deviation of the serial intervals is `r myest4[2]`.
 
 #### Determining the confidence interval for the mean serial interval 
 We need CIs for the mean. For this we use bootstrapping. The bootstrapping is done on the serial interval estimate with 4 cases per cluster and ordered by date of symptom onset.
@@ -380,9 +380,10 @@ for (kk in 1:Nboot) {
 }
 
 #bestimates <- bestimates[-1, ] #Remove the non-bootstrapped row (i.e. the myest4 object)
-save(bestimates, file = "data/sing_boots_100.Rdata")
+#save(bestimates, file = "data/sing_boots_100.Rdata")
 ```
 
+**Appendix Figure 1**
 ```{r, eval=TRUE}
 load("data/sing_boots_100.Rdata") # in case in Rmd with above evals set to FALSE 
 hist(bestimates[,1],breaks = 30)
@@ -402,7 +403,7 @@ mean(bestimates[,2]) # mean of the sd serial intervals
 sd(bestimates[,2]) #sd of the sd serial intervals
 ```
 The mean of the mean serial intervals is `r mean(bestimates[,1])` days and the standard deviation of these means is `r sd(bestimates[,1])`. 
-**The bootstrapped 95% range for the mean serial interval is (`r myest4[1]-1.96*sd(bestimates[,1])`, `r myest4[1]+1.96*sd(bestimates[,1])`).**
+**The bootstrapped 95% range for the mean serial interval (accounting for intermediates) is (`r myest4[1]-1.96*sd(bestimates[,1])`, `r myest4[1]+1.96*sd(bestimates[,1])`).**
 
 
 ## Effect of time on serial interval estimates
@@ -703,7 +704,7 @@ l <- undir_dates %>%
 
 The mean serial interval for the **early** half of the case-pairs is `r e$mean_early`, with a standard deviation of `r e$sd_early`, and a median of `r e$median_early`. The mean serial interval for the **late** half of the case-pairs is `r l$mean_late`, with a standard deviation of `r l$sd_late`, and a median of `r l$median_late`.
 
-This version of the Cleveland dotplot shows which half of the case-pairs was used to calculate each summary statistic.
+**Fig6a** This version of the Cleveland dotplot shows which half of the case-pairs was used to calculate each summary statistic.
 
 ```{r Cleveland dotplot facetted by half for mean calculations}
 ###  Cleveland dotplot of raw serial intervals, facetted by portion of dataset used to do mean, median and sd calculations
@@ -740,7 +741,7 @@ p2 <- ggplot(undir_dotplot2, aes(y = reorder(pairID, earliest_sympt_onset))) +
 p2
 
 # Write to PDF
-# pdf("final_figures/Dotplot_raw_serial_intervals_Singapore_facetted_in_half.pdf", 
+# pdf("final_figures/Fig6a_Dotplot_raw_serial_intervals_Singapore_facetted_in_half.pdf", 
      #family = "Times", 
 #   width = 8.5, height = 11)
 
@@ -749,7 +750,7 @@ p2
 # dev.off()
 ```
 
-## Imputataion of missing data (Supplementary materials and Table S5)
+## Imputataion of missing data (Appendix and Appendix Table 5)
 We want to see what the effect of cases with missing dates of symptom onset has on our estimates of serial intervals. To do this, we will impute the missing data by:
 missing date of symptom onset = confirmation date - mean(confirmation data- symptom onset date)...where the mean is taken over the cases that do have a symptom onset date present. We will use the copy made of the original data so that we can repeat the full estimation process using the data with imputed dates of symptom onset.
 

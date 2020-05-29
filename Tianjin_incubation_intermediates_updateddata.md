@@ -1,7 +1,7 @@
 ---
 title: "Testing incubation with intermediate"
 author: "Caroline Colijn, Jessica Stockdale"
-date: "2020-05-26"
+date: "2020-05-29"
 output: 
   html_document:
     keep_md: TRUE
@@ -79,12 +79,11 @@ tdata$maxIncTimes
 
 ```
 ## Time differences in days
-##   [1]  9 20 20 20 20 20 20  4 20  6 20 20 20 20 20 20 20  7  4 20  9 20 20
-##  [24] 20 20 20  8 20 11  9  5 20 20  8 20 20  9  7 11 11 20  3 20 20 20  6
-##  [47] 15 11  7  7 20 20 20  8  9  6 20 20  9 20 20 20 14 11  6  9 20 20  6
-##  [70] 20  3  6 13 12 20  3 11 10 20 20 20 20 20 20 13 20 20 20 20  7 20 20
-##  [93] 20 20 20 20 20 16 20 11 20 20 20 20  3 11 20 19 16 20 17 20 11 20 20
-## [116]  6 19 20 20 14 20 16 20 20 20
+##   [1]  9 20 20 20 20 20 20  4 20  6 20 20 20 20 20 20 20  7  4 20  9 20 20 20 20
+##  [26] 20  8 20 11  9  5 20 20  8 20 20  9  7 11 11 20  3 20 20 20  6 15 11  7  7
+##  [51] 20 20 20  8  9  6 20 20  9 20 20 20 14 11  6  9 20 20  6 20  3  6 13 12 20
+##  [76]  3 11 10 20 20 20 20 20 20 13 20 20 20 20  7 20 20 20 20 20 20 20 16 20 11
+## [101] 20 20 20 20  3 11 20 19 16 20 17 20 11 20 20  6 19 20 20 14 20 16 20 20 20
 ```
 
 ```r
@@ -93,12 +92,11 @@ tdata$minIncTimes
 
 ```
 ## Time differences in days
-##   [1]  0  0  0  0  0  0  1  1  7  4  0  0  0  6  2  0  7  7  4  7  2  3  3
-##  [24] 12  8  5  8  0  7  5  2  3  4  0  4  1  8  1  5  5  0  0  4  1  5  6
-##  [47]  9 11  7  0  8  3  7  8  9  6 14  0  0  0  0  0  1  8  0  9  0  0  6
-##  [70]  0  3  6 12  1  0  3 11 10  0  0  0  0  0  0 13  0 12  0  0  7  0  0
-##  [93]  0  0  0  0  0 16  0  4  0  0  0  0  3 11  0  0  0  0 17  0  4  0  0
-## [116]  6 19  0  0 11  6 16 11  0  2
+##   [1]  0  0  0  0  0  0  1  1  7  4  0  0  0  6  2  0  7  7  4  7  2  3  3 12  8
+##  [26]  5  8  0  7  5  2  3  4  0  4  1  8  1  5  5  0  0  4  1  5  6  9 11  7  0
+##  [51]  8  3  7  8  9  6 14  0  0  0  0  0  1  8  0  9  0  0  6  0  3  6 12  1  0
+##  [76]  3 11 10  0  0  0  0  0  0 13  0 12  0  0  7  0  0  0  0  0  0  0 16  0  4
+## [101]  0  0  0  0  3 11  0  0  0  0 17  0  4  0  0  6 19  0  0 11  6 16 11  0  2
 ```
 
 Define the maximum and minimum exposure times based on these assumptions. These are the times $t_{min}^i$ and $t_{max}^i$ in the notation. 
@@ -314,14 +312,14 @@ boot1=getBootstraps(nboot, tdata,therate = 0.05)
 boot2=getBootstraps(nboot, tdata,therate = 0.1) 
 boot3=getBootstraps(nboot, tdata,therate = 0.15) 
 boot4=getBootstraps(nboot, tdata,therate = 0.2) 
-save(boot1, boot2, boot3, boot4, file = "interbooty2_tianjin.Rdata")
+#save(boot1, boot2, boot3, boot4, file = "data/interbooty2_tianjin.Rdata")
 ```
 
 Table of quantile information
 
 
 ```r
-load("interbooty2_tianjin.Rdata")
+load("data/interbooty2_tianjin.Rdata")
 
 quantile(boot1$isboots*b, p=c(0.025, 0.5, 0.975))
 ```
@@ -399,7 +397,7 @@ quantile(boot4$gsboots*b, p=c(0.025, 0.5, 0.975))
 ```
 
 
-We overlay the previous plots with boxplots for the bootstraps
+We overlay the previous plots with boxplots for the bootstraps (**Figure 5 lower panel**)
 
 
 ```r
@@ -427,7 +425,7 @@ grid.arrange(plot1, plot2, ncol=2)
 ```r
 #save
 g <- arrangeGrob(plot1, plot2, ncol=2) #generates g
-ggsave(filename = "final_figures/incgen_tianjin_shapes.pdf", g, width = 10, height = 6)
+#ggsave(filename = "final_figures/incgen_tianjin_shapes.pdf", g, width = 10, height = 6)
 
 
 # Plot mean estimates instead (scale b=2.2)
@@ -450,7 +448,7 @@ ggplot(df5, aes(x=r, y=Mean.generation.time)) + geom_boxplot(data = gen_bootdata
 ![](Tianjin_incubation_intermediates_updateddata_files/figure-html/unnamed-chunk-15-2.png)<!-- -->
 
 ```r
-ggsave(filename = "final_figures/incgen_tianjin_means.pdf", width = 10, height = 6)
+#ggsave(filename = "final_figures/Fig5lower_incgen_tianjin_means.pdf", width = 10, height = 6)
 ```
 
 Then the remaining question is to see if we want to handle right truncation without intermediate cases. And the uncertainty and so on there. There, we could continue to do the 3 models (gamma, Weibull, lognormal) because without intermediate cases, it's just the CDFs (which we have access to in R). 

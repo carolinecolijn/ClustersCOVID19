@@ -28,31 +28,31 @@ glimpse(spdata)
 ```
 ## Observations: 93
 ## Variables: 25
-## $ CaseID                 <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, ...
-## $ `Related cases`        <chr> "2,3", "1,3", "1,2", "13", "11", NA, NA...
-## $ `Cluster links`        <chr> NA, NA, NA, NA, NA, NA, NA, NA, "9,31,3...
-## $ `Relationship notes`   <chr> NA, NA, "Son of 1", "Daughter of 13", N...
-## $ Case                   <chr> "Case 1, 66M, Wuhan", "Case 2, 53F, Wuh...
-## $ age                    <dbl> 66, 53, 37, 42, 36, 56, 56, 35, 56, 56,...
-## $ sex                    <chr> "M", "F", "M", "F", "M", "F", "M", "M",...
-## $ country                <chr> "Singapore", "Singapore", "Singapore", ...
-## $ hospital               <chr> "Singapore General Hospital", "National...
-## $ presumed_infected_date <dttm> 2020-01-20, 2020-01-20, 2020-01-20, 20...
-## $ presumed_reason        <chr> "Arrived from Wuhan", "Arrived from Wuh...
-## $ last_poss_exposure     <date> 2020-01-20, 2020-01-20, 2020-01-20, 20...
-## $ contact_based_exposure <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
-## $ start_source           <date> 2019-12-31, 2020-01-01, 2020-01-03, NA...
-## $ end_source             <date> 2020-01-20, 2020-01-20, 2020-01-20, 20...
-## $ date_onset_symptoms    <date> 2020-01-20, 2020-01-21, 2020-01-23, NA...
-## $ date_quarantine        <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA...
-## $ date_hospital          <date> 2020-01-22, 2020-01-22, 2020-01-23, 20...
-## $ date_confirmation      <date> 2020-01-23, 2020-01-24, 2020-01-24, 20...
-## $ outcome                <chr> "Discharged", "Discharged", "Discharged...
-## $ date_discharge         <date> 2020-02-19, 2020-02-07, 2020-02-21, 20...
-## $ travel_history         <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wu...
-## $ additional_information <chr> "Travelled with Case 3 (son) and M1 (wi...
-## $ cluster                <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wu...
-## $ citizenship            <chr> "China", "China", "China", "China", "Ch...
+## $ CaseID                 <dbl> 1, 2, 3, 26, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,…
+## $ `Related cases`        <chr> "2,3", "1,3", "1,2", "13", "11", NA, NA, NA, "…
+## $ `Cluster links`        <chr> NA, NA, NA, NA, NA, NA, NA, NA, "9,31,33,38,83…
+## $ `Relationship notes`   <chr> NA, NA, "Son of 1", "Daughter of 13", NA, NA, …
+## $ Case                   <chr> "Case 1, 66M, Wuhan", "Case 2, 53F, Wuhan", "C…
+## $ age                    <dbl> 66, 53, 37, 42, 36, 56, 56, 35, 56, 56, 56, 31…
+## $ sex                    <chr> "M", "F", "M", "F", "M", "F", "M", "M", "F", "…
+## $ country                <chr> "Singapore", "Singapore", "Singapore", "Singap…
+## $ hospital               <chr> "Singapore General Hospital", "National Centre…
+## $ presumed_infected_date <dttm> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
+## $ presumed_reason        <chr> "Arrived from Wuhan", "Arrived from Wuhan", "A…
+## $ last_poss_exposure     <date> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
+## $ contact_based_exposure <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ start_source           <date> 2019-12-31, 2020-01-01, 2020-01-03, NA, 2020-…
+## $ end_source             <date> 2020-01-20, 2020-01-20, 2020-01-20, 2020-01-2…
+## $ date_onset_symptoms    <date> 2020-01-20, 2020-01-21, 2020-01-23, NA, 2020-…
+## $ date_quarantine        <date> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 2…
+## $ date_hospital          <date> 2020-01-22, 2020-01-22, 2020-01-23, 2020-01-2…
+## $ date_confirmation      <date> 2020-01-23, 2020-01-24, 2020-01-24, 2020-02-0…
+## $ outcome                <chr> "Discharged", "Discharged", "Discharged", "Dis…
+## $ date_discharge         <date> 2020-02-19, 2020-02-07, 2020-02-21, 2020-02-0…
+## $ travel_history         <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wuhan", "…
+## $ additional_information <chr> "Travelled with Case 3 (son) and M1 (wife) ;MO…
+## $ cluster                <chr> "Wuhan", "Wuhan", "Wuhan", "Wuhan", "Wuhan", "…
+## $ citizenship            <chr> "China", "China", "China", "China", "China", "…
 ```
 
 ```r
@@ -170,7 +170,7 @@ range(spdata$end_source, na.rm = T)
 spdata <- filter(spdata, !is.na(date_onset_symptoms)) #Remove all the cases that do not have info on date of symptom onset # NOTE: 10 of these
 ```
 
-## Incubation period
+## Incubation period (without accounting for intermediates)
 
 The incubation period is the time between exposure and the onset of symptoms. We estimate this directly from the stated start and end times for cases' exposure windows. These are now explicitly listed for both Tianjin and Singapore datasets in the 'start_source' and 'end_source' columns.
 
@@ -245,9 +245,9 @@ summary(spcopyfit)
 ##     type = "interval2") ~ has_last, data = spcopy, dist = "weibull")
 ## 
 ##              Estimate Exp(Est) Std.Error z-value        p
-## log_shape       0.597    1.817     0.112    5.35 8.82e-08
+## log_shape       0.597    1.817     0.112    5.35 8.81e-08
 ## log_scale       1.941    6.967     0.093   20.87 0.00e+00
-## has_lastTRUE   -0.699    0.497     0.387   -1.80 7.11e-02
+## has_lastTRUE   -0.699    0.497     0.387   -1.80 7.10e-02
 ## 
 ## final llk =  -44.1 
 ## Iterations =  4
@@ -389,7 +389,7 @@ return(list(par1=par1,par2=par2, par1range=par1range, par2range=par2range, means
 }
 ```
 
-Table for unstratified mean incubation period and CI for these fits: 
+**Table 1 (without intermediates)** for unstratified mean incubation period and CI for these fits: 
 
 
 ```r
@@ -427,19 +427,15 @@ getMeanCI_DF(myfit,myfit_gamma,myfit_lnorm)
 ```
 
 ```
-##   par1s par1lower par1upper par2s par2lower par2upper means meanlower
-## 1  1.83      1.45      2.30  6.91     5.766     8.289  6.18      5.16
-## 2  3.05      2.00      3.84  1.95     1.234     2.343  5.99      4.97
-## 3  1.57      1.38      1.81  0.60     0.475     0.759  5.84      4.76
-##   meanupper
-## 1      7.38
-## 2      7.14
-## 3      7.08
+##   par1s par1lower par1upper par2s par2lower par2upper means meanlower meanupper
+## 1  1.83      1.45      2.30  6.91     5.766     8.289  6.18      5.16      7.38
+## 2  3.05      2.00      3.84  1.95     1.234     2.343  5.99      4.97      7.14
+## 3  1.57      1.38      1.81  0.60     0.475     0.759  5.84      4.76      7.08
 ```
 
 Here is a plot of the estimated distribution together with the empirical survival curve from the data. This is Figure 3a (upper panel) in the manuscript.
 
-### Generating figure 3a above panel for paper
+### Generating figure 4a above panel for paper (not stratified)
 This is to plot the Kaplan-Meier survival curve and estimated probability distribution of days post-infection for a case not to be showing symptoms yet (using three possible distributions: weibull, gamma, and log-normal).
 
 
@@ -461,9 +457,10 @@ ggsp$plot+geom_line(data = pdata, aes(x = days, y = fitsurv, color=distn))
 ![](singapore_wtables_revised_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
 
 ```r
-  ggsave(filename = "final_figures/Fig3_inc_Sing_all.pdf", width = 8, height = 6)
+#  ggsave(filename = "final_figures/Fig4a_inc_Sing_all.pdf", width = 8, height = 6)
 ```
 
+### Generating Table 1 and Figure 4a below panel for paper (stratified into early and late)
 Finally, we want to do this all again but stratifying the data between early occurring cases and late. 
 
 
@@ -511,7 +508,7 @@ getQuantileDF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
 ## 3 Log normal 1.55 0.606   1.439   3.14  4.72   7.11    15.5
 ```
 
-EARLY: how variable are these point estimates? Look at mean and 95\% CI
+EARLY: how variable are these point estimates? Look at mean and 95\% CI (**Table 1 (without intermediates)**)
 
 
 ```r
@@ -519,17 +516,13 @@ getMeanCI_DF(Eallthree[[1]],Eallthree[[2]], Eallthree[[3]])
 ```
 
 ```
-##   par1s par1lower par1upper par2s par2lower par2upper means meanlower
-## 1  2.05      1.34      2.58 6.587     5.077     7.897  5.92      4.47
-## 2  3.22      1.67      4.05 1.818     0.847     2.180  5.91      4.50
-## 3  1.59      1.33      1.82 0.598     0.421     0.848  6.02      4.49
-##   meanupper
-## 1      7.62
-## 2      7.64
-## 3      8.03
+##   par1s par1lower par1upper par2s par2lower par2upper means meanlower meanupper
+## 1  2.05      1.34      2.58 6.587     5.077     7.897  5.92      4.47      7.62
+## 2  3.22      1.67      4.05 1.818     0.847     2.180  5.91      4.50      7.64
+## 3  1.59      1.33      1.82 0.598     0.421     0.848  6.02      4.49      8.03
 ```
 
-LATE: how variable are these point estimates? Look at mean and 95\% CI
+LATE: how variable are these point estimates? Look at mean and 95\% CI (**Table 1 (without intermediates)**)
 
 
 ```r
@@ -537,18 +530,14 @@ getMeanCI_DF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
 ```
 
 ```
-##   par1s par1lower par1upper par2s par2lower par2upper means meanlower
-## 1  1.75      1.29      2.21 6.989     5.408     8.380  6.30      4.87
-## 2  2.96      1.68      3.72 2.034     1.132     2.439  6.06      4.70
-## 3  1.55      1.25      1.78 0.606     0.441     0.834  5.79      4.29
-##   meanupper
-## 1      8.09
-## 2      7.67
-## 3      7.63
+##   par1s par1lower par1upper par2s par2lower par2upper means meanlower meanupper
+## 1  1.75      1.29      2.21 6.989     5.408     8.380  6.30      4.87      8.09
+## 2  2.96      1.68      3.72 2.034     1.132     2.439  6.06      4.70      7.67
+## 3  1.55      1.25      1.78 0.606     0.441     0.834  5.79      4.29      7.63
 ```
 
 
-### Generating Fig 3a below panel for the paper
+### Generating Fig 4a below panel for the paper (stratified)
 This is to plot the Kaplan-Meier survival curves and estimated probability distribution of days post-infection for a case not to be showing symptoms yet, when stratifying the data pre and post quarantine procedures in China. As per tables above, having a specified last possible exposure date (which are all on or before Jan 30, 2020) is the cut-off for what defines an "early" case. 
 
 
@@ -563,8 +552,20 @@ fit <- list(early = fit1, late = fit2)
 ggsp2=ggsurvplot(fit, data = spcopy, combine = TRUE, # Combine curves
              # Clean risk table
            xlab="Days",  ylab = "Overall probability of no symptoms yet", palette = "lancet",legend.labs=c("Stratum:Early","Stratum:Late"),legend=c('right'))
+```
 
+```
+## Warning: Vectorized input to `element_text()` is not officially supported.
+## Results may be unexpected or may change in future versions of ggplot2.
 
+## Warning: Vectorized input to `element_text()` is not officially supported.
+## Results may be unexpected or may change in future versions of ggplot2.
+
+## Warning: Vectorized input to `element_text()` is not officially supported.
+## Results may be unexpected or may change in future versions of ggplot2.
+```
+
+```r
 pdata <- data.frame(days=rep(spdays,3),  
             fitsurv=c(1-pweibull(spdays, shape = exp(Eallthree$myfit$coefficients[1]), scale = exp(Eallthree$myfit$coefficients[2])),
         1-pgamma(spdays,  shape = exp(Eallthree$myfit_gamma$coefficients[1]), scale = exp(Eallthree$myfit_gamma$coefficients[2])),
@@ -581,7 +582,7 @@ ggsp2$plot + geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn)) +ge
 ![](singapore_wtables_revised_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
 
 ```r
-  ggsave(filename = "final_figures/Fig3_inc_Sing_strata.pdf", width = 8, height = 6)
+#  ggsave(filename = "final_figures/Fig4a_inc_Sing_strata.pdf", width = 8, height = 6)
 ```
 
 

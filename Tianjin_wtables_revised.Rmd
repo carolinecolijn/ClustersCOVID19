@@ -176,7 +176,7 @@ return(list(par1=par1,par2=par2, par1range=par1range, par2range=par2range, means
 }
 ```
 
-Table for parameters and their CIs, and the  mean incubation period and its CI, for unstratified data: 
+**Table 1 (without intermediates)** for parameters and their CIs, and the  mean incubation period and its CI, for unstratified data: 
 
 ```{r}
 getMeanCI_DF = function(myfit,myfit_gamma,myfit_lnorm) {
@@ -236,7 +236,7 @@ Plot a fit and the KM curve together.
 # ggsave(filename = "inc_Tianjin.pdf", width = 8, height = 6)
 ```
 
-### Make Figure 3b upper panel (non-stratified) for the manuscript
+### Make Figure 4b upper panel (non-stratified) for the manuscript
 This is to plot the Kaplan-Meier survival curve and estimated probability distribution of days post-infection for a case not to be showing symptoms yet (using three possible distributions: weibull, gamma, and log-normal).
 ```{r}
 days=seq(0,20,by=0.05)
@@ -251,11 +251,11 @@ pdata <- data.frame(days=rep(days,3),
         1-plnorm(days,  meanlog = allthree$myfit_lnorm$coefficients[1], sdlog = exp(allthree$myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(days)), rep("Gamma",length(days)), rep("Lognorm", length(days)) ))  # i know, i know... 
 
 ggs$plot +geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn))
- ggsave(filename = "final_figures/Fig3b_inc_Tianjin_all.pdf", width = 8, height = 6)
+# ggsave(filename = "final_figures/Fig4b_inc_Tianjin_all.pdf", width = 8, height = 6)
 ```
 
 
-### Stratified early and late 
+### Stratified early and late (Table 1 and Figure 4a below panel for manuscript)
 Finally, we want to do this all again but stratifying the data between early occurring cases and late. This is why we used functions in the above, though it was clumsy. 
 
 ```{r}
@@ -282,19 +282,19 @@ LATE: parameter point estimates and the quantiles
 getQuantileDF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
 ```
 
-EARLY: how variable are these point estimates? Look at mean and 95\% CI
+EARLY: how variable are these point estimates? Look at mean and 95\% CI (**Table 1 (without intermediates)**)
 
 ```{r}
 getMeanCI_DF(Eallthree[[1]],Eallthree[[2]], Eallthree[[3]])
 ```
 
-LATE: how variable are these point estimates? Look at mean and 95\% CI
+LATE: how variable are these point estimates? Look at mean and 95\% CI (**Table 1 (without intermediates)**)
 
 ```{r}
 getMeanCI_DF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
 ```
 
-### Generating Figure 3b (lower panel) for manuscript
+### Generating Figure 3b (lower panel) for manuscript (stratified into early and late)
 This is to plot the Kaplan-Meier survival curves and estimated probability distribution of days post-infection for a case not to be showing symptoms yet, when stratifying the data pre and post quarantine procedures in China. As per tables above, the symptom onset date of on or before Jan 31, 2020 is the cut-off for what defines an "early" case. 
 
 ```{r}
@@ -321,7 +321,7 @@ pdata1 <- data.frame(days=rep(tdays,3),
                                                             
 ggsp2$plot + geom_line(data = pdata, aes(x = days, y = fitsurv, color=distn)) +geom_line(data = pdata1, aes(x = days, y = fitsurv, color=distn)) 
 
-ggsave(filename = "final_figures/Fig3b_inc_Tianjin_strata.pdf", width = 8, height = 6)
+#ggsave(filename = "final_figures/Fig4b_inc_Tianjin_strata.pdf", width = 8, height = 6)
 #ggsave(filename = "inc_Tianjin_strata.png", width = 8, height = 6)
 ```
 

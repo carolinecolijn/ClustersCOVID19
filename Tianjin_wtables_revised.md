@@ -79,12 +79,11 @@ tdata$maxIncTimes
 
 ```
 ## Time differences in days
-##   [1]  9 20 20 20 20 20 20  4 20  6 20 20 20 20 20 20 20  7  4 20  9 20 20
-##  [24] 20 20 20  8 20 11  9  5 20 20  8 20 20  9  7 11 11 20  3 20 20 20  6
-##  [47] 15 11  7  7 20 20 20  8  9  6 20 20  9 20 20 20 14 11  6  9 20 20  6
-##  [70] 20  3  6 13 12 20  3 11 10 20 20 20 20 20 20 13 20 20 20 20  7 20 20
-##  [93] 20 20 20 20 20 16 20 11 20 20 20 20  3 11 20 19 16 20 17 20 11 20 20
-## [116]  6 19 20 20 14 20 16 20 20 20
+##   [1]  9 20 20 20 20 20 20  4 20  6 20 20 20 20 20 20 20  7  4 20  9 20 20 20 20
+##  [26] 20  8 20 11  9  5 20 20  8 20 20  9  7 11 11 20  3 20 20 20  6 15 11  7  7
+##  [51] 20 20 20  8  9  6 20 20  9 20 20 20 14 11  6  9 20 20  6 20  3  6 13 12 20
+##  [76]  3 11 10 20 20 20 20 20 20 13 20 20 20 20  7 20 20 20 20 20 20 20 16 20 11
+## [101] 20 20 20 20  3 11 20 19 16 20 17 20 11 20 20  6 19 20 20 14 20 16 20 20 20
 ```
 
 ```r
@@ -93,12 +92,11 @@ tdata$minIncTimes
 
 ```
 ## Time differences in days
-##   [1]  0  0  0  0  0  0  1  1  7  4  0  0  0  6  2  0  7  7  4  7  2  3  3
-##  [24] 12  8  5  8  0  7  5  2  3  4  0  4  1  8  1  5  5  0  0  4  1  5  6
-##  [47]  9 11  7  0  8  3  7  8  9  6 14  0  0  0  0  0  1  8  0  9  0  0  6
-##  [70]  0  3  6 12  1  0  3 11 10  0  0  0  0  0  0 13  0 12  0  0  7  0  0
-##  [93]  0  0  0  0  0 16  0  4  0  0  0  0  3 11  0  0  0  0 17  0  4  0  0
-## [116]  6 19  0  0 11  6 16 11  0  2
+##   [1]  0  0  0  0  0  0  1  1  7  4  0  0  0  6  2  0  7  7  4  7  2  3  3 12  8
+##  [26]  5  8  0  7  5  2  3  4  0  4  1  8  1  5  5  0  0  4  1  5  6  9 11  7  0
+##  [51]  8  3  7  8  9  6 14  0  0  0  0  0  1  8  0  9  0  0  6  0  3  6 12  1  0
+##  [76]  3 11 10  0  0  0  0  0  0 13  0 12  0  0  7  0  0  0  0  0  0  0 16  0  4
+## [101]  0  0  0  0  3 11  0  0  0  0 17  0  4  0  0  6 19  0  0 11  6 16 11  0  2
 ```
 
 
@@ -220,7 +218,7 @@ return(list(par1=par1,par2=par2, par1range=par1range, par2range=par2range, means
 }
 ```
 
-Table for parameters and their CIs, and the  mean incubation period and its CI, for unstratified data: 
+**Table 1 (without intermediates)** for parameters and their CIs, and the  mean incubation period and its CI, for unstratified data: 
 
 
 ```r
@@ -293,7 +291,7 @@ Plot a fit and the KM curve together.
 # ggsave(filename = "inc_Tianjin.pdf", width = 8, height = 6)
 ```
 
-### Make Figure 3b upper panel (non-stratified) for the manuscript
+### Make Figure 4b upper panel (non-stratified) for the manuscript
 This is to plot the Kaplan-Meier survival curve and estimated probability distribution of days post-infection for a case not to be showing symptoms yet (using three possible distributions: weibull, gamma, and log-normal).
 
 ```r
@@ -314,11 +312,11 @@ ggs$plot +geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn))
 ![](Tianjin_wtables_revised_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
 
 ```r
- ggsave(filename = "final_figures/Fig3b_inc_Tianjin_all.pdf", width = 8, height = 6)
+# ggsave(filename = "final_figures/Fig4b_inc_Tianjin_all.pdf", width = 8, height = 6)
 ```
 
 
-### Stratified early and late 
+### Stratified early and late (Table 1 and Figure 4a below panel for manuscript)
 Finally, we want to do this all again but stratifying the data between early occurring cases and late. This is why we used functions in the above, though it was clumsy. 
 
 
@@ -363,7 +361,7 @@ getQuantileDF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
 ## 3 Log normal  2.48  0.233    7.60   10.2  12.0   14.0    18.9
 ```
 
-EARLY: how variable are these point estimates? Look at mean and 95\% CI
+EARLY: how variable are these point estimates? Look at mean and 95\% CI (**Table 1 (without intermediates)**)
 
 
 ```r
@@ -371,17 +369,13 @@ getMeanCI_DF(Eallthree[[1]],Eallthree[[2]], Eallthree[[3]])
 ```
 
 ```
-##   par1s par1lower par1upper par2s par2lower par2upper means meanlower
-## 1  2.88      2.16      3.48 7.643     6.735     8.553  6.83      5.99
-## 2  6.01      3.61      7.26 1.140     0.660     1.276  6.88      5.97
-## 3  1.84      1.70      2.03 0.426     0.331     0.547  6.93      5.96
-##   meanupper
-## 1      7.77
-## 2      7.87
-## 3      8.03
+##   par1s par1lower par1upper par2s par2lower par2upper means meanlower meanupper
+## 1  2.88      2.16      3.48 7.643     6.735     8.553  6.83      5.99      7.77
+## 2  6.01      3.61      7.26 1.140     0.660     1.276  6.88      5.97      7.87
+## 3  1.84      1.70      2.03 0.426     0.331     0.547  6.93      5.96      8.03
 ```
 
-LATE: how variable are these point estimates? Look at mean and 95\% CI
+LATE: how variable are these point estimates? Look at mean and 95\% CI (**Table 1 (without intermediates)**)
 
 
 ```r
@@ -399,7 +393,7 @@ getMeanCI_DF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
 ## 3      13.7
 ```
 
-### Generating Figure 3b (lower panel) for manuscript
+### Generating Figure 3b (lower panel) for manuscript (stratified into early and late)
 This is to plot the Kaplan-Meier survival curves and estimated probability distribution of days post-infection for a case not to be showing symptoms yet, when stratifying the data pre and post quarantine procedures in China. As per tables above, the symptom onset date of on or before Jan 31, 2020 is the cut-off for what defines an "early" case. 
 
 
@@ -414,7 +408,20 @@ fit <- list(early = fit1, late = fit2)
 ggsp2=ggsurvplot(fit, data = tdata, combine = TRUE, # Combine curves
              # Clean risk table
            palette = "lancet",legend.labs=c("Pre-quarantine","Post-quarantine"),legend=c('right'))
+```
 
+```
+## Warning: Vectorized input to `element_text()` is not officially supported.
+## Results may be unexpected or may change in future versions of ggplot2.
+
+## Warning: Vectorized input to `element_text()` is not officially supported.
+## Results may be unexpected or may change in future versions of ggplot2.
+
+## Warning: Vectorized input to `element_text()` is not officially supported.
+## Results may be unexpected or may change in future versions of ggplot2.
+```
+
+```r
 pdata <- data.frame(days=rep(tdays,3),  
             fitsurv=c(1-pweibull(tdays, shape = exp(Eallthree$myfit$coefficients[1]), scale = exp(Eallthree$myfit$coefficients[2])),
         1-pgamma(tdays, shape = exp(Eallthree$myfit_gamma$coefficients[1]), scale = exp(Eallthree$myfit_gamma$coefficients[2])),
@@ -431,7 +438,7 @@ ggsp2$plot + geom_line(data = pdata, aes(x = days, y = fitsurv, color=distn)) +g
 ![](Tianjin_wtables_revised_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
 
 ```r
-ggsave(filename = "final_figures/Fig3b_inc_Tianjin_strata.pdf", width = 8, height = 6)
+#ggsave(filename = "final_figures/Fig4b_inc_Tianjin_strata.pdf", width = 8, height = 6)
 #ggsave(filename = "inc_Tianjin_strata.png", width = 8, height = 6)
 ```
 

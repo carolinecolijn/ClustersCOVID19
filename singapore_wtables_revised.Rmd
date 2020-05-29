@@ -56,7 +56,7 @@ range(spdata$end_source, na.rm = T)
 spdata <- filter(spdata, !is.na(date_onset_symptoms)) #Remove all the cases that do not have info on date of symptom onset # NOTE: 10 of these
 ```
 
-## Incubation period
+## Incubation period (without accounting for intermediates)
 
 The incubation period is the time between exposure and the onset of symptoms. We estimate this directly from the stated start and end times for cases' exposure windows. These are now explicitly listed for both Tianjin and Singapore datasets in the 'start_source' and 'end_source' columns.
 
@@ -217,7 +217,7 @@ return(list(par1=par1,par2=par2, par1range=par1range, par2range=par2range, means
 }
 ```
 
-Table for unstratified mean incubation period and CI for these fits: 
+**Table 1 (without intermediates)** for unstratified mean incubation period and CI for these fits: 
 
 ```{r}
 getMeanCI_DF = function(myfit,myfit_gamma,myfit_lnorm) {
@@ -255,7 +255,7 @@ getMeanCI_DF(myfit,myfit_gamma,myfit_lnorm)
 
 Here is a plot of the estimated distribution together with the empirical survival curve from the data. This is Figure 3a (upper panel) in the manuscript.
 
-### Generating figure 3a above panel for paper
+### Generating figure 4a above panel for paper (not stratified)
 This is to plot the Kaplan-Meier survival curve and estimated probability distribution of days post-infection for a case not to be showing symptoms yet (using three possible distributions: weibull, gamma, and log-normal).
 
 ```{r}
@@ -271,9 +271,10 @@ pdata <- data.frame(days=rep(spdays,3),
         1-plnorm(spdays,  meanlog = myfit_lnorm$coefficients[1], sdlog = exp(myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(spdays)), rep("Gamma",length(spdays)), rep("Lognorm", length(spdays)) )) 
                                                             
 ggsp$plot+geom_line(data = pdata, aes(x = days, y = fitsurv, color=distn))
-  ggsave(filename = "final_figures/Fig3_inc_Sing_all.pdf", width = 8, height = 6)
+#  ggsave(filename = "final_figures/Fig4a_inc_Sing_all.pdf", width = 8, height = 6)
 ```
 
+### Generating Table 1 and Figure 4a below panel for paper (stratified into early and late)
 Finally, we want to do this all again but stratifying the data between early occurring cases and late. 
 
 
@@ -303,20 +304,20 @@ LATE: parameter point estimates and the quantiles
 getQuantileDF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
 ```
 
-EARLY: how variable are these point estimates? Look at mean and 95\% CI
+EARLY: how variable are these point estimates? Look at mean and 95\% CI (**Table 1 (without intermediates)**)
 
 ```{r}
 getMeanCI_DF(Eallthree[[1]],Eallthree[[2]], Eallthree[[3]])
 ```
 
-LATE: how variable are these point estimates? Look at mean and 95\% CI
+LATE: how variable are these point estimates? Look at mean and 95\% CI (**Table 1 (without intermediates)**)
 
 ```{r}
 getMeanCI_DF(Lallthree[[1]],Lallthree[[2]], Lallthree[[3]])
 ```
 
 
-### Generating Fig 3a below panel for the paper
+### Generating Fig 4a below panel for the paper (stratified)
 This is to plot the Kaplan-Meier survival curves and estimated probability distribution of days post-infection for a case not to be showing symptoms yet, when stratifying the data pre and post quarantine procedures in China. As per tables above, having a specified last possible exposure date (which are all on or before Jan 30, 2020) is the cut-off for what defines an "early" case. 
 
 ```{r}
@@ -343,7 +344,7 @@ pdata1 <- data.frame(days=rep(spdays,3),
         1-plnorm(spdays,  meanlog = Lallthree$myfit_lnorm$coefficients[1], sdlog = exp(Lallthree$myfit_lnorm$coefficients[2]))),distn=c(rep("Weibull", length(spdays)), rep("Gamma",length(spdays)), rep("Lognorm", length(spdays)) )) 
                                                             
 ggsp2$plot + geom_line(data = pdata, aes(x = days, y = fitsurv,color=distn)) +geom_line(data = pdata1, aes(x = days, y = fitsurv,color=distn)) 
-  ggsave(filename = "final_figures/Fig3_inc_Sing_strata.pdf", width = 8, height = 6)
+#  ggsave(filename = "final_figures/Fig4a_inc_Sing_strata.pdf", width = 8, height = 6)
 ```
 
 
