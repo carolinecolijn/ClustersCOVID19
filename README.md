@@ -31,7 +31,7 @@ This analysis originated from work begun at EpiCoronaHack which took place at Si
 [^1]: co-first authors
 [^2]: corresponding author at ccolijn@sfu.ca
 
-Please cite: Tindale LC*, Stockdale JE*, Coombe M, , Garlock E, Lau WYV, Saraswat M, Lee YHB, Zhang L, Chen D, Wallinga J, and Colijn C. Evidence for transmission of COVID-19 prior to symptom onset. eLife, 2020; 9:e57149. DOI: 10.7554/eLife.57149.
+Please cite: Tindale LC*, Stockdale JE*, Coombe M, , Garlock E, Lau WYV, Saraswat M, Zhang L, Chen D, Wallinga J, and Colijn C. Evidence for transmission of COVID-19 prior to symptom onset. eLife, 2020; 9:e57149. DOI: 10.7554/eLife.57149.
 
 ## Summary of data sources
 ### Singapore Cluster
