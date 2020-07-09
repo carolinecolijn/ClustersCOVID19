@@ -31,6 +31,8 @@ This analysis originated from work begun at EpiCoronaHack which took place at Si
 [^1]: co-first authors
 [^2]: corresponding author at ccolijn@sfu.ca
 
+Please cite: Tindale LC*, Stockdale JE*, Coombe M, , Garlock E, Lau WYV, Saraswat M, Lee YHB, Zhang L, Chen D, Wallinga J, and Colijn C. Evidence for transmission of COVID-19 prior to symptom onset. eLife, 2020; 9:e57149. DOI: 10.7554/eLife.57149.
+
 ## Summary of data sources
 ### Singapore Cluster
 This dataset [link to copy of dataset](/data/COVID-19_Singapore.csv) includes the 93 cases confirmed between Jan 19 to Feb 26, 2020. The data was obtained from press releases from the Ministry of Health Singapore [website](https://www.moh.gov.sg/covid-19). Close contacts and a few transmission clusters were identified for many of the Singapore cases. The dataset includes the following information:
