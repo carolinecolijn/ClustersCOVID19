@@ -35,7 +35,7 @@ Please cite: Tindale LC*, Stockdale JE*, Coombe M, , Garlock E, Lau WYV, Saraswa
 
 ## Summary of data sources
 ### Singapore Cluster
-This dataset [link to copy of dataset](/data/COVID-19_Singapore.csv) includes the 93 cases confirmed between Jan 19 to Feb 26, 2020. The data was obtained from press releases from the Ministry of Health Singapore [website](https://www.moh.gov.sg/covid-19). Close contacts and a few transmission clusters were identified for many of the Singapore cases. The dataset includes the following information:
+This dataset [link to copy of dataset](/data/COVID-19_Singapore_data_revised.csv) includes the 93 cases confirmed between Jan 19 to Feb 26, 2020. The data was obtained from press releases from the Ministry of Health Singapore [website](https://www.moh.gov.sg/covid-19). Close contacts and a few transmission clusters were identified for many of the Singapore cases. The dataset includes the following information:
 
 * CaseID = case identification number
 
@@ -89,7 +89,7 @@ This dataset [link to copy of dataset](/data/COVID-19_Singapore.csv) includes th
 
 
 ### Tianjin Cluster
-The Tianjin dataset [link to copy of dataset](/data/Tianjin135casesFeb22.csv) was compiled by Dongxuan Chen and Louxin Zhang, and includes 135 confirmed cases between Jan 21 to Feb 27, 2020. The case information was obtained from online press releases, as well as local media sources including Zounai Jianjin and Jinyun News on Weibo. The three primary sources for the dataset are the following: 
+The Tianjin dataset [link to copy of dataset](/data/Tianjin135cases_revised.csv) was compiled by Dongxuan Chen and Louxin Zhang, and includes 135 confirmed cases between Jan 21 to Feb 27, 2020. The case information was obtained from online press releases, as well as local media sources including Zounai Jianjin and Jinyun News on Weibo. The three primary sources for the dataset are the following: 
 
 * source1: Tianjin health commission official website, for daily announcements [link for source1](http://wsjk.tj.gov.cn/col/col87/index.html#!uid=259&pageNum=1)
 * source2: Jinyun News, Tianjin offical local media weibo account, for patient symptom onset reference [link for source2](https://www.weibo.com/u/2967529507?is_all=1) 
